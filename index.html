@@ -235,13 +235,15 @@
 
         .hero em { font-style: italic; }
 
-        .hero-part {
-            display: inline-block;
-            transition: none;
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
         }
 
-        .hero-part.dim { color: #ccc; }
-        .hero-part.lit { color: #000; }
+        .hero-cursor {
+            animation: blink 0.8s step-end infinite;
+            font-weight: 300;
+        }
 
         /* ── GRID ── */
         .grid {
@@ -418,11 +420,9 @@
     </nav>
 
     <div class="hero" id="hero">
-        <span class="hero-part dim">פסיכולוגיה</span>
-        <span class="hero-part dim"> + עסקים</span>
-        <span class="hero-part dim"> + יותר מדי רעיונות טובים לשמור לעצמי.</span>
+        <span id="hero-line1"></span><span class="hero-cursor">|</span>
         <br>
-        <span class="hero-part dim"><em>בואו נתחיל.</em></span>
+        <em><span id="hero-line2"></span></em>
     </div>
 
     <div class="grid">
@@ -476,24 +476,40 @@
             wall.appendChild(span);
         });
 
-        // ── Hero spotlight animation ──
-        const heroParts = Array.from(document.querySelectorAll('.hero-part'));
-        let heroIndex = 0;
+        // ── Hero typewriter animation ──
+        const heroLine1 = document.getElementById('hero-line1');
+        const heroLine2 = document.getElementById('hero-line2');
+        const heroCursor = document.querySelector('.hero-cursor');
+        const line1Text = 'פסיכולוגיה + עסקים + יותר מדי רעיונות טובים לשמור לעצמי.';
+        const line2Text = 'בואו נתחיל.';
 
         function lightNext() {
-            if (heroIndex < heroParts.length) {
-                heroParts[heroIndex].classList.remove('dim');
-                heroParts[heroIndex].classList.add('lit');
-
-                // grow then shrink back to normal
-                const part = heroParts[heroIndex];
-                part.style.transition = 'transform 0.25s ease, color 0.3s ease';
-                part.style.transform = 'scale(1.18)';
-                setTimeout(() => { part.style.transform = 'scale(1)'; }, 250);
-
-                heroIndex++;
-                setTimeout(lightNext, 600);
+            let i = 0;
+            function typeLine1() {
+                if (i <= line1Text.length) {
+                    heroLine1.textContent = line1Text.slice(0, i);
+                    i++;
+                    setTimeout(typeLine1, 40);
+                } else {
+                    // pause then type line 2
+                    heroCursor.style.display = 'none';
+                    setTimeout(() => {
+                        let j = 0;
+                        function typeLine2() {
+                            if (j <= line2Text.length) {
+                                heroLine2.textContent = line2Text.slice(0, j);
+                                j++;
+                                setTimeout(typeLine2, 60);
+                            } else {
+                                // done — hide cursor
+                                heroCursor.style.display = 'none';
+                            }
+                        }
+                        typeLine2();
+                    }, 400);
+                }
             }
+            typeLine1();
         }
 
         // lightNext is triggered after CV is thrown away
