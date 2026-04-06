@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מועמד שלא תשכחו</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { background: #fff; }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            color: #000;
+            background: transparent;
+            -webkit-font-smoothing: antialiased;
+            padding-top: 70px;
+        }
+
+        /* ── COVER LETTER SECTION ── */
+        #cover-letter {
+            max-width: 580px;
+            margin: 100px auto 80px;
+            padding: 50px 40px;
+            direction: rtl;
+            font-family: 'Rubik', sans-serif;
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #111;
+            background: rgba(255,255,255,0.88);
+            border-radius: 4px;
+            position: relative;
+            z-index: 2;
+        }
+
+        #cover-letter p { margin-bottom: 1.3em; }
+        #cover-letter p:last-child { margin-bottom: 0; }
+
+        #cover-letter .sig {
+            margin-top: 2em;
+            font-style: italic;
+            color: #555;
+            font-size: 1rem;
+        }
+
+        /* ── CV OVERLAY ── */
+        #cv-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #cv-paper {
+            background: #fff;
+            max-height: 88vh;
+            max-width: 92vw;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+            transform-origin: center center;
+            position: relative;
+            overflow: hidden;
+            padding: 0;
+            display: flex;
+        }
+
+        #cv-paper img {
+            height: 88vh;
+            width: auto;
+            display: block;
+        }
+
+        /* skip button */
+        #cv-skip {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            color: #fff;
+            opacity: 0.5;
+            cursor: pointer;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border: none;
+            background: none;
+        }
+
+        #cv-skip:hover { opacity: 1; }
+
+        /* trash can */
+        #trash-can {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            font-size: 3.5rem;
+            z-index: 999;
+            display: none;
+            transform-origin: bottom center;
+        }
+
+        @keyframes trash-shake {
+            0%   { transform: rotate(0deg); }
+            20%  { transform: rotate(-12deg); }
+            40%  { transform: rotate(10deg); }
+            60%  { transform: rotate(-8deg); }
+            80%  { transform: rotate(6deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        #trash-can.shake {
+            animation: trash-shake 0.5s ease;
+        }
+
+        @keyframes fly-to-trash {
+            0%   { opacity: 1; }
+            100% { opacity: 0; transform: scale(0.04) rotate(720deg) translate(var(--tx), var(--ty)); border-radius: 50%; }
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 30px;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(6px);
+        }
+
+        nav .name {
+            font-weight: 400;
+            text-decoration: none;
+            color: #000;
+        }
+
+        nav .links { display: flex; gap: 24px; align-items: center; }
+
+        @keyframes ig-spin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes ig-pulse {
+            0%, 100% { box-shadow: 0 2px 10px rgba(225,48,108,0.4); }
+            50%       { box-shadow: 0 2px 22px rgba(225,48,108,0.85); }
+        }
+
+        @keyframes ig-rotate {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        nav .ig-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            animation: ig-rotate 6s linear infinite;
+        }
+
+        nav .ig-icon::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: conic-gradient(#f09433, #e6683c, #dc2743, #cc2366, #bc1888, #833ab4, #f09433);
+            animation: ig-spin 3s linear infinite;
+            z-index: 0;
+        }
+
+        nav .ig-icon::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            background: #000;
+            z-index: 1;
+        }
+
+        nav .ig-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: #fff;
+            position: relative;
+            z-index: 2;
+        }
+
+        nav .ig-icon:hover { transform: scale(1.2); }
+
+        nav a {
+            text-decoration: none;
+            color: #000;
+            transition: opacity 0.2s;
+        }
+
+        nav a:hover { opacity: 0.4; }
+
+        /* ── HERO ── */
+        .hero {
+            text-align: center;
+            padding: 48px 40px 64px;
+            max-width: 640px;
+            margin: 0 auto;
+            font-family: 'Rubik', sans-serif;
+            font-size: 2rem;
+            line-height: 1.8;
+            font-weight: 400;
+            direction: rtl;
+            background: rgba(255,255,255,0.88);
+            border-radius: 4px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero em { font-style: italic; }
+
+        .hero-part {
+            display: inline-block;
+            transition: none;
+        }
+
+        .hero-part.dim { color: #ccc; }
+        .hero-part.lit { color: #000; }
+
+        /* ── GRID ── */
+        .grid {
+            columns: 2;
+            column-gap: 4px;
+            padding: 0 4px 4px;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .grid-item {
+            break-inside: avoid;
+            margin-bottom: 4px;
+            overflow: visible;
+            background: #f4f4f4;
+            position: relative;
+        }
+
+        @keyframes wiggle {
+            0%   { transform: rotate(0deg); }
+            20%  { transform: rotate(-4deg); }
+            40%  { transform: rotate(4deg); }
+            60%  { transform: rotate(-3deg); }
+            80%  { transform: rotate(3deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .grid-item img { width: 100%; display: block; }
+        .grid-item:hover img { animation: wiggle 0.5s ease; }
+
+        .grid-item::after {
+            content: attr(data-label);
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            color: #fff;
+            font-family: 'Rubik', sans-serif;
+            font-size: 1rem;
+            padding: 4px 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            direction: rtl;
+        }
+
+        .grid-item:hover::after { opacity: 1; }
+
+        /* ── ABOUT ── */
+        #about {
+            max-width: 580px;
+            margin: 90px auto 60px;
+            padding: 0 30px;
+            font-family: 'Rubik', sans-serif;
+            font-size: 1.2rem;
+            line-height: 1.75;
+        }
+
+        #about a {
+            color: #000;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        #about a:hover { opacity: 0.5; }
+
+        /* ── WORD WALL ── */
+        #word-wall {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            direction: rtl;
+            font-family: 'Rubik', sans-serif;
+            font-size: 1rem;
+            line-height: 1.85;
+            color: #d8d8d8;
+            padding: 16px 20px;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 0 32px;
+        }
+
+        #word-wall span {
+            pointer-events: auto;
+            cursor: default;
+            transition: color 0.2s, transform 0.2s;
+            white-space: nowrap;
+            text-align: center;
+            display: inline-block;
+        }
+
+        #word-wall span:hover {
+            color: #111;
+            transform: scale(1.18);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            color: #aaa;
+            text-transform: uppercase;
+            background: rgba(255,255,255,0.85);
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 600px) {
+            #word-wall {
+                font-size: 0.85rem;
+                line-height: 2;
+                gap: 0 20px;
+            }
+            .grid { columns: 1; }
+            .hero { font-size: 1.25rem; padding: 28px 20px 40px; }
+            nav { padding: 18px 20px; }
+            #cv-paper img {
+                height: auto;
+                width: 92vw;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SVG displacement filter for crumple -->
+    <svg style="position:absolute;width:0;height:0;overflow:hidden">
+        <defs>
+            <filter id="crumple-filter" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="turbulence" baseFrequency="0.03" numOctaves="4" seed="5" result="noise"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0"
+                    xChannelSelector="R" yChannelSelector="G" id="fe-displace"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- CV OVERLAY -->
+    <div id="cv-overlay">
+        <div id="cv-paper">
+            <img src="cv.jpg.jpg" alt="קורות חיים - אלון צבי סבג">
+        </div>
+        <button id="cv-skip">דלג/י ←</button>
+    </div>
+
+    <!-- TRASH CAN -->
+    <div id="trash-can">🗑️</div>
+
+    <!-- WORD WALL BACKGROUND -->
+    <div id="word-wall"></div>
+
+    <!-- PORTFOLIO -->
+    <nav>
+        <a class="name" href="#" id="name-btn">Alon Zvi Sabag</a>
+        <div class="links">
+            <a href="#" id="cv-nav-btn">CV</a>
+            <a href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener" class="ig-icon" aria-label="Instagram">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                    <circle cx="12" cy="12" r="4.5"/>
+                    <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
+                </svg>
+            </a>
+        </div>
+    </nav>
+
+    <div class="hero" id="hero">
+        <span class="hero-part dim">פסיכולוגיה</span>
+        <span class="hero-part dim"> + עסקים</span>
+        <span class="hero-part dim"> + יותר מדי רעיונות טובים לשמור לעצמי.</span>
+        <br>
+        <span class="hero-part dim"><em>בואו נתחיל.</em></span>
+    </div>
+
+    <div class="grid">
+        <div class="grid-item" data-label="אגס מסורס"><img src="image 1.png" alt="אגס מסורס"></div>
+        <div class="grid-item" data-label="אפונה מפונה"><img src="image 2.png" alt="אפונה מפונה"></div>
+        <div class="grid-item" data-label="חסה קלבסה"><img src="image 3.png" alt="חסה קלבסה"></div>
+        <div class="grid-item" data-label="כרוב מגנוב"><img src="image 4.png" alt="כרוב מגנוב"></div>
+        <div class="grid-item" data-label="מישמש טיפש"><img src="image 5.png" alt="מישמש טיפש"></div>
+        <div class="grid-item" data-label="ענבים מגניבים"><img src="image 6.png" alt="ענבים מגניבים"></div>
+        <div class="grid-item" data-label="פול מהבול"><img src="image 7.png" alt="פול מהבול"></div>
+        <div class="grid-item" data-label="פקאן מסוכן"><img src="image 8.png" alt="פקאן מסוכן"></div>
+        <div class="grid-item" data-label="צ׳ילי דבילי"><img src="image 9.png" alt="צ׳ילי דבילי"></div>
+        <div class="grid-item" data-label="צימוק דפוק"><img src="image 10.png" alt="צימוק דפוק"></div>
+    </div>
+
+    <section id="cover-letter">
+        <p>שלום,</p>
+        <p>אם אתם מחפשים קורות חיים עם חמש שנות ניסיון במשרד פרסום, כנראה ששלי לא ירשימו אתכם במבט ראשון. אבל אם אתם מחפשים את האדם שמבין שפרסום הוא שילוב של פסיכולוגיה עמוקה ושורה תחתונה עסקית — כדאי שנדבר.</p>
+        <p>אני סטודנט שנה ב׳ לפסיכולוגיה ומנהל עסקים ברופין. השילוב הזה הוא לא מקרי: הפסיכולוגיה נותנת לי את המפתחות להבנת הצרכן, הטריגרים הרגשיים וקבלת ההחלטות, בזמן שמנהל העסקים מאפשר לי לראות את התמונה הגדולה — אסטרטגיה, שיווק ויעדים עסקיים. אלו הכלים הדרושים כדי לגשר בין צרכי הלקוח למעוף של מחלקת הקריאייטיב.</p>
+        <p>הוכחה סבירה ליכולות שלי היא ״מילים של מבוגרים״ — עמוד אינסטגרם הומוריסטי שהקמתי ומנהל (מעל 100 מונחים שנבחרו בפינצטה ומעל 200 עוקבים). שם למדתי בדרך הקשה והמהנה איך בונים שפה מותגית, איך מנהלים קהילה ואיך הופכים תובנה אנושית פשוטה לתוכן שגורם לאנשים לעצור, לצחוק ולשתף.</p>
+        <p>בתחילת המלחמה חשבתי על חקלאי הצפון. רציתי לעשות משהו. הרעיון: קולקציית ביגוד עם שמות ירקות מצחיקים, שרווחיה ייתרמו לחקלאים שנפגעו מהמלחמה. לקחתי פנקס — והאיורים שאתם רואים פה הם התוצאה.</p>
+        <p>אני רוצה להיות קופירייטר בעתיד, אבל אני מבין שכדי לכתוב מילים שמוכרות, אני חייב קודם ללמוד את המערכת מלמטה. אני מחפש להיכנס למשרד פרסום, ללמוד איך קמפיין נולד ולהיות מאסטר של הפרטים הקטנים.</p>
+        <p>אני מגיע עם רעב גדול, אפס התנצלות על חוסר הניסיון הפורמלי, ומקסימום מוטיבציה להוכיח שהשילוב בין הבנה פסיכולוגית לחוש עסקי הוא מה שאתם צריכים במשרד.</p>
+        <p>אשמח מאוד להזדמנות להציג את עצמי בראיון.</p>
+        <div class="sig">
+            <p>בברכה,<br>אלון צבי סבג<br>053-8322416</p>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 Alon Zvi Sabag
+    </footer>
+
+    <script>
+        // ── Word Wall ──
+        const words = ['בלאו הכי','רפורט','לשים ראש','מתחת לכל ביקורת','וינטלטור','פריג\'ידר','טמפרמנט','באחריות','במחיר','לך תזדיין ותביא קבלה','דפוק עם תעודות','אני אעשה לו מי שבירך','פירמה','קיסמים','צורפת','הצנטרום של הצנטרום','פר','קנדום','יחזור על ארבע','ובגדול','הצעקה האחרונה','ווטקה','קרי','מודה','עד כדי','גזעי','טוניזאי','תקף','דבר ללמפה','בשביל הספורט','ברושור','רבותיי','חבל על הזמן','לטרפד','פונקט','ג\'ק רובינזון','בן כיתה','ערוץ החיים הטובים','פושטק','בנדיט','בחיי','שאפה','יחפן','וואצאפ','חתיכה','רצפט','מנבל את הפה','מקרר','לעומת זאת','כדי שתשאל','מונו','יוצמח','ברדק','פורפרה','גרושים','חנטריש','פלאח','לתפוס ראש','עצרו סוסים','לגנוב איתו סוסים','פוץ','קיבלת קצת שכל','דפוק או עושה את עצמך','פרענק','שאטר','שבוע ימים','זד','יוגורט','על זמני','מיקרוב','פישר','לתפוס קריזה','שוס','אגזוזן','תרוויח','תהפוך כוס','פציינט','הלך פייפן','דגנרט','חלאה','דרעק','חינגה','שלומפר','בית שימוש','אכלנו מאותו המסטינג','בן אחותי','פרוספקט','יורם','ישר כוח','פרזיט','דלפק','זיפת','קקמייקה','דחילק','מקגייוור','שחק אותה','לפזר את ההפגנה','ארחי פרחי','יקירי','מזל שהראש מחובר לגוף','קליבר','פוטר','טריקו','לעשות ממנו קציצות','דיסקוטק','הרגת אותנו','כלבויניק','ביצעלך','טעטעלה','לנגס','דחעלה','מכר','גיסנו','דוקטור','על חשבון הברון','מוגז','לעשות ביצה','דיאט','למזוג אוכל','אסקימו','חולירע','סובייטים','זפטה','פיקס','קרח','קוטר','יקה','קוזינה','שאלטר','טיפ טופ','צ\'אנסה','מארס','שטיק','קונץ','ונטה','ברוך','ג\'ון בריון','גומי','צ\'חצ\'ח','חמור גדול','מינוי','ז\'ונגלר','זה יכול להוציא למישהו עין','להחטיף מכות','שוד לאור יום','פרופר','שלאגר','ז\'רגון','פלומבה','קלמפה','בוננזה','יושב','בשצף קצף','צחוק מעבודה','חדר כוח','פרה פרה','קשקוש בלבוש','ג\'בלאות','כהנה וכהנה','משגע','לעמוד על רגליים אחוריות','יו טרן','חזק ביותר','בראבו','דמיקולו','לצלצל','לטלפן','תרמית','נבלה','משהו משהו','זבנג','מילא','קבסה','ספרדים','פולניה','לוקסוס','לגזור קופון','יצאת מדעתך','תוכנית כבקשתך','צ\'ופר','פרנסה','קומזיץ','וברכה','אל תעשה חוכמות','כל טוב','למוחורת','חכם בלילה','בכבוד','מזיקים','שמשון ויובב','סבתא רבתא','טוכעס','אין דבר','נהג בוס','מם כף','סקנדל','רבע עוף','זיל הזול','סוף הדרך','צוציקים','יאלה','דיפלומה','קלפתה','גילית לי את אמריקה','מעדן','חמדלה','קטונתי','שטיף','שטיקים','לא מקובל עליי','קרסול','סוטול','שמחה גדולה','דמה','גראס','סופרסל','אבועגלה','לקבל חום','להסריט','שיבר','קוץ בתחת','יהושע פרוע','שאפו','שופרא דשופרא','אקדמיה','כמו','פרונקל','ירדת מהפסים','קליינט','ילקוט','חמור גארם','סנצ\'ו פנצ\'ו','אחורנית','פרסי','ומהר','ועד הודעה חדשה','מסיבת חשק','ביצה מבולבלת','עם מי יש לך עסק','קוקוריקו','בעל מקצוע','בלבוסתה','יציאת מצרים','שאין כמוהו','קסקסה','כל שני וחמישי','מוהיקן','איקס מיקס דריקס','קופי','לוקשים','טיקט','מדרוב','שמנדריק','בלי הכרה','שיהיה לו לתרופות','בשורות טובות','פספורט','מיליון דולר','חכם גדול','הפקה','ברדקיסט','מרשם','מעלה לי את הסעיף','לצעוד','פולקע','פיצ\'פקעס','פספוס','גישפט','כמו כוסות רוח למת','שיפוץ','סערה בכוס תה','תעשה לי טובה','אורנג\'דה','קינלי','סמל סטטוס','לשים יד','זה לא שיטה','נחלאי','סלמון','סנוקרת','שתי סטירות','רזרבה','מיזבלה','גנון','תותחן','אסטרונאוט','ביג טיים','לקלוף','בלגן שלם','בשר תותחים','גייז','לסדר','אוי לך','הפנקס פתוח והיד רושמת','נקניק','בן גילי','אוהו','פנומן','לא נולדתי אתמול','מסובב על האצבע הקטנה','האוכל של האוכל שלי','הכיס הקטן','גוגל','אחותך הצולעת','פרוזדור','ווזווז','דרדלה','לעצום עין','הפרצוף האמיתי','ושלום על ישראל','טררם','מה קרה לך','שוויצריה','ישן בעמידה','כמו הצרות שלי','גפרור','להעיף על טיל','בדרן','נולדת באוטובוס','בלעה אותו האדמה','רמת גן','קריית שמונה','סיגריה','דוט קום','תכף פה','מה הקשר בירה נשר','חתונה קתולית','לא עשו אותי באצבע','שטנץ','טיפין טיפין','סתום בלחץ','מה הנזק','זה פשע לא לקנות','חלסטרה','פר אקסלנס','גמרנו','לנדנד','לא שם קצוץ','לא היה ולא נברא','בורדל','לערבב','חתול בשק','טרגדיה','זה מה שחסר לי','שוק בשר','מוזיאון','אכלו לי שתו לי','איפה בחיפו','אינפנטיל','נעלי התעמלות','גזל','ציטרואן','קומפלימנט','נסיעה לחו\'\'ל','ליטול ידיים','קובוי','אמהמה','להבין את הפרינציפ','פרימדונה','בסוף לא ישאר ממך כלום','סרטים כחולים','סטודנט חופשי','מי נגד מי','באורך הגלות','כאוס','אירו','סוס מת','לחרבן קוביות'];
+
+        const wall = document.getElementById('word-wall');
+        // Fill screen height with repeated phrases, each as its own line
+        const wallH = window.innerHeight;
+        const lineH = 16 * 1.85; // font-size * line-height
+        const linesNeeded = Math.ceil(wallH / lineH) + 2;
+        const colsNeeded = Math.ceil(window.innerWidth / 160) + 1;
+        const total = linesNeeded * colsNeeded;
+
+        const repeated = [];
+        while (repeated.length < total) repeated.push(...words);
+        repeated.slice(0, total).forEach(w => {
+            const span = document.createElement('span');
+            span.textContent = w;
+            wall.appendChild(span);
+        });
+
+        // ── Hero spotlight animation ──
+        const heroParts = Array.from(document.querySelectorAll('.hero-part'));
+        let heroIndex = 0;
+
+        function lightNext() {
+            if (heroIndex < heroParts.length) {
+                heroParts[heroIndex].classList.remove('dim');
+                heroParts[heroIndex].classList.add('lit');
+
+                // grow then shrink back to normal
+                const part = heroParts[heroIndex];
+                part.style.transition = 'transform 0.25s ease, color 0.3s ease';
+                part.style.transform = 'scale(1.18)';
+                setTimeout(() => { part.style.transform = 'scale(1)'; }, 250);
+
+                heroIndex++;
+                setTimeout(lightNext, 600);
+            }
+        }
+
+        // lightNext is triggered after CV is thrown away
+
+
+        // ── Occasional emoji cursor ──
+        const emojis = ['🍐', '🥬', '🌶️', '🍇', '🥦', '🍑', '🫘', '🥑'];
+
+        function flashEmojiCursor() {
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='28' font-size='26'>${emoji}</text></svg>`;
+            document.body.style.cursor = `url("data:image/svg+xml,${encodeURIComponent(svg)}") 0 0, auto`;
+            setTimeout(() => { document.body.style.cursor = ''; }, 1000);
+        }
+
+        setInterval(flashEmojiCursor, 5000);
+
+        // ── Instagram sparkles ──
+        const igIcon = document.querySelector('.ig-icon');
+        igIcon.addEventListener('mouseenter', () => {
+            const colors = ['#f09433','#e6683c','#dc2743','#cc2366','#bc1888','#833ab4'];
+            for (let i = 0; i < 8; i++) {
+                const spark = document.createElement('div');
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = 4 + Math.random() * 5;
+                const rect = igIcon.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                spark.style.cssText = `
+                    position: fixed;
+                    width: ${size}px; height: ${size}px;
+                    border-radius: 50%;
+                    background: ${color};
+                    left: ${cx}px; top: ${cy}px;
+                    pointer-events: none;
+                    z-index: 9999;
+                `;
+                document.body.appendChild(spark);
+                const angle = Math.random() * 2 * Math.PI;
+                const dist = 30 + Math.random() * 40;
+                spark.animate([
+                    { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+                    { transform: `translate(calc(-50% + ${Math.cos(angle)*dist}px), calc(-50% + ${Math.sin(angle)*dist}px)) scale(0)`, opacity: 0 }
+                ], { duration: 500 + Math.random() * 300, easing: 'ease-out', fill: 'forwards' })
+                .onfinish = () => spark.remove();
+            }
+        });
+
+        // ── veggie explosion ──
+        const veggies = ['🍐','🥬','🌶️','🍇','🥦','🍑','🫘','🥑','🥕','🌽','🍅','🧅','🫑','🥒','🍆','🧄','🌿','🥝'];
+
+        document.getElementById('name-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            const count = 40;
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('div');
+                const emoji = veggies[Math.floor(Math.random() * veggies.length)];
+                const size = 20 + Math.random() * 30;
+                el.textContent = emoji;
+                el.style.cssText = `
+                    position: fixed;
+                    font-size: ${size}px;
+                    left: ${e.clientX}px;
+                    top: ${e.clientY}px;
+                    pointer-events: none;
+                    z-index: 9999;
+                    user-select: none;
+                    transition: none;
+                `;
+                document.body.appendChild(el);
+
+                const angle = Math.random() * 2 * Math.PI;
+                const speed = 120 + Math.random() * 500;
+                const tx = Math.cos(angle) * speed;
+                const ty = Math.sin(angle) * speed;
+                const rot = (Math.random() - 0.5) * 1080;
+                const duration = 600 + Math.random() * 800;
+
+                el.animate([
+                    { transform: `translate(0,0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) rotate(${rot}deg)`, opacity: 0 }
+                ], {
+                    duration,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    fill: 'forwards'
+                }).onfinish = () => el.remove();
+            }
+        });
+
+        // ── CV crumple & toss ──
+        const overlay  = document.getElementById('cv-overlay');
+        const paper    = document.getElementById('cv-paper');
+        const trash    = document.getElementById('trash-can');
+        const skipBtn  = document.getElementById('cv-skip');
+
+        const feDisplace = document.getElementById('fe-displace');
+
+        const isMobile = window.innerWidth < 700;
+
+        function launchAnimation() {
+            trash.style.display = 'block';
+            paper.style.transition = 'none';
+            paper.style.animation = 'none';
+
+            // Phase 1: crumple
+            // On mobile skip the heavy SVG filter — just scale/rotate
+            const crumpleDuration = isMobile ? 600 : 1300;
+            const crumpleStart = performance.now();
+
+            if (!isMobile) {
+                paper.style.filter = 'url(#crumple-filter)';
+            }
+
+            function crumpleFrame(now) {
+                const t = Math.min((now - crumpleStart) / crumpleDuration, 1);
+                const ease = t * t;
+
+                if (!isMobile) feDisplace.setAttribute('scale', ease * 90);
+                const scale  = 1 - ease * 0.75;
+                const rotate = ease * 40;
+                const radius = ease * 50;
+                paper.style.transform    = `scale(${scale}) rotate(${rotate}deg)`;
+                paper.style.borderRadius = `${radius}%`;
+
+                if (t < 1) {
+                    requestAnimationFrame(crumpleFrame);
+                } else {
+                    flyToTrash();
+                }
+            }
+
+            requestAnimationFrame(crumpleFrame);
+
+            function flyToTrash() {
+                // Switch paper to fixed position so it can fly freely across the screen
+                const pr = paper.getBoundingClientRect();
+                const tr = trash.getBoundingClientRect();
+
+                // Start position (center of crumpled ball)
+                const startX = pr.left + pr.width  / 2;
+                const startY = pr.top  + pr.height / 2;
+
+                // End position (center of trash can)
+                const endX = tr.left + tr.width  / 2;
+                const endY = tr.top  + tr.height / 2;
+
+                // Create a dedicated flying ball element so we don't fight the overlay
+                const ball = document.createElement('div');
+                ball.style.cssText = `
+                    position: fixed;
+                    width: 60px; height: 60px;
+                    background: #ddd;
+                    border-radius: 50%;
+                    z-index: 2000;
+                    pointer-events: none;
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 2rem;
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+                    left: ${startX - 30}px;
+                    top:  ${startY - 30}px;
+                `;
+                ball.textContent = '🗞️';
+                document.body.appendChild(ball);
+
+                // Hide the paper now that the ball takes over
+                paper.style.opacity = '0';
+                overlay.style.display = 'none';
+
+                // Arc flight using rAF — parabolic arc
+                const flyDuration = 800;
+                const flyStart = performance.now();
+                // Control point for arc (goes up before coming down)
+                const arcHeight = Math.min(200, Math.abs(endY - startY) * 0.8);
+
+                function flyFrame(now) {
+                    const t = Math.min((now - flyStart) / flyDuration, 1);
+                    // ease-in for gravity feel
+                    const te = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+                    const x = startX + (endX - startX) * te - 30;
+                    // Parabolic arc: goes up then curves down to trash
+                    const y = startY + (endY - startY) * te - arcHeight * Math.sin(Math.PI * t) - 30;
+                    const scale = 1 - t * 0.55; // shrinks as it reaches trash
+                    const spin  = t * 360;
+
+                    ball.style.left      = x + 'px';
+                    ball.style.top       = y + 'px';
+                    ball.style.transform = `scale(${scale}) rotate(${spin}deg)`;
+
+                    if (t < 1) {
+                        requestAnimationFrame(flyFrame);
+                    } else {
+                        // Land in trash
+                        ball.remove();
+                        trash.classList.add('shake');
+                        trash.style.fontSize = '5rem';
+                        setTimeout(() => {
+                            trash.style.fontSize = '3.5rem';
+                            setTimeout(() => {
+                                trash.style.display = 'none';
+                                cvThrown = true;
+                                setTimeout(lightNext, 400);
+                            }, 400);
+                        }, 500);
+                    }
+                }
+
+                requestAnimationFrame(flyFrame);
+            }
+        }
+
+        // Auto-trigger after 5 seconds
+        const autoTimer = setTimeout(launchAnimation, 5000);
+
+        // Skip button
+        skipBtn.addEventListener('click', () => {
+            clearTimeout(autoTimer);
+            launchAnimation();
+        });
+
+        // Click outside CV paper to close — only after CV has been thrown
+        let cvThrown = false;
+        overlay.addEventListener('click', (e) => {
+            if (cvThrown && !paper.contains(e.target)) {
+                overlay.style.display = 'none';
+            }
+        });
+
+        // CV nav button — reopen the CV overlay
+        document.getElementById('cv-nav-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (window.innerWidth < 700) {
+                window.open('cv.jpg.jpg', '_blank');
+                return;
+            }
+            paper.style.animation    = 'none';
+            paper.style.opacity      = '1';
+            paper.style.borderRadius = '0';
+            paper.style.transform    = 'scale(1) rotate(0deg)';
+            paper.style.filter       = 'none';
+            feDisplace.setAttribute('scale', 0);
+            overlay.style.display = 'flex';
+        });
+    </script>
+
+</body>
+</html>
