@@ -767,10 +767,10 @@
             const grid     = document.querySelector('.grid');
             const vw       = window.innerWidth;
             const centerX  = vw / 2;
-            const amplitude = centerX - 20;
+            const amplitude = centerX * 0.55;
             const waves    = 4;
-            const imgW     = Math.min(160, vw * 0.28); // קטן יותר
-            const spacing  = 150; // צפוף יותר
+            const imgW     = Math.min(200, vw * 0.34);
+            const spacing  = 160;
             const totalH   = (items.length - 1) * spacing + imgW;
 
             grid.style.height = totalH + 'px';
