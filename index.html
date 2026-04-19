@@ -830,9 +830,10 @@
                 const t = (i + 0.5) / items.length;
                 const x = centerX + amplitude * Math.sin(t * waves * Math.PI * 2);
                 const y = t * pathH;
-                item.style.left    = (x - imgW / 2) + 'px';
-                item.style.top     = y + 'px';
-                item.style.opacity = '1';
+                item.style.left      = (x - imgW / 2) + 'px';
+                item.style.top       = y + 'px';
+                item.style.transform = 'translateY(-50%)';
+                item.style.opacity   = '1';
             });
         }
 
