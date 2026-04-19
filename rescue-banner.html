@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Rescue Banner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #e5e5e5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Rubik', sans-serif;
+    }
+
+    .banner {
+      width: 434px;
+      height: 434px;
+      background: #0b1a4a;
+      position: relative;
+      overflow: hidden;
+      direction: rtl;
+    }
+
+    /* ── כוכבים ── */
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0;
+      animation: twinkle 3s infinite;
+    }
+    @keyframes twinkle {
+      0%,100% { opacity: 0.2; }
+      50%      { opacity: 0.9; }
+    }
+
+    /* ── ירח ── */
+    .moon {
+      position: absolute;
+      top: 18px;
+      left: 28px;
+      width: 52px;
+      height: 52px;
+      background: #f5c200;
+      border-radius: 50%;
+      box-shadow: 0 0 22px 6px rgba(245,194,0,0.35);
+    }
+    .moon::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 10px;
+      width: 40px;
+      height: 40px;
+      background: #0b1a4a;
+      border-radius: 50%;
+    }
+
+    /* ── לוגו ── */
+    .logo-area {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      text-align: right;
+    }
+    .logo-bach {
+      font-size: 11px;
+      color: #f5c200;
+      font-style: italic;
+      letter-spacing: 2px;
+      font-weight: 400;
+    }
+    .logo-rescue {
+      font-size: 36px;
+      font-weight: 900;
+      color: #f5c200;
+      line-height: 1;
+      letter-spacing: 1px;
+    }
+    .logo-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 1px;
+      margin-top: 1px;
+    }
+
+    /* ── קו הפרדה צהוב ── */
+    .divider {
+      position: absolute;
+      top: 100px;
+      right: 0;
+      left: 0;
+      height: 2px;
+      background: linear-gradient(to left, #f5c200 0%, transparent 100%);
+      opacity: 0.4;
+    }
+
+    /* ── טקסט ראשי ── */
+    .headline {
+      position: absolute;
+      top: 118px;
+      right: 24px;
+      left: 24px;
+      text-align: right;
+    }
+    .headline .small {
+      font-size: 15px;
+      color: rgba(255,255,255,0.72);
+      font-weight: 400;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .headline .main {
+      font-size: 32px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.25;
+    }
+    .headline .main .highlight {
+      color: #f5c200;
+    }
+
+    /* ── תיבת הטקסט השני ── */
+    .sub-box {
+      position: absolute;
+      bottom: 64px;
+      right: 24px;
+      left: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .tagline {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      max-width: 220px;
+      line-height: 1.5;
+      text-align: right;
+    }
+    .cta {
+      background: #f5c200;
+      color: #0b1a4a;
+      font-weight: 900;
+      font-size: 15px;
+      padding: 10px 22px;
+      border-radius: 30px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    /* ── פס תחתון ── */
+    .bottom-bar {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      height: 42px;
+      background: rgba(245,194,0,0.08);
+      border-top: 1px solid rgba(245,194,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bottom-bar span {
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="banner" id="banner">
+  <!-- כוכבים (נוצרים ב-JS) -->
+  <div class="moon"></div>
+
+  <div class="logo-area">
+    <div class="logo-bach">Bach</div>
+    <div class="logo-rescue">RESCUE</div>
+    <div class="logo-sub">טיפת שלווה</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="headline">
+    <span class="small">כשאי אפשר להגיד לה —</span>
+    <div class="main">
+      תירגעי.<br>
+      <span class="highlight">טוב שיש רסקיו.</span>
+    </div>
+  </div>
+
+  <div class="sub-box">
+    <div class="tagline">מוצר זה אינו תרופה ולא נועד לטפל, לרפא או למנוע מחלה.</div>
+    <div class="cta">לרכישה ›</div>
+  </div>
+
+  <div class="bottom-bar">
+    <span>גם ביום. גם בלילה.</span>
+  </div>
+</div>
+
+<script>
+  // זורע כוכבים
+  const banner = document.getElementById('banner');
+  for (let i = 0; i < 38; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.5 + 1;
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random()*100}%;
+      left:${Math.random()*100}%;
+      animation-delay:${Math.random()*3}s;
+      animation-duration:${2+Math.random()*3}s;
+    `;
+    banner.appendChild(s);
+  }
+</script>
+
+</body>
+</html>
