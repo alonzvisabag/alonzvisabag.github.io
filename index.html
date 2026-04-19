@@ -255,21 +255,44 @@
 
         /* ── GRID ── */
         .grid {
-            columns: 2;
-            column-gap: 4px;
-            padding: 0 4px 4px;
-            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            max-width: 780px;
             margin: 0 auto;
+            padding: 20px 10px 60px;
+            gap: 40px;
             position: relative;
             z-index: 2;
         }
 
+        /* zigzag path line */
+        .grid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 2px dashed #d0d0d0;
+            z-index: 0;
+        }
+
         .grid-item {
-            break-inside: avoid;
-            margin-bottom: 4px;
+            width: 46%;
             overflow: visible;
             background: #f4f4f4;
             position: relative;
+            z-index: 1;
+        }
+
+        .grid-item:nth-child(odd) {
+            align-self: flex-start;
+            transform: rotate(-1.5deg);
+        }
+
+        .grid-item:nth-child(even) {
+            align-self: flex-end;
+            transform: rotate(1.5deg);
         }
 
         @keyframes wiggle {
@@ -375,7 +398,8 @@
                 line-height: 2;
                 gap: 0 20px;
             }
-            .grid { columns: 1; }
+            .grid { gap: 24px; }
+            .grid-item { width: 82% !important; align-self: center !important; transform: none !important; }
             .hero { font-size: 1.25rem; padding: 28px 20px 40px; }
             nav { padding: 18px 20px; }
             #cv-paper img {
@@ -730,7 +754,7 @@
         }
 
         // Auto-trigger after 5 seconds
-        const autoTimer = setTimeout(launchAnimation, 1500);
+        const autoTimer = setTimeout(launchAnimation, 2500);
 
         // Skip button
         skipBtn.addEventListener('click', () => {
