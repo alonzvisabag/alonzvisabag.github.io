@@ -836,6 +836,39 @@
             });
         }
 
+        // ── זכוכית מגדלת על הקורות חיים ──
+        (function() {
+            const paper = document.getElementById('cv-paper');
+            const lens  = document.getElementById('cv-lens');
+            const img   = document.getElementById('cv-img');
+            const zoom  = 2.8;
+            const lensR = 80; // רדיוס הלנס
+
+            paper.addEventListener('mousemove', function(e) {
+                const rect   = img.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                // מציב את הלנס סביב הסמן
+                lens.style.left = (mouseX - lensR) + 'px';
+                lens.style.top  = (mouseY - lensR) + 'px';
+
+                // מחשב את מיקום הרקע המוגדל
+                const bgX = -(mouseX * zoom - lensR);
+                const bgY = -(mouseY * zoom - lensR);
+
+                lens.style.backgroundImage    = `url('cv.jpg.jpg')`;
+                lens.style.backgroundSize     = `${rect.width * zoom}px ${rect.height * zoom}px`;
+                lens.style.backgroundPosition = `${bgX}px ${bgY}px`;
+                lens.style.backgroundRepeat   = 'no-repeat';
+                lens.style.display = 'block';
+            });
+
+            paper.addEventListener('mouseleave', function() {
+                lens.style.display = 'none';
+            });
+        })();
+
         window.addEventListener('load', function() {
             // מילא את הגיבור בטקסט הסופי כדי למדוד גובה
             heroLine1.textContent = line1Text;
