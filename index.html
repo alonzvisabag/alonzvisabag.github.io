@@ -788,10 +788,15 @@
             const amplitude = centerX - pad;
             const waves  = 4;
 
+            // התחל מתחת ל-hero
+            const hero = document.getElementById('hero');
+            const startY = hero ? hero.getBoundingClientRect().bottom + window.scrollY + 40 : 0;
+            const lineH  = totalH - startY;
+
             const pts = [];
-            for (let y = 0; y <= totalH; y += 5) {
-                const x = centerX + amplitude * Math.sin((y / totalH) * waves * Math.PI * 2);
-                pts.push(`${x.toFixed(1)},${y}`);
+            for (let y = 0; y <= lineH; y += 5) {
+                const x = centerX + amplitude * Math.sin((y / lineH) * waves * Math.PI * 2);
+                pts.push(`${x.toFixed(1)},${startY + y}`);
             }
 
             const svg = document.createElementNS(svgNS, 'svg');
