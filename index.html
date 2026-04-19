@@ -20,7 +20,7 @@
             color: #000;
             background: transparent;
             -webkit-font-smoothing: antialiased;
-            padding-top: 70px;
+            padding-top: 86px;
         }
 
         /* ── COVER LETTER SECTION ── */
@@ -131,8 +131,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 22px 30px;
-            font-size: 0.72rem;
-            letter-spacing: 0.08em;
+            font-size: 1rem;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
             position: fixed;
             top: 0;
@@ -144,12 +144,20 @@
         }
 
         nav .name {
-            font-weight: 400;
+            font-weight: 600;
+            font-size: 1.1rem;
             text-decoration: none;
             color: #000;
+            letter-spacing: 0.12em;
         }
 
-        nav .links { display: flex; gap: 24px; align-items: center; }
+        nav .links { display: flex; gap: 32px; align-items: center; }
+
+        nav #cv-nav-btn {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+        }
 
         @keyframes ig-spin {
             0%   { transform: rotate(0deg); }
@@ -170,8 +178,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 42px;
-            height: 42px;
+            width: 58px;
+            height: 58px;
             border-radius: 50%;
             color: #fff;
             position: relative;
@@ -182,7 +190,7 @@
         nav .ig-icon::before {
             content: '';
             position: absolute;
-            inset: -4px;
+            inset: -5px;
             border-radius: 50%;
             background: conic-gradient(#f09433, #e6683c, #dc2743, #cc2366, #bc1888, #833ab4, #f09433);
             animation: ig-spin 3s linear infinite;
@@ -192,15 +200,15 @@
         nav .ig-icon::after {
             content: '';
             position: absolute;
-            inset: 2px;
+            inset: 3px;
             border-radius: 50%;
             background: #000;
             z-index: 1;
         }
 
         nav .ig-icon svg {
-            width: 20px;
-            height: 20px;
+            width: 28px;
+            height: 28px;
             stroke: #fff;
             position: relative;
             z-index: 2;
@@ -233,7 +241,7 @@
             z-index: 2;
         }
 
-        .hero em { font-style: italic; }
+        .hero em { font-style: italic; font-size: 3rem; }
 
         @keyframes blink {
             0%, 100% { opacity: 1; }
