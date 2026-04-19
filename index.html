@@ -256,33 +256,18 @@
 
         /* ── GRID ── */
         .grid {
-            display: flex;
-            flex-direction: column;
-            max-width: 780px;
-            margin: 0 auto;
-            padding: 20px 10px 60px;
-            gap: 40px;
             position: relative;
+            width: 100%;
             z-index: 2;
+            /* height set by JS */
         }
-
 
         .grid-item {
-            width: 46%;
+            position: absolute;
             overflow: visible;
             background: #f4f4f4;
-            position: relative;
-            z-index: 1;
-        }
-
-        .grid-item:nth-child(odd) {
-            align-self: flex-start;
-            transform: rotate(-1.5deg);
-        }
-
-        .grid-item:nth-child(even) {
-            align-self: flex-end;
-            transform: rotate(1.5deg);
+            z-index: 2;
+            /* width + position set by JS */
         }
 
         @keyframes wiggle {
