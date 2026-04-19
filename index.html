@@ -760,38 +760,53 @@
             feDisplace.setAttribute('scale', 0);
             overlay.style.display = 'flex';
         });
-        // ── Slalom line ──
-        function drawSlalom() {
-            const existing = document.getElementById('slalom-svg');
-            if (existing) existing.remove();
+        // ── Slalom: מציב תמונות על הקו ומצייר ביחד ──
+        function layoutSlalom() {
+            const ex = document.getElementById('slalom-svg');
+            if (ex) ex.remove();
 
+            const items    = Array.from(document.querySelectorAll('.grid-item'));
+            const grid     = document.querySelector('.grid');
+            const vw       = window.innerWidth;
+            const centerX  = vw / 2;
+            const amplitude = centerX - 20;
+            const waves    = 4;
+            const imgW     = Math.min(160, vw * 0.28); // קטן יותר
+            const spacing  = 150; // צפוף יותר
+            const totalH   = (items.length - 1) * spacing + imgW;
+
+            grid.style.height = totalH + 'px';
+
+            const gridTop = grid.offsetTop;
+
+            // מציב כל תמונה בנקודה על הגל
+            items.forEach((item, i) => {
+                const t      = i / (items.length - 1);
+                const localY = i * spacing;
+                const x      = centerX + amplitude * Math.sin(t * waves * Math.PI * 2);
+                item.style.width  = imgW + 'px';
+                item.style.left   = (x - imgW / 2) + 'px';
+                item.style.top    = localY + 'px';
+            });
+
+            // מצייר את הקו בדיוק על אותו גל
             const svgNS = 'http://www.w3.org/2000/svg';
-            const totalH = document.documentElement.scrollHeight;
-            const vw     = window.innerWidth;
-            const pad    = 16;
-            const centerX   = vw / 2;
-            const amplitude = centerX - pad;
-            const waves  = 4;
-
-            // התחל מתחת ל-hero
-            const hero = document.getElementById('hero');
-            const startY = hero ? hero.getBoundingClientRect().bottom + window.scrollY + 40 : 0;
-            const lineH  = totalH - startY;
-
-            const pts = [];
-            for (let y = 0; y <= lineH; y += 5) {
-                const x = centerX + amplitude * Math.sin((y / lineH) * waves * Math.PI * 2);
-                pts.push(`${x.toFixed(1)},${startY + y}`);
+            const pageH = document.documentElement.scrollHeight;
+            const pts   = [];
+            for (let y = 0; y <= totalH; y += 4) {
+                const t = y / totalH;
+                const x = centerX + amplitude * Math.sin(t * waves * Math.PI * 2);
+                pts.push(`${x.toFixed(1)},${gridTop + y}`);
             }
 
             const svg = document.createElementNS(svgNS, 'svg');
             svg.id = 'slalom-svg';
             svg.setAttribute('width', vw);
-            svg.setAttribute('height', totalH);
+            svg.setAttribute('height', pageH);
             svg.style.cssText = `
                 position: absolute;
                 top: 0; left: 0;
-                width: 100%; height: ${totalH}px;
+                width: 100%; height: ${pageH}px;
                 pointer-events: none;
                 z-index: 1;
                 overflow: visible;
@@ -799,7 +814,7 @@
 
             const poly = document.createElementNS(svgNS, 'polyline');
             poly.setAttribute('points', pts.join(' '));
-            poly.setAttribute('stroke', '#aaa');
+            poly.setAttribute('stroke', '#bbb');
             poly.setAttribute('stroke-width', '2.5');
             poly.setAttribute('stroke-dasharray', '8 12');
             poly.setAttribute('stroke-linecap', 'round');
@@ -809,8 +824,8 @@
             document.body.appendChild(svg);
         }
 
-        window.addEventListener('load', drawSlalom);
-        window.addEventListener('resize', drawSlalom);
+        window.addEventListener('load', layoutSlalom);
+        window.addEventListener('resize', layoutSlalom);
     </script>
 
 </body>
