@@ -20,7 +20,8 @@
             color: #000;
             background: transparent;
             -webkit-font-smoothing: antialiased;
-            padding-top: 70px;
+            padding-top: 86px;
+            position: relative;
         }
 
         /* ── COVER LETTER SECTION ── */
@@ -131,8 +132,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 22px 30px;
-            font-size: 0.72rem;
-            letter-spacing: 0.08em;
+            font-size: 1rem;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
             position: fixed;
             top: 0;
@@ -144,12 +145,20 @@
         }
 
         nav .name {
-            font-weight: 400;
+            font-weight: 600;
+            font-size: 1.1rem;
             text-decoration: none;
             color: #000;
+            letter-spacing: 0.12em;
         }
 
-        nav .links { display: flex; gap: 24px; align-items: center; }
+        nav .links { display: flex; gap: 32px; align-items: center; }
+
+        nav #cv-nav-btn {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+        }
 
         @keyframes ig-spin {
             0%   { transform: rotate(0deg); }
@@ -170,8 +179,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 42px;
-            height: 42px;
+            width: 58px;
+            height: 58px;
             border-radius: 50%;
             color: #fff;
             position: relative;
@@ -182,7 +191,7 @@
         nav .ig-icon::before {
             content: '';
             position: absolute;
-            inset: -4px;
+            inset: -5px;
             border-radius: 50%;
             background: conic-gradient(#f09433, #e6683c, #dc2743, #cc2366, #bc1888, #833ab4, #f09433);
             animation: ig-spin 3s linear infinite;
@@ -192,15 +201,15 @@
         nav .ig-icon::after {
             content: '';
             position: absolute;
-            inset: 2px;
+            inset: 3px;
             border-radius: 50%;
             background: #000;
             z-index: 1;
         }
 
         nav .ig-icon svg {
-            width: 20px;
-            height: 20px;
+            width: 28px;
+            height: 28px;
             stroke: #fff;
             position: relative;
             z-index: 2;
@@ -233,7 +242,7 @@
             z-index: 2;
         }
 
-        .hero em { font-style: italic; }
+        .hero em { font-style: italic; font-size: 3rem; }
 
         @keyframes blink {
             0%, 100% { opacity: 1; }
@@ -247,21 +256,33 @@
 
         /* ── GRID ── */
         .grid {
-            columns: 2;
-            column-gap: 4px;
-            padding: 0 4px 4px;
-            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            max-width: 780px;
             margin: 0 auto;
+            padding: 20px 10px 60px;
+            gap: 40px;
             position: relative;
             z-index: 2;
         }
 
+
         .grid-item {
-            break-inside: avoid;
-            margin-bottom: 4px;
+            width: 46%;
             overflow: visible;
             background: #f4f4f4;
             position: relative;
+            z-index: 1;
+        }
+
+        .grid-item:nth-child(odd) {
+            align-self: flex-start;
+            transform: rotate(-1.5deg);
+        }
+
+        .grid-item:nth-child(even) {
+            align-self: flex-end;
+            transform: rotate(1.5deg);
         }
 
         @keyframes wiggle {
@@ -367,7 +388,8 @@
                 line-height: 2;
                 gap: 0 20px;
             }
-            .grid { columns: 1; }
+            .grid { gap: 24px; }
+            .grid-item { width: 82% !important; align-self: center !important; transform: none !important; }
             .hero { font-size: 1.25rem; padding: 28px 20px 40px; }
             nav { padding: 18px 20px; }
             #cv-paper img {
@@ -722,7 +744,7 @@
         }
 
         // Auto-trigger after 5 seconds
-        const autoTimer = setTimeout(launchAnimation, 5000);
+        const autoTimer = setTimeout(launchAnimation, 2500);
 
         // Skip button
         skipBtn.addEventListener('click', () => {
@@ -753,6 +775,52 @@
             feDisplace.setAttribute('scale', 0);
             overlay.style.display = 'flex';
         });
+        // ── Slalom line ──
+        function drawSlalom() {
+            const existing = document.getElementById('slalom-svg');
+            if (existing) existing.remove();
+
+            const svgNS = 'http://www.w3.org/2000/svg';
+            const totalH = document.documentElement.scrollHeight;
+            const vw     = window.innerWidth;
+            const pad    = 16;
+            const centerX   = vw / 2;
+            const amplitude = centerX - pad;
+            const waves  = 4;
+
+            const pts = [];
+            for (let y = 0; y <= totalH; y += 5) {
+                const x = centerX + amplitude * Math.sin((y / totalH) * waves * Math.PI * 2);
+                pts.push(`${x.toFixed(1)},${y}`);
+            }
+
+            const svg = document.createElementNS(svgNS, 'svg');
+            svg.id = 'slalom-svg';
+            svg.setAttribute('width', vw);
+            svg.setAttribute('height', totalH);
+            svg.style.cssText = `
+                position: absolute;
+                top: 0; left: 0;
+                width: 100%; height: ${totalH}px;
+                pointer-events: none;
+                z-index: 1;
+                overflow: visible;
+            `;
+
+            const poly = document.createElementNS(svgNS, 'polyline');
+            poly.setAttribute('points', pts.join(' '));
+            poly.setAttribute('stroke', '#aaa');
+            poly.setAttribute('stroke-width', '2.5');
+            poly.setAttribute('stroke-dasharray', '8 12');
+            poly.setAttribute('stroke-linecap', 'round');
+            poly.setAttribute('fill', 'none');
+
+            svg.appendChild(poly);
+            document.body.appendChild(svg);
+        }
+
+        window.addEventListener('load', drawSlalom);
+        window.addEventListener('resize', drawSlalom);
     </script>
 
 </body>
