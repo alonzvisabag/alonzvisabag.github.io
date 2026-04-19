@@ -758,58 +758,44 @@
             feDisplace.setAttribute('scale', 0);
             overlay.style.display = 'flex';
         });
-        // ── Slalom: מציב תמונות על הקו ומצייר ביחד ──
+        // ── מסוע סושי ──
         function layoutSlalom() {
             const ex = document.getElementById('slalom-svg');
             if (ex) ex.remove();
+            if (window._sushiRAF) cancelAnimationFrame(window._sushiRAF);
 
-            const items    = Array.from(document.querySelectorAll('.grid-item'));
-            const grid     = document.querySelector('.grid');
-            const vw       = window.innerWidth;
-            const centerX  = vw / 2;
+            const items     = Array.from(document.querySelectorAll('.grid-item'));
+            const grid      = document.querySelector('.grid');
+            const vw        = window.innerWidth;
+            const centerX   = vw / 2;
             const amplitude = centerX * 0.55;
-            const waves    = 4;
-            const imgW     = Math.min(200, vw * 0.34);
-            const spacing  = 160;
-            const totalH   = (items.length - 1) * spacing + imgW;
+            const waves     = 4;
+            const imgW      = Math.min(200, vw * 0.34);
+            const gridTop   = grid.offsetTop;
+            const pathH     = window.innerHeight - gridTop; // גובה הנתיב = גובה מסך שנותר
 
-            grid.style.height = totalH + 'px';
+            grid.style.height = pathH + 'px';
 
-            const gridTop = grid.offsetTop;
-
-            // מציב כל תמונה בנקודה על הגל
-            items.forEach((item, i) => {
-                const t      = i / (items.length - 1);
-                const localY = i * spacing;
-                const x      = centerX + amplitude * Math.sin(t * waves * Math.PI * 2);
-                item.style.width  = imgW + 'px';
-                item.style.left   = (x - imgW / 2) + 'px';
-                item.style.top    = localY + 'px';
+            // מגדיר כל פריט
+            items.forEach(item => {
+                item.style.position = 'absolute';
+                item.style.width    = imgW + 'px';
             });
 
-            // מצייר את הקו בדיוק על אותו גל
+            // מצייר את הקו
             const svgNS = 'http://www.w3.org/2000/svg';
             const pageH = document.documentElement.scrollHeight;
             const pts   = [];
-            for (let y = 0; y <= totalH; y += 4) {
-                const t = y / totalH;
+            for (let y = 0; y <= pathH; y += 4) {
+                const t = y / pathH;
                 const x = centerX + amplitude * Math.sin(t * waves * Math.PI * 2);
                 pts.push(`${x.toFixed(1)},${gridTop + y}`);
             }
-
             const svg = document.createElementNS(svgNS, 'svg');
             svg.id = 'slalom-svg';
             svg.setAttribute('width', vw);
             svg.setAttribute('height', pageH);
-            svg.style.cssText = `
-                position: absolute;
-                top: 0; left: 0;
-                width: 100%; height: ${pageH}px;
-                pointer-events: none;
-                z-index: 1;
-                overflow: visible;
-            `;
-
+            svg.style.cssText = `position:absolute;top:0;left:0;width:100%;height:${pageH}px;pointer-events:none;z-index:1;overflow:visible;`;
             const poly = document.createElementNS(svgNS, 'polyline');
             poly.setAttribute('points', pts.join(' '));
             poly.setAttribute('stroke', '#bbb');
@@ -817,9 +803,29 @@
             poly.setAttribute('stroke-dasharray', '8 12');
             poly.setAttribute('stroke-linecap', 'round');
             poly.setAttribute('fill', 'none');
-
             svg.appendChild(poly);
             document.body.appendChild(svg);
+
+            // אנימציה — כל תמונה נעה לאורך הגל
+            const ts    = items.map((_, i) => i / items.length);
+            const speed = 0.0008; // מהירות מסוע (מחזור שלם ~21 שניות)
+            const fade  = 0.07;   // אזור דעיכה בשוליים
+
+            function animate() {
+                items.forEach((item, i) => {
+                    ts[i] = (ts[i] + speed) % 1;
+                    const t = ts[i];
+                    const x = centerX + amplitude * Math.sin(t * waves * Math.PI * 2);
+                    const y = t * pathH;
+                    item.style.left = (x - imgW / 2) + 'px';
+                    item.style.top  = y + 'px';
+                    // דעיכה בכניסה וביציאה
+                    const op = t < fade ? t / fade : t > 1 - fade ? (1 - t) / fade : 1;
+                    item.style.opacity = op;
+                });
+                window._sushiRAF = requestAnimationFrame(animate);
+            }
+            animate();
         }
 
         window.addEventListener('load', function() {
