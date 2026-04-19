@@ -266,10 +266,15 @@
         .grid-item {
             position: absolute;
             overflow: visible;
-            background: #f4f4f4;
+            background: transparent;
             z-index: 2;
             pointer-events: auto;
             /* width + position set by JS */
+        }
+
+        .grid-item img {
+            outline: 1.5px solid rgba(0,0,0,0.12);
+            outline-offset: 3px;
         }
 
         @keyframes wiggle {
