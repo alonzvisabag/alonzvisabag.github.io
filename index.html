@@ -822,6 +822,18 @@
             document.body.appendChild(svg);
         }
 
+        window.addEventListener('load', function() {
+            // מילא את הגיבור בטקסט הסופי כדי למדוד גובה
+            heroLine1.textContent = line1Text;
+            heroLine2.textContent = line2Text;
+            const hero = document.getElementById('hero');
+            hero.style.height = hero.offsetHeight + 'px';
+            // מנקה ומתחיל טקסטרייטר כרגיל
+            heroLine1.textContent = '';
+            heroLine2.textContent = '';
+            // מציב תמונות וקו עכשיו כשהגובה קבוע
+            layoutSlalom();
+        });
         window.addEventListener('resize', layoutSlalom);
     </script>
 
