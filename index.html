@@ -291,25 +291,6 @@
         .grid-item img { width: 100%; display: block; }
         .grid-item:hover img { }
 
-        .grid-item::after {
-            content: attr(data-label);
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #000;
-            color: #fff;
-            font-family: 'Rubik', sans-serif;
-            font-size: 1rem;
-            padding: 4px 12px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-            direction: rtl;
-        }
-
-        .grid-item:hover::after { opacity: 1; }
 
         .item-logo { background: transparent; }
         .item-logo img {
