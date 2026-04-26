@@ -311,6 +311,31 @@
 
         .grid-item:hover::after { opacity: 1; }
 
+        .item-logo { background: transparent; }
+        .item-logo img {
+            border-radius: 10px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+        }
+
+        .item-section-header { background: transparent; }
+        .item-section-header::after { display: none; }
+
+        .section-card {
+            background: #6b8c3a;
+            color: #000;
+            font-family: 'Alef', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1;
+            width: 100%;
+            direction: rtl;
+            text-align: center;
+            border-radius: 8px;
+        }
+
         /* ── ABOUT ── */
         #about {
             max-width: 580px;
