@@ -809,10 +809,6 @@
         // CV nav button — reopen the CV overlay
         document.getElementById('cv-nav-btn').addEventListener('click', (e) => {
             e.preventDefault();
-            if (window.innerWidth < 700) {
-                window.open('cv.jpg.jpg', '_blank');
-                return;
-            }
             paper.style.animation    = 'none';
             paper.style.opacity      = '1';
             paper.style.borderRadius = '0';
