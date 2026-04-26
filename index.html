@@ -934,6 +934,10 @@
             });
         })();
 
+        document.getElementById('rescue-item').addEventListener('click', () => {
+            window.open('rescue-banner.html', '_blank');
+        });
+
         window.addEventListener('load', function() {
             // מילא את הגיבור בטקסט הסופי כדי למדוד גובה
             heroLine1.textContent = line1Text;
