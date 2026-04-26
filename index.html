@@ -827,7 +827,7 @@
             feDisplace.setAttribute('scale', 0);
             overlay.style.display = 'flex';
         });
-        // ── מסוע סושי ──
+        // ── ציר זמן שלום ──
         function layoutSlalom() {
             const ex = document.getElementById('slalom-svg');
             if (ex) ex.remove();
@@ -837,18 +837,22 @@
             const grid      = document.querySelector('.grid');
             const vw        = window.innerWidth;
             const centerX   = vw / 2;
-            const amplitude = centerX * 0.55;
+            const amplitude = centerX * 0.52;
             const waves     = 4;
-            const imgW      = Math.min(130, vw * 0.22);
+            const baseW     = Math.min(130, vw * 0.22);
+            const logoW     = Math.min(230, vw * 0.40);
+            const headerW   = Math.min(170, vw * 0.30);
             const gridTop   = grid.offsetTop;
-            const pathH     = window.innerHeight * 2.5; // גובה הנתיב
+            const pathH     = Math.max(window.innerHeight * 3, items.length * 290);
 
             grid.style.height = pathH + 'px';
 
-            // מגדיר כל פריט
+            // גודל לפי סוג פריט
             items.forEach(item => {
                 item.style.position = 'absolute';
-                item.style.width    = imgW + 'px';
+                if (item.classList.contains('item-logo'))           item.style.width = logoW + 'px';
+                else if (item.classList.contains('item-section-header')) item.style.width = headerW + 'px';
+                else                                                item.style.width = baseW + 'px';
             });
 
             // מצייר את הקו
@@ -873,20 +877,34 @@
             poly.setAttribute('stroke-linecap', 'round');
             poly.setAttribute('fill', 'none');
             svg.appendChild(poly);
-            document.body.appendChild(svg);
 
-            // הצבה סטטית — כל תמונה במיקום קבוע לאורך הקו
             if (window._sushiScroll) window.removeEventListener('scroll', window._sushiScroll);
 
+            // מציב פריטים ומוסיף נקודות ציון
             items.forEach((item, i) => {
-                const t = (i + 0.5) / items.length;
-                const x = centerX + amplitude * Math.sin(t * waves * Math.PI * 2);
-                const y = t * pathH;
-                item.style.left      = (x - imgW / 2) + 'px';
+                const t   = (i + 0.5) / items.length;
+                const x   = centerX + amplitude * Math.sin(t * waves * Math.PI * 2);
+                const y   = t * pathH;
+                const w   = parseFloat(item.style.width);
+                item.style.left      = (x - w / 2) + 'px';
                 item.style.top       = y + 'px';
                 item.style.transform = 'translateY(-50%)';
                 item.style.opacity   = '1';
+
+                // נקודת ציון על הקו עבור כותרות
+                if (item.classList.contains('item-logo') || item.classList.contains('item-section-header')) {
+                    const dot = document.createElementNS(svgNS, 'circle');
+                    dot.setAttribute('cx', x.toFixed(1));
+                    dot.setAttribute('cy', (gridTop + y).toFixed(1));
+                    dot.setAttribute('r', '7');
+                    dot.setAttribute('fill', '#000');
+                    dot.setAttribute('stroke', '#fff');
+                    dot.setAttribute('stroke-width', '2.5');
+                    svg.appendChild(dot);
+                }
             });
+
+            document.body.appendChild(svg);
         }
 
         // ── זכוכית מגדלת על הקורות חיים ──
