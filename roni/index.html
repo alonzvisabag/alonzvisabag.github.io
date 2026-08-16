@@ -654,7 +654,7 @@ function playReveal(data, onDone){
   setTimeout(finish, 2600);
 }
 
-fetch('content.json')
+fetch('content.json', { cache: 'no-store' })
   .then(r => r.json())
   .then(data => {
     document.getElementById('gate-subtitle').textContent = data.site.subtitle || '';
