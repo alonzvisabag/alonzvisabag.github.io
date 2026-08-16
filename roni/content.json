@@ -2,7 +2,7 @@
   "site": {
     "title": "לרונני",
     "subtitle": "כמה דברים שהחברים שלך רצו שיחכו לך כאן",
-    "password": "1111",
+    "password": "1",
     "gateHint": "תשאלי מישהו מהחבר'ה אם שכחת את הסיסמה",
     "gatePhoto": "gate-before.jpg",
     "revealPhoto": "gate-after.jpg",
@@ -26,7 +26,8 @@
       "photo-17.jpg",
       "photo-18.jpg",
       "photo-19.jpg"
-    ]
+    ],
+    "passwordHint": "את"
   },
   "acts": [
     {
