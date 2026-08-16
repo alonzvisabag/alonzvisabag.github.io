@@ -284,25 +284,21 @@ function renderList(data){
   const wrap = document.getElementById('list-view');
   wrap.innerHTML = '';
 
-  const sections = [...data.acts, data.extra];
-  sections.forEach(section => {
-    const div = document.createElement('section');
-    div.className = 'group';
-    div.innerHTML = `<h2>${section.title}</h2><div class="sub">${section.subtitle || ''}</div>`;
-    const list = document.createElement('div');
-    list.className = 'cap-list';
-    section.capsules.forEach(c => {
-      const meta = TYPE_META[c.type] || { label:'', color:'var(--coral)' };
-      const btn = document.createElement('button');
-      btn.className = 'cap-item';
-      btn.type = 'button';
-      btn.innerHTML = `<span class="badge" style="background:${meta.color}">${meta.label}</span><span>${c.trigger}</span>`;
-      btn.addEventListener('click', () => openCompose({ capsuleId: c.id, trigger: c.trigger }));
-      list.appendChild(btn);
-    });
-    div.appendChild(list);
-    wrap.appendChild(div);
+  const allCapsules = [...data.acts.flatMap(a => a.capsules), ...data.extra.capsules];
+  const visibleCapsules = allCapsules.filter(c => c.openToFriends === true);
+
+  const list = document.createElement('div');
+  list.className = 'cap-list';
+  visibleCapsules.forEach(c => {
+    const meta = TYPE_META[c.type] || { label:'', color:'var(--coral)' };
+    const btn = document.createElement('button');
+    btn.className = 'cap-item';
+    btn.type = 'button';
+    btn.innerHTML = `<span class="badge" style="background:${meta.color}">${meta.label}</span><span>${c.trigger}</span>`;
+    btn.addEventListener('click', () => openCompose({ capsuleId: c.id, trigger: c.trigger }));
+    list.appendChild(btn);
   });
+  wrap.appendChild(list);
 
   const newBtn = document.createElement('button');
   newBtn.className = 'new-cap-btn';
