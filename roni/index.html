@@ -856,8 +856,7 @@ function itemHTML(item){
 
 function isPhotoOnly(item){
   if(item.from || item.text || !item.media) return false;
-  const ext = item.media.split('.').pop().toLowerCase();
-  return ['jpg','jpeg','png','gif','webp'].includes(ext);
+  return detectMediaType(item.media) === 'photo';
 }
 
 function capsuleBodyHTML(c){
