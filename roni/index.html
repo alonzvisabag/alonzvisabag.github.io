@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>לרוני</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  :root{
+    --bg:#fbf3ec;
+    --card:#fffdfb;
+    --accent:#c17a5a;
+    --accent-dark:#a35f42;
+    --text:#3c2f2a;
+    --muted:#93807a;
+    --locked:#f1e3d8;
+    --border:#e8d7c9;
+  }
+
+  html,body{ background:var(--bg); }
+
+  body{
+    font-family:'Heebo', sans-serif;
+    color:var(--text);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ── GATE ── */
+  #gate{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  #gate-card{
+    background:var(--card);
+    border-radius:18px;
+    padding:44px 32px;
+    max-width:380px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 12px 40px rgba(163,95,66,0.12);
+  }
+
+  #gate-card .emoji{ font-size:2.4rem; margin-bottom:14px; }
+
+  #gate-card h1{
+    font-family:'Frank Ruhl Libre', serif;
+    font-size:1.7rem;
+    font-weight:700;
+    margin-bottom:10px;
+  }
+
+  #gate-card p{
+    color:var(--muted);
+    font-size:0.95rem;
+    line-height:1.6;
+    margin-bottom:26px;
+  }
+
+  #gate-form{ display:flex; flex-direction:column; gap:12px; }
+
+  #pw-input{
+    font-family:'Heebo', sans-serif;
+    font-size:1rem;
+    padding:13px 16px;
+    border-radius:10px;
+    border:1.5px solid var(--border);
+    text-align:center;
+    background:#fff;
+    outline:none;
+  }
+  #pw-input:focus{ border-color:var(--accent); }
+
+  #gate-form button{
+    font-family:'Heebo', sans-serif;
+    font-size:1rem;
+    font-weight:500;
+    padding:13px 16px;
+    border-radius:10px;
+    border:none;
+    background:var(--accent);
+    color:#fff;
+    cursor:pointer;
+    transition:background .15s;
+  }
+  #gate-form button:hover{ background:var(--accent-dark); }
+
+  #gate-error{
+    color:#b3453a;
+    font-size:0.85rem;
+    margin-top:10px;
+    min-height:1.2em;
+  }
+
+  @keyframes shake{
+    0%,100%{ transform:translateX(0); }
+    20%{ transform:translateX(-8px); }
+    40%{ transform:translateX(8px); }
+    60%{ transform:translateX(-6px); }
+    80%{ transform:translateX(6px); }
+  }
+  .shake{ animation:shake .4s; }
+
+  /* ── SITE ── */
+  #site{ display:none; }
+
+  header.hero{
+    text-align:center;
+    padding:70px 20px 40px;
+  }
+
+  header.hero .emoji{ font-size:2.2rem; margin-bottom:12px; }
+
+  header.hero h1{
+    font-family:'Frank Ruhl Libre', serif;
+    font-size:2.4rem;
+    font-weight:700;
+    margin-bottom:10px;
+  }
+
+  header.hero p{
+    color:var(--muted);
+    font-size:1.05rem;
+    max-width:480px;
+    margin:0 auto;
+    line-height:1.7;
+  }
+
+  main{
+    max-width:640px;
+    margin:0 auto;
+    padding:10px 20px 100px;
+  }
+
+  section.act{ margin-bottom:56px; }
+
+  section.act .act-head{
+    text-align:center;
+    margin-bottom:26px;
+  }
+
+  section.act .act-head h2{
+    font-family:'Frank Ruhl Libre', serif;
+    font-size:1.5rem;
+    font-weight:700;
+  }
+
+  section.act .act-head span{
+    display:block;
+    color:var(--muted);
+    font-size:0.9rem;
+    margin-top:4px;
+  }
+
+  section.extra .act-head{
+    border-top:1px dashed var(--border);
+    padding-top:30px;
+  }
+
+  .capsule-list{ display:flex; flex-direction:column; gap:14px; }
+
+  .capsule{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    transition:box-shadow .2s;
+  }
+  .capsule:hover{ box-shadow:0 6px 20px rgba(163,95,66,0.08); }
+
+  .capsule-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:18px 20px;
+  }
+
+  .capsule-icon{
+    font-size:1.4rem;
+    flex-shrink:0;
+  }
+
+  .capsule-trigger{
+    font-size:0.98rem;
+    line-height:1.5;
+    flex:1;
+  }
+
+  .capsule-type{
+    font-size:0.72rem;
+    color:var(--muted);
+    background:var(--locked);
+    padding:3px 9px;
+    border-radius:20px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+
+  .capsule-open-btn{
+    display:block;
+    width:calc(100% - 40px);
+    margin:0 20px 18px;
+    font-family:'Heebo', sans-serif;
+    font-size:0.92rem;
+    font-weight:500;
+    padding:11px;
+    border-radius:9px;
+    border:1.5px solid var(--accent);
+    background:transparent;
+    color:var(--accent-dark);
+    cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .capsule-open-btn:hover{ background:var(--accent); color:#fff; }
+
+  .capsule-body{
+    display:none;
+    padding:0 20px 22px;
+    border-top:1px solid var(--border);
+    margin-top:0;
+  }
+
+  .capsule.open .capsule-body{ display:block; padding-top:18px; }
+  .capsule.open .capsule-open-btn{ display:none; }
+
+  .capsule-body .letter-text{
+    font-family:'Frank Ruhl Libre', serif;
+    font-size:1.05rem;
+    line-height:1.9;
+    white-space:pre-line;
+  }
+
+  .capsule-body img, .capsule-body video{
+    width:100%;
+    border-radius:10px;
+    display:block;
+  }
+
+  .capsule-body audio{ width:100%; }
+
+  .capsule-body .placeholder{
+    color:var(--muted);
+    font-size:0.92rem;
+    font-style:italic;
+    text-align:center;
+    padding:10px 0;
+  }
+
+  footer{
+    text-align:center;
+    padding:30px 20px 50px;
+  }
+
+  #reset-link{
+    font-size:0.78rem;
+    color:var(--muted);
+    text-decoration:underline;
+    cursor:pointer;
+    background:none;
+    border:none;
+    font-family:'Heebo', sans-serif;
+  }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div id="gate-card">
+    <div class="emoji">💛</div>
+    <h1>לרוני</h1>
+    <p id="gate-subtitle">כמה דברים שהחברים שלך רצו שיחכו לך כאן</p>
+    <form id="gate-form">
+      <input type="password" id="pw-input" placeholder="סיסמה" autocomplete="off">
+      <button type="submit">פתחי לי 💌</button>
+    </form>
+    <div id="gate-error"></div>
+  </div>
+</div>
+
+<div id="site">
+  <header class="hero">
+    <div class="emoji">💌</div>
+    <h1 id="site-title">לרוני</h1>
+    <p id="site-subtitle">כמה דברים שהחברים שלך רצו שיחכו לך כאן</p>
+  </header>
+  <main id="main"></main>
+  <footer>
+    <button id="reset-link">נעלי הכל מחדש</button>
+  </footer>
+</div>
+
+<script>
+const TYPE_META = {
+  letter:   { icon: '💌', label: 'מכתב' },
+  audio:    { icon: '🎙️', label: 'הקלטה' },
+  video:    { icon: '🎥', label: 'וידאו' },
+  photo:    { icon: '📷', label: 'תמונה' },
+  playlist: { icon: '🎵', label: 'פלייליסט' },
+  idea:     { icon: '📝', label: 'רעיון' }
+};
+
+const OPENED_KEY = 'roni_opened_capsules';
+const UNLOCK_KEY = 'roni_gate_unlocked';
+
+function getOpened(){
+  try { return JSON.parse(localStorage.getItem(OPENED_KEY) || '[]'); }
+  catch(e){ return []; }
+}
+function markOpened(id){
+  const opened = getOpened();
+  if(!opened.includes(id)){
+    opened.push(id);
+    localStorage.setItem(OPENED_KEY, JSON.stringify(opened));
+  }
+}
+
+function mediaTag(media){
+  if(!media) return null;
+  const ext = media.split('.').pop().toLowerCase();
+  const audioExt = ['mp3','wav','m4a','ogg','aac'];
+  const videoExt = ['mp4','mov','webm','m4v'];
+  const imgExt   = ['jpg','jpeg','png','gif','webp'];
+  const src = 'media/' + media;
+  if(audioExt.includes(ext)) return `<audio controls src="${src}"></audio>`;
+  if(videoExt.includes(ext)) return `<video controls src="${src}"></video>`;
+  if(imgExt.includes(ext))   return `<img src="${src}" alt="">`;
+  return `<a href="${src}" target="_blank">פתחי קובץ</a>`;
+}
+
+function capsuleBodyHTML(c){
+  const parts = [];
+  if(c.text){
+    parts.push(`<div class="letter-text">${c.text.replace(/</g,'&lt;')}</div>`);
+  }
+  if(c.media){
+    parts.push(mediaTag(c.media));
+  }
+  if(!c.text && !c.media){
+    parts.push(`<div class="placeholder">התוכן בדרך אליך... 💌 (עוד לא הועלה)</div>`);
+  }
+  return parts.join('');
+}
+
+function renderCapsule(c){
+  const meta = TYPE_META[c.type] || { icon:'💛', label:'' };
+  const opened = getOpened().includes(c.id);
+  const div = document.createElement('div');
+  div.className = 'capsule' + (opened ? ' open' : '');
+  div.dataset.id = c.id;
+  div.innerHTML = `
+    <div class="capsule-head">
+      <span class="capsule-icon">${meta.icon}</span>
+      <span class="capsule-trigger">${c.trigger}</span>
+      <span class="capsule-type">${meta.label}</span>
+    </div>
+    <button class="capsule-open-btn" type="button">זה קורה לי עכשיו — פתחי 💌</button>
+    <div class="capsule-body">${capsuleBodyHTML(c)}</div>
+  `;
+  const btn = div.querySelector('.capsule-open-btn');
+  btn.addEventListener('click', () => {
+    div.classList.add('open');
+    markOpened(c.id);
+  });
+  return div;
+}
+
+function renderAct(act, extraClass){
+  const section = document.createElement('section');
+  section.className = 'act' + (extraClass ? ' ' + extraClass : '');
+  const head = document.createElement('div');
+  head.className = 'act-head';
+  head.innerHTML = `<h2>${act.title}</h2><span>${act.subtitle || ''}</span>`;
+  section.appendChild(head);
+  const list = document.createElement('div');
+  list.className = 'capsule-list';
+  act.capsules.forEach(c => list.appendChild(renderCapsule(c)));
+  section.appendChild(list);
+  return section;
+}
+
+function renderSite(data){
+  document.getElementById('site-title').textContent = data.site.title || 'לרוני';
+  document.getElementById('site-subtitle').textContent = data.site.subtitle || '';
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+  data.acts.forEach(act => main.appendChild(renderAct(act)));
+  if(data.extra && data.extra.capsules && data.extra.capsules.length){
+    main.appendChild(renderAct(data.extra, 'extra'));
+  }
+}
+
+function showSite(){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('site').style.display = 'block';
+}
+
+fetch('content.json')
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('gate-subtitle').textContent = data.site.subtitle || '';
+
+    if(localStorage.getItem(UNLOCK_KEY) === '1'){
+      renderSite(data);
+      showSite();
+    }
+
+    document.getElementById('gate-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = document.getElementById('pw-input').value.trim();
+      if(val === (data.site.password || '')){
+        localStorage.setItem(UNLOCK_KEY, '1');
+        renderSite(data);
+        showSite();
+      } else {
+        const card = document.getElementById('gate-card');
+        const err = document.getElementById('gate-error');
+        err.textContent = data.site.gateHint || 'סיסמה לא נכונה, נסי שוב 💛';
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+      }
+    });
+  })
+  .catch(() => {
+    document.getElementById('gate-error').textContent = 'לא הצלחתי לטעון את התוכן. נסי לרענן.';
+  });
+
+document.getElementById('reset-link').addEventListener('click', () => {
+  if(confirm('לנעול הכל מחדש?')){
+    localStorage.removeItem(OPENED_KEY);
+    location.reload();
+  }
+});
+</script>
+
+</body>
+</html>
