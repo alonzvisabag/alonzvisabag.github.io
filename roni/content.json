@@ -26,7 +26,7 @@
           "type": "letter",
           "desc": "מכתב/הקלטה מהחברים שמברכים את שניכם על הנחיתה ומזכירים לו לעזור לך לסחוב את המזוודות.",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         },
         {
           "id": "a1-2",
@@ -34,7 +34,7 @@
           "type": "audio",
           "desc": "הקלטה מצחיקה של חבר שמשמש כ\"בורר\" ומזכיר לכם שאתם באותו צוות.",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         },
         {
           "id": "a1-3",
@@ -42,7 +42,7 @@
           "type": "idea",
           "desc": "פתק שמבקש מכם להרים כוסית משותפת ולשלוח סלפי מיידי לקבוצה.",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         },
         {
           "id": "a1-4",
@@ -50,7 +50,7 @@
           "type": "photo",
           "desc": "תמונה מביכה שלו מהעבר שתזכיר לך שזה האופי ואין מה לעשות.",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         },
         {
           "id": "a1-5",
@@ -58,7 +58,7 @@
           "type": "letter",
           "desc": "מכתב אישי ומרגש ממך על החודש המדהים שהיה ועל כמה שאת מאמינה בו להמשך.",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         }
       ]
     },
@@ -73,7 +73,7 @@
           "type": "audio",
           "desc": "הקלטה קצרה של \"זה לא באמת פרידה, רק מעבירים את השרביט\".",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         },
         {
           "id": "a2-2",
@@ -81,7 +81,7 @@
           "type": "video",
           "desc": "הקלטת חיבוק ענקית מכל החברים שמחכים לפתוח איתך שיחת וידאו כדי שלא תרגישי את השקט.",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         },
         {
           "id": "a2-3",
@@ -89,7 +89,7 @@
           "type": "letter",
           "desc": "תזכורת כתובה שאת לגמרי מסוגלת לזה ושזה הרגע שבו ההרפתקה האמיתית שלך מתחילה.",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         },
         {
           "id": "a2-4",
@@ -97,7 +97,7 @@
           "type": "playlist",
           "desc": "רשימת שירים מרימה או פודקאסט מומלץ שיעשו רעש וכיף ברקע.",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         },
         {
           "id": "a2-5",
@@ -105,7 +105,7 @@
           "type": "idea",
           "desc": "פנקס קטן ייעודי לפריקת מחשבות עד שתדברו.",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         }
       ]
     },
@@ -120,7 +120,7 @@
           "type": "letter",
           "desc": "מכתב גאווה על הבית שבנית לעצמך.",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         },
         {
           "id": "a3-2",
@@ -128,7 +128,7 @@
           "type": "letter",
           "desc": "תזכורת לכמה היית לחוצה בהתחלה ואיזה דרך מטורפת עשית.",
           "items": [],
-          "openToFriends": false
+          "openToFriends": true
         },
         {
           "id": "a3-3",
@@ -177,7 +177,7 @@
               "media": "photo-16.jpg"
             }
           ],
-          "openToFriends": false
+          "openToFriends": true
         }
       ]
     }
