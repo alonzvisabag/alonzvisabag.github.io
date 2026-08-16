@@ -635,27 +635,6 @@ function renderCapsule(c){
   return div;
 }
 
-function renderAct(act, index, extraClass){
-  const colors = ACT_COLORS[index % ACT_COLORS.length];
-  const section = document.createElement('section');
-  section.className = 'act' + (extraClass ? ' ' + extraClass : '');
-  section.style.setProperty('--shadow-c', colors.shadow);
-  const head = document.createElement('div');
-  head.className = 'act-head';
-  head.innerHTML = `<h2>${act.title}</h2><span>${act.subtitle || ''}</span>`;
-  section.appendChild(head);
-  const list = document.createElement('div');
-  list.className = 'capsule-list';
-  list.style.setProperty('--shadow-c', colors.shadow);
-  act.capsules.forEach(c => {
-    const capsule = renderCapsule(c);
-    capsule.style.setProperty('--shadow-c', colors.shadow);
-    list.appendChild(capsule);
-  });
-  section.appendChild(list);
-  return section;
-}
-
 function renderHeroPhotos(photos){
   const wrap = document.getElementById('hero-photos');
   if(photos && photos.length){
