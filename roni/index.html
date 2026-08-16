@@ -690,7 +690,7 @@ function capsuleBodyHTML(c){
 
 function updateCapsuleBtnLabel(div){
   const btn = div.querySelector('.capsule-open-btn');
-  btn.textContent = div.classList.contains('expanded') ? 'סגרי' : 'זה קורה לי עכשיו — פתחי';
+  btn.textContent = div.classList.contains('expanded') ? 'סגרי' : 'זה קורה לי עכשיו';
 }
 
 function renderCapsule(c){
@@ -705,7 +705,7 @@ function renderCapsule(c){
       <span class="capsule-chevron">▾</span>
       <span class="capsule-type" style="background:${meta.color}">${meta.label}</span>
     </div>
-    <button class="capsule-open-btn" type="button">זה קורה לי עכשיו — פתחי</button>
+    <button class="capsule-open-btn" type="button">זה קורה לי עכשיו</button>
     <div class="capsule-body">${capsuleBodyHTML(c)}</div>
   `;
   const head = div.querySelector('.capsule-head');
