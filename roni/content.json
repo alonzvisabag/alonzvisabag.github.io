@@ -2,8 +2,10 @@
   "site": {
     "title": "לרוני",
     "subtitle": "כמה דברים שהחברים שלך רצו שיחכו לך כאן",
-    "password": "רוני2026",
-    "gateHint": "תשאלי מישהו מהחבר'ה אם שכחת את הסיסמה 💛"
+    "password": "SHNITZKIPUTZ",
+    "gateHint": "תשאלי מישהו מהחבר'ה אם שכחת את הסיסמה 💛",
+    "gatePhoto": "gate-before.jpg",
+    "revealPhoto": "gate-after.jpg"
   },
   "acts": [
     {
