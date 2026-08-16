@@ -126,11 +126,28 @@ async function handleContribute(request, env) {
     return json({ ok: false, error: 'invalid json' }, 400);
   }
 
-  const { capsuleId, from, text, mediaBase64, mediaExt } = body;
+  const { capsuleId, newCapsule, from, text, mediaBase64, mediaExt } = body;
 
-  if (!capsuleId || typeof capsuleId !== 'string') {
-    return json({ ok: false, error: 'missing capsuleId' }, 400);
+  const hasExisting = typeof capsuleId === 'string' && capsuleId.length > 0;
+  let cleanNewCapsule = null;
+  if (!hasExisting) {
+    if (
+      !newCapsule ||
+      !VALID_SECTIONS.includes(newCapsule.section) ||
+      !VALID_TYPES.includes(newCapsule.type) ||
+      typeof newCapsule.trigger !== 'string' ||
+      !newCapsule.trigger.trim() ||
+      newCapsule.trigger.trim().length > 300
+    ) {
+      return json({ ok: false, error: 'missing capsuleId or invalid newCapsule' }, 400);
+    }
+    cleanNewCapsule = {
+      section: newCapsule.section,
+      type: newCapsule.type,
+      trigger: newCapsule.trigger.trim(),
+    };
   }
+
   const hasText = typeof text === 'string' && text.trim().length > 0;
   const hasMedia = typeof mediaBase64 === 'string' && mediaBase64.length > 0;
   if (!hasText && !hasMedia) {
@@ -146,13 +163,13 @@ async function handleContribute(request, env) {
     if (mediaBase64.length > 15_000_000) {
       return json({ ok: false, error: 'file too large' }, 400);
     }
-    const safeCapsuleId = capsuleId.replace(/[^a-zA-Z0-9-]/g, '');
-    mediaFilename = `${safeCapsuleId}-${Date.now()}.${ext}`;
+    const prefix = (hasExisting ? capsuleId : 'custom').replace(/[^a-zA-Z0-9-]/g, '');
+    mediaFilename = `${prefix}-${Date.now()}.${ext}`;
     const res = await putFile(
       env,
       `${MEDIA_DIR}/${mediaFilename}`,
       mediaBase64,
-      `contribute: add media for ${capsuleId}`
+      `contribute: add media for ${hasExisting ? capsuleId : 'new capsule'}`
     );
     if (!res.ok) {
       const errText = await res.text();
@@ -167,7 +184,7 @@ async function handleContribute(request, env) {
   };
 
   try {
-    await addItemToContent(env, capsuleId, item);
+    await addItemToContent(env, { capsuleId: hasExisting ? capsuleId : null, newCapsule: cleanNewCapsule }, item);
   } catch (e) {
     return json({ ok: false, error: e.message }, 500);
   }
