@@ -202,7 +202,13 @@ export default {
     const url = new URL(request.url);
     if (request.method === 'POST' && url.pathname === '/debug-echo') {
       const body = await request.json();
-      return json({ ok: true, echoed: body, textCodes: body.text ? [...body.text].map(c => c.codePointAt(0).toString(16)) : null });
+      const roundtrip = body.text ? base64ToUtf8(utf8ToBase64(body.text)) : null;
+      return json({
+        ok: true,
+        echoed: body,
+        roundtrip,
+        roundtripCodes: roundtrip ? [...roundtrip].map((c) => c.codePointAt(0).toString(16)) : null,
+      });
     }
     if (request.method === 'POST' && url.pathname === '/contribute') {
       return handleContribute(request, env);
