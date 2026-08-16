@@ -5,7 +5,7 @@ const MEDIA_DIR = 'roni/media';
 const ALLOWED_ORIGIN = 'https://alonzvisabag.github.io';
 
 const MEDIA_EXT_WHITELIST = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3', 'wav', 'm4a', 'ogg', 'aac', 'mp4', 'mov', 'webm', 'm4v'];
-const VALID_TYPES = ['letter', 'audio', 'video', 'photo', 'playlist', 'idea'];
+const VALID_TYPES = ['letter', 'audio', 'video', 'photo'];
 const VALID_SECTIONS = ['act1', 'act2', 'act3', 'extra'];
 
 function corsHeaders() {
