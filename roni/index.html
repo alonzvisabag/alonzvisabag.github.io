@@ -809,16 +809,34 @@ function burstConfetti(x, y){
   }
 }
 
+const AUDIO_EXT = ['mp3','wav','m4a','ogg','aac'];
+const VIDEO_EXT = ['mp4','mov','webm','m4v'];
+const IMG_EXT   = ['jpg','jpeg','png','gif','webp'];
+
+function detectMediaType(media){
+  const ext = media.split('.').pop().toLowerCase();
+  if(AUDIO_EXT.includes(ext)) return 'audio';
+  if(VIDEO_EXT.includes(ext)) return 'video';
+  if(IMG_EXT.includes(ext)) return 'photo';
+  return null;
+}
+
+function effectiveType(c){
+  const withMedia = (c.items || []).find(i => i.media);
+  if(withMedia){
+    const detected = detectMediaType(withMedia.media);
+    if(detected) return detected;
+  }
+  return c.type;
+}
+
 function mediaTag(media){
   if(!media) return null;
   const ext = media.split('.').pop().toLowerCase();
-  const audioExt = ['mp3','wav','m4a','ogg','aac'];
-  const videoExt = ['mp4','mov','webm','m4v'];
-  const imgExt   = ['jpg','jpeg','png','gif','webp'];
   const src = 'media/' + media;
-  if(audioExt.includes(ext)) return `<audio controls src="${src}"></audio>`;
-  if(videoExt.includes(ext)) return `<video controls src="${src}"></video>`;
-  if(imgExt.includes(ext))   return `<img src="${src}" alt="">`;
+  if(AUDIO_EXT.includes(ext)) return `<audio controls src="${src}"></audio>`;
+  if(VIDEO_EXT.includes(ext)) return `<video controls src="${src}"></video>`;
+  if(IMG_EXT.includes(ext))   return `<img src="${src}" alt="">`;
   return `<a href="${src}" target="_blank">פתחי קובץ</a>`;
 }
 
