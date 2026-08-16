@@ -584,23 +584,30 @@ function capsuleBodyHTML(c){
 
 function renderCapsule(c){
   const meta = TYPE_META[c.type] || { label:'', color:'var(--coral)' };
-  const opened = getOpened().includes(c.id);
+  const unlocked = getOpened().includes(c.id);
   const div = document.createElement('div');
-  div.className = 'capsule' + (opened ? ' open' : '');
+  div.className = 'capsule' + (unlocked ? ' unlocked expanded' : '');
   div.dataset.id = c.id;
   div.innerHTML = `
     <div class="capsule-head">
       <span class="capsule-trigger">${c.trigger}</span>
+      <span class="capsule-chevron">▾</span>
       <span class="capsule-type" style="background:${meta.color}">${meta.label}</span>
     </div>
     <button class="capsule-open-btn" type="button">זה קורה לי עכשיו — פתחי</button>
     <div class="capsule-body">${capsuleBodyHTML(c)}</div>
   `;
+  const head = div.querySelector('.capsule-head');
   const btn = div.querySelector('.capsule-open-btn');
   btn.addEventListener('click', (e) => {
-    div.classList.add('open');
+    div.classList.add('unlocked', 'expanded');
     markOpened(c.id);
     burstConfetti(e.clientX, e.clientY);
+  });
+  head.addEventListener('click', () => {
+    if(div.classList.contains('unlocked')){
+      div.classList.toggle('expanded');
+    }
   });
   return div;
 }
