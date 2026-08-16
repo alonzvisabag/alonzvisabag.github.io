@@ -1012,6 +1012,95 @@ document.getElementById('memory-back-btn').addEventListener('click', () => {
   document.getElementById('memory-view').classList.remove('show');
 });
 document.getElementById('memory-replay-btn').addEventListener('click', startMemoryGame);
+
+const NICKNAMES = ['שניצ','שביצ','אושו','טוסיק','טוכעס','רונן','רונני','רונן מיזרחי',"מצ'קה",'שניצקיפיצ'];
+let nickState = { order: [], index: 0, score: 0, current: null };
+
+function scrambleWord(word){
+  const chars = word.split('');
+  let attempts = 0;
+  let scrambled;
+  do {
+    scrambled = shuffle([...chars]);
+    attempts++;
+  } while(scrambled.join('') === word && attempts < 20);
+  return scrambled;
+}
+
+function startNicknameGame(){
+  nickState.order = shuffle([...NICKNAMES]);
+  nickState.index = 0;
+  nickState.score = 0;
+  document.getElementById('nickname-input').style.display = 'block';
+  document.getElementById('nickname-btn-row').style.display = 'flex';
+  document.getElementById('nickname-replay-btn').style.display = 'none';
+  nextNicknameRound();
+}
+
+function nextNicknameRound(){
+  const feedback = document.getElementById('nickname-feedback');
+  feedback.textContent = '';
+  feedback.className = '';
+  document.getElementById('nickname-input').value = '';
+  document.getElementById('nickname-score').textContent = `${nickState.score} מתוך ${NICKNAMES.length}`;
+
+  if(nickState.index >= nickState.order.length){
+    document.getElementById('nickname-tiles').innerHTML = '';
+    feedback.textContent = `סיימת! ${nickState.score} מתוך ${NICKNAMES.length}`;
+    feedback.className = 'ok';
+    document.getElementById('nickname-input').style.display = 'none';
+    document.getElementById('nickname-btn-row').style.display = 'none';
+    document.getElementById('nickname-replay-btn').style.display = 'block';
+    return;
+  }
+
+  const word = nickState.order[nickState.index];
+  nickState.current = word;
+  const scrambled = scrambleWord(word);
+  document.getElementById('nickname-tiles').innerHTML = scrambled
+    .map(ch => `<span class="nickname-tile">${ch === ' ' ? '&nbsp;' : ch}</span>`)
+    .join('');
+  document.getElementById('nickname-input').focus();
+}
+
+function checkNicknameGuess(){
+  const input = document.getElementById('nickname-input');
+  const guess = input.value.trim();
+  const feedback = document.getElementById('nickname-feedback');
+  if(!guess) return;
+  if(guess === nickState.current){
+    nickState.score++;
+    feedback.textContent = 'נכון!';
+    feedback.className = 'ok';
+    burstConfetti(window.innerWidth / 2, window.innerHeight / 2);
+    nickState.index++;
+    setTimeout(nextNicknameRound, 900);
+  } else {
+    feedback.textContent = 'לא בדיוק, נסי שוב';
+    feedback.className = 'err';
+  }
+}
+
+function skipNickname(){
+  document.getElementById('nickname-feedback').textContent = `זה היה: ${nickState.current}`;
+  document.getElementById('nickname-feedback').className = '';
+  nickState.index++;
+  setTimeout(nextNicknameRound, 1200);
+}
+
+document.getElementById('nickname-open-btn').addEventListener('click', () => {
+  document.getElementById('nickname-view').classList.add('show');
+  startNicknameGame();
+});
+document.getElementById('nickname-back-btn').addEventListener('click', () => {
+  document.getElementById('nickname-view').classList.remove('show');
+});
+document.getElementById('nickname-submit-btn').addEventListener('click', checkNicknameGuess);
+document.getElementById('nickname-input').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') checkNicknameGuess();
+});
+document.getElementById('nickname-skip-btn').addEventListener('click', skipNickname);
+document.getElementById('nickname-replay-btn').addEventListener('click', startNicknameGame);
 </script>
 
 </body>
