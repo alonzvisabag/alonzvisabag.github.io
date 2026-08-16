@@ -470,6 +470,78 @@
     font-family:'Rubik', sans-serif;
     font-weight:500;
   }
+
+  #memory-open-btn{
+    display:block;
+    margin:0 auto 16px;
+    padding:12px 26px;
+  }
+
+  #memory-view{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:60;
+    overflow-y:auto;
+    background:linear-gradient(120deg, var(--bg1), var(--bg2) 45%, var(--bg3) 100%);
+    padding:20px;
+  }
+  #memory-view.show{ display:block; }
+
+  #memory-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    max-width:520px;
+    margin:0 auto 18px;
+  }
+  #memory-header h2{ font-size:1.3rem; font-weight:800; }
+  #memory-back-btn{
+    background:none;
+    border:none;
+    font-family:'Rubik', sans-serif;
+    font-size:0.92rem;
+    font-weight:700;
+    color:var(--ink);
+    cursor:pointer;
+  }
+
+  #memory-grid{
+    max-width:520px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:10px;
+  }
+
+  .memory-card{
+    aspect-ratio:1;
+    border-radius:12px;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(135deg, var(--coral), var(--sun));
+    box-shadow:0 4px 0 var(--coral-dark);
+    transition:transform .15s;
+  }
+  .memory-card:active{ transform:scale(0.94); }
+  .memory-card img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:none;
+  }
+  .memory-card.flipped img, .memory-card.matched img{ display:block; }
+  .memory-card.flipped, .memory-card.matched{ box-shadow:none; }
+  .memory-card.matched{ opacity:0.5; }
+
+  #memory-win{
+    display:none;
+    max-width:520px;
+    margin:26px auto 0;
+    text-align:center;
+  }
+  #memory-win p{ font-size:1.1rem; font-weight:700; margin-bottom:14px; }
 </style>
 </head>
 <body>
