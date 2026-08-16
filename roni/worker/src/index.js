@@ -78,17 +78,38 @@ function findCapsule(json, capsuleId) {
   return null;
 }
 
-async function addItemToContent(env, capsuleId, item) {
+function findSection(data, sectionId) {
+  if (sectionId === 'extra') return data.extra || null;
+  return (data.acts || []).find((a) => a.id === sectionId) || null;
+}
+
+async function addItemToContent(env, { capsuleId, newCapsule }, item) {
   for (let attempt = 0; attempt < 3; attempt++) {
     const file = await getFile(env, CONTENT_PATH);
     if (!file) throw new Error('content.json not found');
     const data = JSON.parse(base64ToUtf8(file.contentBase64));
-    const capsule = findCapsule(data, capsuleId);
+
+    let capsule = capsuleId ? findCapsule(data, capsuleId) : null;
+
+    if (!capsule && newCapsule) {
+      const section = findSection(data, newCapsule.section);
+      if (!section) throw new Error(`invalid section: ${newCapsule.section}`);
+      if (!section.capsules) section.capsules = [];
+      capsule = {
+        id: `friend-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        trigger: newCapsule.trigger,
+        type: newCapsule.type,
+        desc: null,
+        items: [],
+      };
+      section.capsules.push(capsule);
+    }
+
     if (!capsule) throw new Error(`capsule not found: ${capsuleId}`);
     if (!capsule.items) capsule.items = [];
     capsule.items.push(item);
     const newBase64 = utf8ToBase64(JSON.stringify(data, null, 2) + '\n');
-    const res = await putFile(env, CONTENT_PATH, newBase64, `contribute: add item to ${capsuleId}`, file.sha);
+    const res = await putFile(env, CONTENT_PATH, newBase64, `contribute: add item to ${capsule.id}`, file.sha);
     if (res.ok) return;
     if (res.status === 409 && attempt < 2) continue;
     const errText = await res.text();
