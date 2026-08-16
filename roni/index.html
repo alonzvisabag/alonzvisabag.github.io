@@ -573,10 +573,20 @@ function itemHTML(item){
   return `<div class="item">${parts.join('')}</div>`;
 }
 
+function isPhotoOnly(item){
+  if(item.from || item.text || !item.media) return false;
+  const ext = item.media.split('.').pop().toLowerCase();
+  return ['jpg','jpeg','png','gif','webp'].includes(ext);
+}
+
 function capsuleBodyHTML(c){
   const items = c.items || [];
   if(!items.length){
     return `<div class="placeholder">התוכן בדרך אליך... (עוד לא הועלה)</div>`;
+  }
+  if(items.length > 1 && items.every(isPhotoOnly)){
+    const imgs = items.map(i => `<img src="media/${i.media}" alt="">`).join('');
+    return `<div class="photo-grid">${imgs}</div>`;
   }
   return items.map(itemHTML).join('');
 }
