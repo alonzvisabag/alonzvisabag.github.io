@@ -200,35 +200,6 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders() });
     }
     const url = new URL(request.url);
-    if (request.method === 'POST' && url.pathname === '/debug-echo') {
-      const body = await request.json();
-      const roundtrip = body.text ? base64ToUtf8(utf8ToBase64(body.text)) : null;
-      return json({
-        ok: true,
-        echoed: body,
-        roundtrip,
-        roundtripCodes: roundtrip ? [...roundtrip].map((c) => c.codePointAt(0).toString(16)) : null,
-      });
-    }
-    if (request.method === 'POST' && url.pathname === '/debug-full') {
-      const body = await request.json();
-      const file = await getFile(env, CONTENT_PATH);
-      const data = JSON.parse(base64ToUtf8(file.contentBase64));
-      const capsule = findCapsule(data, body.capsuleId);
-      const item = { from: body.from || null, text: body.text || null, media: null };
-      capsule.items.push(item);
-      const fullString = JSON.stringify(data, null, 2) + '\n';
-      const encodedBase64 = utf8ToBase64(fullString);
-      const decodedBack = base64ToUtf8(encodedBase64);
-      const parsedBack = JSON.parse(decodedBack);
-      const capsuleBack = findCapsule(parsedBack, body.capsuleId);
-      return json({
-        ok: true,
-        itemAsPushed: item,
-        capsuleItemsAfterPush: capsule.items,
-        capsuleItemsAfterFullRoundtrip: capsuleBack.items,
-      });
-    }
     if (request.method === 'POST' && url.pathname === '/contribute') {
       return handleContribute(request, env);
     }
