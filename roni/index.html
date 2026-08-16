@@ -877,7 +877,7 @@ function updateCapsuleBtnLabel(div){
 }
 
 function renderCapsule(c){
-  const meta = TYPE_META[c.type] || { label:'', color:'var(--coral)' };
+  const meta = TYPE_META[effectiveType(c)] || { label:'', color:'var(--coral)' };
   const unlocked = getOpened().includes(c.id);
   const div = document.createElement('div');
   div.className = 'capsule' + (unlocked ? ' unlocked' : '');
