@@ -934,10 +934,61 @@ function renderHeroPhotos(photos){
   }
 }
 
+const HOME_LOCATIONS = [
+  { name: 'תל אביב', lat: 32.0853, lon: 34.7818 },
+  { name: 'גן השומרון', lat: 32.28, lon: 35.03 },
+  { name: 'גבעת ניל"י', lat: 32.49, lon: 35.08 }
+];
+const AWAY_LOCATION = { name: 'גראץ', lat: 47.0707, lon: 15.4395, timeZone: 'Europe/Vienna' };
+
+function weatherCodeToText(code){
+  if(code === 0) return 'בהיר';
+  if([1,2,3].includes(code)) return 'מעונן חלקית';
+  if([45,48].includes(code)) return 'ערפל';
+  if([51,53,55,56,57].includes(code)) return 'טפטוף';
+  if([61,63,65,66,67].includes(code)) return 'גשם';
+  if([71,73,75,77].includes(code)) return 'שלג';
+  if([80,81,82].includes(code)) return 'ממטרים';
+  if([95,96,99].includes(code)) return 'סופת רעמים';
+  return '';
+}
+
+async function fetchWeather(loc){
+  try{
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,weather_code`);
+    const data = await res.json();
+    return { temp: Math.round(data.current.temperature_2m), desc: weatherCodeToText(data.current.weather_code) };
+  } catch(e){
+    return null;
+  }
+}
+
+function updateHomeStripTimes(){
+  document.getElementById('israel-time').textContent = new Intl.DateTimeFormat('he-IL', { timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit' }).format(new Date());
+  document.getElementById('graz-time').textContent = new Intl.DateTimeFormat('he-IL', { timeZone: AWAY_LOCATION.timeZone, hour: '2-digit', minute: '2-digit' }).format(new Date());
+}
+
+async function initHomeStrip(){
+  updateHomeStripTimes();
+  setInterval(updateHomeStripTimes, 60000);
+
+  const results = await Promise.all([...HOME_LOCATIONS, AWAY_LOCATION].map(fetchWeather));
+  const israelResults = results.slice(0, HOME_LOCATIONS.length);
+  const awayResult = results[results.length - 1];
+
+  document.getElementById('israel-weather').innerHTML = HOME_LOCATIONS.map((loc, i) => {
+    const w = israelResults[i];
+    return `<div class="weather-row"><span>${loc.name}</span><span>${w ? w.temp + '°, ' + w.desc : '—'}</span></div>`;
+  }).join('');
+
+  document.getElementById('graz-weather').textContent = awayResult ? `${awayResult.temp}°, ${awayResult.desc}` : '—';
+}
+
 function renderSite(data){
   document.getElementById('site-title').textContent = data.site.title || 'לרונני';
   document.getElementById('site-subtitle').textContent = data.site.subtitle || '';
   renderHeroPhotos(data.site.heroPhotos);
+  initHomeStrip();
   const main = document.getElementById('main');
   main.innerHTML = '';
   const list = document.createElement('div');
