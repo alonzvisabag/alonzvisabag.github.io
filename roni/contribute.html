@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>עזרו לרוני</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  :root{
+    --bg1:#fff3da;
+    --bg2:#ffdff0;
+    --bg3:#dff4ff;
+    --ink:#332b2b;
+    --muted:#8d7f8a;
+    --card:#fffefc;
+    --coral:#ff6b4a;
+    --coral-dark:#e8512f;
+    --sun:#ffb703;
+    --mint:#06b88a;
+    --sky:#3fa9dd;
+    --border:#f0e2d4;
+  }
+
+  html{ background:var(--bg1); }
+
+  body{
+    font-family:'Rubik', sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    background:linear-gradient(120deg, var(--bg1), var(--bg2) 45%, var(--bg3) 100%);
+    background-size:200% 200%;
+  }
+
+  header{
+    text-align:center;
+    padding:44px 20px 24px;
+  }
+  header h1{ font-size:1.9rem; font-weight:800; margin-bottom:8px; }
+  header p{ color:var(--muted); font-size:0.98rem; max-width:440px; margin:0 auto; line-height:1.6; font-weight:500; }
+
+  main{
+    max-width:600px;
+    margin:0 auto;
+    padding:10px 20px 100px;
+  }
+
+  section.group{ margin-bottom:34px; }
+  section.group h2{ font-size:1.2rem; font-weight:800; margin-bottom:4px; }
+  section.group .sub{ color:var(--muted); font-size:0.88rem; margin-bottom:14px; font-weight:500; }
+
+  .cap-list{ display:flex; flex-direction:column; gap:10px; }
+
+  .cap-item{
+    background:var(--card);
+    border:1.5px solid var(--border);
+    border-radius:14px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    text-align:right;
+    font-family:'Rubik', sans-serif;
+    font-size:0.95rem;
+    color:var(--ink);
+    width:100%;
+    transition:transform .15s, box-shadow .15s;
+  }
+  .cap-item:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+  .cap-item .badge{
+    font-size:0.7rem;
+    font-weight:700;
+    color:#fff;
+    padding:3px 9px;
+    border-radius:20px;
+    flex-shrink:0;
+  }
+
+  .new-cap-btn{
+    display:block;
+    width:100%;
+    margin-top:6px;
+    padding:16px;
+    border-radius:14px;
+    border:2px dashed var(--coral);
+    background:transparent;
+    color:var(--coral-dark);
+    font-family:'Rubik', sans-serif;
+    font-weight:700;
+    font-size:0.98rem;
+    cursor:pointer;
+  }
+
+  #compose{ display:none; }
+  #compose .back-btn{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-family:'Rubik', sans-serif;
+    font-size:0.9rem;
+    font-weight:600;
+    cursor:pointer;
+    margin-bottom:16px;
+    padding:6px 0;
+  }
+
+  .compose-card{
+    background:var(--card);
+    border-radius:18px;
+    padding:24px 20px;
+    border:1.5px solid var(--border);
+  }
+  .compose-card .trigger-label{
+    font-size:1.05rem;
+    font-weight:700;
+    margin-bottom:18px;
+    line-height:1.5;
+  }
+
+  label.field-label{
+    display:block;
+    font-size:0.85rem;
+    font-weight:700;
+    color:var(--muted);
+    margin:16px 0 6px;
+  }
+  label.field-label:first-of-type{ margin-top:0; }
+
+  input[type="text"], select, textarea{
+    width:100%;
+    font-family:'Rubik', sans-serif;
+    font-size:0.95rem;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1.5px solid var(--border);
+    background:#fff;
+    outline:none;
+    color:var(--ink);
+  }
+  input[type="text"]:focus, select:focus, textarea:focus{ border-color:var(--coral); }
+  textarea{ min-height:110px; resize:vertical; font-family:'Rubik', sans-serif; }
+
+  .rec-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+
+  button.pill{
+    font-family:'Rubik', sans-serif;
+    font-size:0.9rem;
+    font-weight:700;
+    padding:11px 18px;
+    border-radius:30px;
+    border:none;
+    cursor:pointer;
+    color:#fff;
+    background:var(--sky);
+    transition:transform .12s;
+  }
+  button.pill:hover{ transform:scale(1.03); }
+  button.pill:active{ transform:scale(0.97); }
+  button.pill.recording{ background:var(--coral); }
+  button.pill:disabled{ opacity:0.5; cursor:default; transform:none; }
+
+  #rec-status{ font-size:0.85rem; color:var(--muted); font-weight:600; }
+
+  audio{ width:100%; margin-top:10px; }
+
+  input[type="file"]{
+    font-family:'Rubik', sans-serif;
+    font-size:0.88rem;
+  }
+
+  .submit-row{ margin-top:22px; }
+
+  button#submit-btn{
+    width:100%;
+    padding:15px;
+    border-radius:14px;
+    border:none;
+    background:linear-gradient(100deg, var(--coral), var(--sun));
+    color:#fff;
+    font-family:'Rubik', sans-serif;
+    font-weight:800;
+    font-size:1rem;
+    cursor:pointer;
+    box-shadow:0 6px 0 var(--coral-dark);
+    transition:transform .15s;
+  }
+  button#submit-btn:active{ transform:translateY(2px); box-shadow:0 3px 0 var(--coral-dark); }
+  button#submit-btn:disabled{ opacity:0.6; cursor:default; }
+
+  #status-msg{
+    margin-top:14px;
+    font-size:0.9rem;
+    font-weight:600;
+    text-align:center;
+    min-height:1.3em;
+  }
+  #status-msg.ok{ color:var(--mint); }
+  #status-msg.err{ color:var(--coral-dark); }
+
+  #new-cap-fields{ display:none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>עזרו לרוני</h1>
+  <p>בחרו רגע מהרשימה למטה והשאירו לה שם הקלטה, תמונה או מכתב. היא לא תראה כלום עד שהיא תגיע לרגע הזה בעצמה — ואתם לא תראו מה חברים אחרים כבר השאירו.</p>
+</header>
+
+<main>
+  <div id="list-view"></div>
+
+  <div id="compose">
+    <button class="back-btn" type="button" id="back-btn">← חזרה לרשימה</button>
+    <div class="compose-card">
+      <div class="trigger-label" id="compose-trigger"></div>
+
+      <div id="new-cap-fields">
+        <label class="field-label">באיזה חלק באתר זה יופיע?</label>
+        <select id="new-section"></select>
+        <label class="field-label">איזה סוג תוכן זה?</label>
+        <select id="new-type">
+          <option value="letter">מכתב</option>
+          <option value="audio">הקלטה</option>
+          <option value="video">וידאו</option>
+          <option value="photo">תמונה</option>
+          <option value="playlist">פלייליסט</option>
+          <option value="idea">רעיון</option>
+        </select>
+        <label class="field-label">מתי כדאי לה לפתוח את זה?</label>
+        <input type="text" id="new-trigger" placeholder="לדוגמה: ברגע שהיא מתגעגעת הביתה">
+      </div>
+
+      <label class="field-label">השם שלכם (רשות)</label>
+      <input type="text" id="from-name" placeholder="מי אתם?">
+
+      <label class="field-label">מכתב (רשות)</label>
+      <textarea id="letter-text" placeholder="כתבו כאן..."></textarea>
+
+      <label class="field-label">הקלטה קולית (רשות)</label>
+      <div class="rec-row">
+        <button class="pill" type="button" id="rec-btn">הקליטו</button>
+        <span id="rec-status"></span>
+      </div>
+      <audio id="rec-preview" controls style="display:none"></audio>
+
+      <label class="field-label">או צרפו קובץ — תמונה, סרטון או הקלטה (רשות)</label>
+      <input type="file" id="file-input" accept="image/*,video/*,audio/*">
+
+      <div class="submit-row">
+        <button type="button" id="submit-btn">שלחו לרוני</button>
+        <div id="status-msg"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const WORKER_URL = 'WORKER_URL_PLACEHOLDER';
+
+const SECTION_LABELS = { act1: 'החודש הראשון יחד', act2: 'נקודת המפנה', act3: 'חודש שני ואילך', extra: 'רגעים נוספים' };
+const TYPE_META = {
+  letter:   { label: 'מכתב',    color: 'var(--coral)' },
+  audio:    { label: 'הקלטה',   color: 'var(--sky)' },
+  video:    { label: 'וידאו',    color: 'var(--mint)' },
+  photo:    { label: 'תמונה',    color: 'var(--sun)' },
+  playlist: { label: 'פלייליסט', color: 'var(--sky)' },
+  idea:     { label: 'רעיון',    color: 'var(--mint)' }
+};
+
+let selectedCapsuleId = null;
+let recordedBlob = null;
+let recordedExt = null;
+let mediaRecorder = null;
+let recChunks = [];
+
+function renderList(data){
+  const wrap = document.getElementById('list-view');
+  wrap.innerHTML = '';
+
+  const sections = [...data.acts, data.extra];
+  sections.forEach(section => {
+    const div = document.createElement('section');
+    div.className = 'group';
+    div.innerHTML = `<h2>${section.title}</h2><div class="sub">${section.subtitle || ''}</div>`;
+    const list = document.createElement('div');
+    list.className = 'cap-list';
+    section.capsules.forEach(c => {
+      const meta = TYPE_META[c.type] || { label:'', color:'var(--coral)' };
+      const btn = document.createElement('button');
+      btn.className = 'cap-item';
+      btn.type = 'button';
+      btn.innerHTML = `<span class="badge" style="background:${meta.color}">${meta.label}</span><span>${c.trigger}</span>`;
+      btn.addEventListener('click', () => openCompose({ capsuleId: c.id, trigger: c.trigger }));
+      list.appendChild(btn);
+    });
+    div.appendChild(list);
+    wrap.appendChild(div);
+  });
+
+  const newBtn = document.createElement('button');
+  newBtn.className = 'new-cap-btn';
+  newBtn.type = 'button';
+  newBtn.textContent = '+ צרו כמוסה משלכם';
+  newBtn.addEventListener('click', () => openCompose({ isNew: true }));
+  wrap.appendChild(newBtn);
+}
+
+function populateSectionSelect(){
+  const sel = document.getElementById('new-section');
+  sel.innerHTML = Object.entries(SECTION_LABELS).map(([id, label]) => `<option value="${id}">${label}</option>`).join('');
+}
+
+function openCompose({ capsuleId, trigger, isNew }){
+  selectedCapsuleId = isNew ? null : capsuleId;
+  document.getElementById('list-view').style.display = 'none';
+  document.getElementById('compose').style.display = 'block';
+  document.getElementById('new-cap-fields').style.display = isNew ? 'block' : 'none';
+  document.getElementById('compose-trigger').textContent = isNew ? 'צרו כמוסה חדשה' : trigger;
+  document.getElementById('from-name').value = '';
+  document.getElementById('letter-text').value = '';
+  document.getElementById('new-trigger').value = '';
+  document.getElementById('file-input').value = '';
+  document.getElementById('status-msg').textContent = '';
+  document.getElementById('status-msg').className = '';
+  resetRecording();
+  window.scrollTo(0, 0);
+}
+
+function backToList(){
+  document.getElementById('compose').style.display = 'none';
+  document.getElementById('list-view').style.display = 'block';
+  stopRecordingStream();
+}
+
+function resetRecording(){
+  recordedBlob = null;
+  recordedExt = null;
+  recChunks = [];
+  const preview = document.getElementById('rec-preview');
+  preview.style.display = 'none';
+  preview.src = '';
+  document.getElementById('rec-btn').textContent = 'הקליטו';
+  document.getElementById('rec-btn').classList.remove('recording');
+  document.getElementById('rec-status').textContent = '';
+}
+
+let activeStream = null;
+function stopRecordingStream(){
+  if(activeStream){
+    activeStream.getTracks().forEach(t => t.stop());
+    activeStream = null;
+  }
+}
+
+function pickMimeType(){
+  const candidates = [
+    { mime: 'audio/mp4', ext: 'm4a' },
+    { mime: 'audio/webm;codecs=opus', ext: 'webm' },
+    { mime: 'audio/webm', ext: 'webm' },
+    { mime: 'audio/ogg;codecs=opus', ext: 'ogg' }
+  ];
+  for(const c of candidates){
+    if(window.MediaRecorder && MediaRecorder.isTypeSupported(c.mime)) return c;
+  }
+  return { mime: '', ext: 'webm' };
+}
+
+async function toggleRecording(){
+  const btn = document.getElementById('rec-btn');
+  const status = document.getElementById('rec-status');
+
+  if(mediaRecorder && mediaRecorder.state === 'recording'){
+    mediaRecorder.stop();
+    return;
+  }
+
+  try{
+    activeStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch(e){
+    status.textContent = 'אין גישה למיקרופון';
+    return;
+  }
+
+  const picked = pickMimeType();
+  recChunks = [];
+  mediaRecorder = picked.mime ? new MediaRecorder(activeStream, { mimeType: picked.mime }) : new MediaRecorder(activeStream);
+  mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recChunks.push(e.data); };
+  mediaRecorder.onstop = () => {
+    recordedBlob = new Blob(recChunks, { type: picked.mime || 'audio/webm' });
+    recordedExt = picked.ext;
+    const preview = document.getElementById('rec-preview');
+    preview.src = URL.createObjectURL(recordedBlob);
+    preview.style.display = 'block';
+    btn.textContent = 'הקליטו שוב';
+    btn.classList.remove('recording');
+    status.textContent = '';
+    stopRecordingStream();
+  };
+  mediaRecorder.start();
+  btn.textContent = 'עצרו הקלטה';
+  btn.classList.add('recording');
+  status.textContent = 'מקליט...';
+}
+
+function blobToBase64(blob){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+function extFromFilename(name){
+  return (name.split('.').pop() || '').toLowerCase();
+}
+
+async function submitContribution(){
+  const statusEl = document.getElementById('status-msg');
+  const submitBtn = document.getElementById('submit-btn');
+  const from = document.getElementById('from-name').value.trim();
+  const text = document.getElementById('letter-text').value.trim();
+  const fileInput = document.getElementById('file-input');
+  const file = fileInput.files[0] || null;
+
+  const isNew = !selectedCapsuleId;
+  let newCapsule = null;
+  if(isNew){
+    const trigger = document.getElementById('new-trigger').value.trim();
+    if(!trigger){
+      statusEl.textContent = 'צריך לכתוב מתי כדאי לה לפתוח את זה';
+      statusEl.className = 'err';
+      return;
+    }
+    newCapsule = {
+      section: document.getElementById('new-section').value,
+      type: document.getElementById('new-type').value,
+      trigger
+    };
+  }
+
+  if(!text && !recordedBlob && !file){
+    statusEl.textContent = 'צריך לכתוב, להקליט או לצרף משהו';
+    statusEl.className = 'err';
+    return;
+  }
+
+  submitBtn.disabled = true;
+  statusEl.textContent = 'שולח...';
+  statusEl.className = '';
+
+  try{
+    let mediaBase64 = null;
+    let mediaExt = null;
+    if(recordedBlob){
+      mediaBase64 = await blobToBase64(recordedBlob);
+      mediaExt = recordedExt;
+    } else if(file){
+      if(file.size > 12_000_000){
+        statusEl.textContent = 'הקובץ גדול מדי (מקסימום 12MB)';
+        statusEl.className = 'err';
+        submitBtn.disabled = false;
+        return;
+      }
+      mediaBase64 = await blobToBase64(file);
+      mediaExt = extFromFilename(file.name);
+    }
+
+    const payload = {
+      capsuleId: selectedCapsuleId || undefined,
+      newCapsule: newCapsule || undefined,
+      from: from || undefined,
+      text: text || undefined,
+      mediaBase64: mediaBase64 || undefined,
+      mediaExt: mediaExt || undefined
+    };
+
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(data.ok){
+      statusEl.textContent = 'תודה, זה נשמר לרוני!';
+      statusEl.className = 'ok';
+      setTimeout(() => { backToList(); loadCapsules(); }, 1400);
+    } else {
+      statusEl.textContent = 'משהו השתבש: ' + (data.error || 'שגיאה');
+      statusEl.className = 'err';
+    }
+  } catch(e){
+    statusEl.textContent = 'לא הצלחנו לשלוח, בדקו את החיבור לאינטרנט ונסו שוב';
+    statusEl.className = 'err';
+  }
+  submitBtn.disabled = false;
+}
+
+function loadCapsules(){
+  return fetch('content.json', { cache: 'no-store' })
+    .then(r => r.json())
+    .then(data => { renderList(data); return data; });
+}
+
+populateSectionSelect();
+loadCapsules();
+document.getElementById('rec-btn').addEventListener('click', toggleRecording);
+document.getElementById('back-btn').addEventListener('click', backToList);
+document.getElementById('submit-btn').addEventListener('click', submitContribution);
+</script>
+
+</body>
+</html>
