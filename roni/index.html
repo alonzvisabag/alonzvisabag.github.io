@@ -576,6 +576,7 @@
   <main id="main"></main>
   <footer>
     <button id="memory-open-btn" class="btn">משחק זיכרון</button>
+    <button id="nickname-open-btn" class="btn">פאזל כינויים</button>
     <button id="reset-link">נעלי הכל מחדש</button>
   </footer>
 </div>
@@ -589,6 +590,24 @@
   <div id="memory-win">
     <p>כל הכבוד! מצאת את כל הזוגות.</p>
     <button id="memory-replay-btn" class="btn" type="button">שחקי שוב</button>
+  </div>
+</div>
+
+<div id="nickname-view">
+  <div id="memory-header">
+    <button id="nickname-back-btn" type="button">← חזרה</button>
+    <h2>פאזל כינויים</h2>
+  </div>
+  <div id="nickname-card">
+    <p id="nickname-score"></p>
+    <div id="nickname-tiles"></div>
+    <input type="text" id="nickname-input" placeholder="מה הכינוי?">
+    <div id="nickname-btn-row">
+      <button id="nickname-submit-btn" class="btn" type="button">בדקי</button>
+      <button id="nickname-skip-btn" type="button">דלגי</button>
+    </div>
+    <p id="nickname-feedback"></p>
+    <button id="nickname-replay-btn" class="btn" type="button" style="display:none">שחקי שוב</button>
   </div>
 </div>
 
