@@ -200,6 +200,10 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders() });
     }
     const url = new URL(request.url);
+    if (request.method === 'POST' && url.pathname === '/debug-echo') {
+      const body = await request.json();
+      return json({ ok: true, echoed: body, textCodes: body.text ? [...body.text].map(c => c.codePointAt(0).toString(16)) : null });
+    }
     if (request.method === 'POST' && url.pathname === '/contribute') {
       return handleContribute(request, env);
     }
