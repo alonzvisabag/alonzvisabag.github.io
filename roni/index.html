@@ -382,6 +382,22 @@
     font-weight:400;
   }
 
+  .capsule-body .item{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .capsule-body .item + .item{
+    margin-top:20px;
+    padding-top:20px;
+    border-top:2px dashed var(--border);
+  }
+  .capsule-body .item-from{
+    font-size:0.82rem;
+    font-weight:700;
+    color:var(--muted);
+  }
+
   .capsule-body img, .capsule-body video{
     width:100%;
     border-radius:12px;
