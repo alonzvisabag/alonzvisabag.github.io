@@ -643,6 +643,8 @@ function playReveal(data, onDone){
   const caption = document.getElementById('reveal-caption');
   const continueBtn = document.getElementById('reveal-continue');
 
+  photo.onerror = () => { photo.style.display = 'none'; };
+  photo.onload = () => { photo.style.display = 'block'; };
   photo.src = 'media/' + (data.site.revealPhoto || '');
   photo.classList.remove('pop');
   caption.classList.remove('show-text');
