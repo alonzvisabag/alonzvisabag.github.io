@@ -913,7 +913,8 @@ function renderCapsule(c){
 function renderHeroPhotos(photos){
   const wrap = document.getElementById('hero-photos');
   if(photos && photos.length){
-    wrap.innerHTML = photos.map(p => `<div class="polaroid"><img src="media/${p}" alt=""></div>`).join('');
+    const picked = shuffle([...photos]).slice(0, Math.min(5, photos.length));
+    wrap.innerHTML = picked.map(p => `<div class="polaroid"><img src="media/${p}" alt=""></div>`).join('');
   } else {
     wrap.innerHTML = '';
   }
