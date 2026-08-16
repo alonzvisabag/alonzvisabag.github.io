@@ -650,11 +650,16 @@ function renderSite(data){
   renderHeroPhotos(data.site.heroPhotos);
   const main = document.getElementById('main');
   main.innerHTML = '';
-  let idx = 0;
-  data.acts.forEach(act => { main.appendChild(renderAct(act, idx)); idx++; });
-  if(data.extra && data.extra.capsules && data.extra.capsules.length){
-    main.appendChild(renderAct(data.extra, idx, 'extra'));
-  }
+  const list = document.createElement('div');
+  list.className = 'capsule-list';
+  const allCapsules = [...data.acts.flatMap(a => a.capsules), ...(data.extra ? data.extra.capsules : [])];
+  allCapsules.forEach((c, i) => {
+    const colors = ACT_COLORS[i % ACT_COLORS.length];
+    const capsule = renderCapsule(c);
+    capsule.style.setProperty('--shadow-c', colors.shadow);
+    list.appendChild(capsule);
+  });
+  main.appendChild(list);
 }
 
 function showSite(){
