@@ -1078,6 +1078,18 @@ fetch('content.json', { cache: 'no-store' })
       gatePhoto.src = 'media/' + data.site.gatePhoto;
     }
 
+    const hintToggle = document.getElementById('hint-toggle');
+    const hintText = document.getElementById('hint-text');
+    if(data.site.passwordHint){
+      hintToggle.addEventListener('click', () => {
+        hintText.textContent = data.site.passwordHint;
+        hintText.classList.add('show');
+        hintToggle.style.display = 'none';
+      });
+    } else {
+      hintToggle.style.display = 'none';
+    }
+
     document.getElementById('gate-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const val = document.getElementById('pw-input').value.trim();
