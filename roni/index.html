@@ -681,7 +681,7 @@ fetch('content.json')
       } else {
         const card = document.getElementById('gate-card');
         const err = document.getElementById('gate-error');
-        err.textContent = data.site.gateHint || 'סיסמה לא נכונה, נסי שוב 💛';
+        err.textContent = data.site.gateHint || 'סיסמה לא נכונה, נסי שוב';
         card.classList.remove('shake');
         void card.offsetWidth;
         card.classList.add('shake');
