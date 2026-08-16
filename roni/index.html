@@ -576,7 +576,7 @@ function renderAct(act, index, extraClass){
   section.style.setProperty('--shadow-c', colors.shadow);
   const head = document.createElement('div');
   head.className = 'act-head';
-  head.innerHTML = `<span class="act-badge" style="background:${colors.badge}">פרק ${index+1}</span><h2>${act.title}</h2><span>${act.subtitle || ''}</span>`;
+  head.innerHTML = `<h2>${act.title}</h2><span>${act.subtitle || ''}</span>`;
   section.appendChild(head);
   const list = document.createElement('div');
   list.className = 'capsule-list';
