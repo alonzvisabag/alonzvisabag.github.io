@@ -532,18 +532,26 @@ function mediaTag(media){
   return `<a href="${src}" target="_blank">פתחי קובץ</a>`;
 }
 
-function capsuleBodyHTML(c){
+function itemHTML(item){
   const parts = [];
-  if(c.text){
-    parts.push(`<div class="letter-text">${c.text.replace(/</g,'&lt;')}</div>`);
+  if(item.from){
+    parts.push(`<div class="item-from">מ${item.from}</div>`);
   }
-  if(c.media){
-    parts.push(mediaTag(c.media));
+  if(item.text){
+    parts.push(`<div class="letter-text">${item.text.replace(/</g,'&lt;')}</div>`);
   }
-  if(!c.text && !c.media){
-    parts.push(`<div class="placeholder">התוכן בדרך אליך... (עוד לא הועלה)</div>`);
+  if(item.media){
+    parts.push(mediaTag(item.media));
   }
-  return parts.join('');
+  return `<div class="item">${parts.join('')}</div>`;
+}
+
+function capsuleBodyHTML(c){
+  const items = c.items || [];
+  if(!items.length){
+    return `<div class="placeholder">התוכן בדרך אליך... (עוד לא הועלה)</div>`;
+  }
+  return items.map(itemHTML).join('');
 }
 
 function renderCapsule(c){
