@@ -5,7 +5,14 @@
     "password": "1111",
     "gateHint": "תשאלי מישהו מהחבר'ה אם שכחת את הסיסמה",
     "gatePhoto": "gate-before.jpg",
-    "revealPhoto": "gate-after.jpg"
+    "revealPhoto": "gate-after.jpg",
+    "heroPhotos": [
+      "photo-07.jpg",
+      "photo-14.jpg",
+      "photo-18.jpg",
+      "photo-19.jpg",
+      "photo-13.jpg"
+    ]
   },
   "acts": [
     {
@@ -134,7 +141,48 @@
           "trigger": "ברגע שמתחיל הגעגוע האמיתי לשגרה עם אלון והחברים",
           "type": "photo",
           "desc": "אלבום תמונות קטן של הרגעים הכי יפים מהחודש הראשון בעיר.",
-          "items": [],
+          "items": [
+            {
+              "from": null,
+              "text": null,
+              "media": "photo-01.jpg"
+            },
+            {
+              "from": null,
+              "text": null,
+              "media": "photo-03.jpg"
+            },
+            {
+              "from": null,
+              "text": null,
+              "media": "photo-05.jpg"
+            },
+            {
+              "from": null,
+              "text": null,
+              "media": "photo-06.jpg"
+            },
+            {
+              "from": null,
+              "text": null,
+              "media": "photo-09.jpg"
+            },
+            {
+              "from": null,
+              "text": null,
+              "media": "photo-11.jpg"
+            },
+            {
+              "from": null,
+              "text": null,
+              "media": "photo-12.jpg"
+            },
+            {
+              "from": null,
+              "text": null,
+              "media": "photo-16.jpg"
+            }
+          ],
           "openToFriends": false
         }
       ]
