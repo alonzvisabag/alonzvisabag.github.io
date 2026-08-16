@@ -709,16 +709,10 @@ fetch('content.json', { cache: 'no-store' })
       gatePhoto.src = 'media/' + data.site.gatePhoto;
     }
 
-    if(localStorage.getItem(UNLOCK_KEY) === '1'){
-      renderSite(data);
-      showSite();
-    }
-
     document.getElementById('gate-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const val = document.getElementById('pw-input').value.trim();
       if(val === (data.site.password || '')){
-        localStorage.setItem(UNLOCK_KEY, '1');
         renderSite(data);
         playReveal(data, showSite);
       } else {
