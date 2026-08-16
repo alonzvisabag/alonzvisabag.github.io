@@ -690,6 +690,11 @@ function capsuleBodyHTML(c){
   return items.map(itemHTML).join('');
 }
 
+function updateCapsuleBtnLabel(div){
+  const btn = div.querySelector('.capsule-open-btn');
+  btn.textContent = div.classList.contains('expanded') ? 'סגרי' : 'זה קורה לי עכשיו — פתחי';
+}
+
 function renderCapsule(c){
   const meta = TYPE_META[c.type] || { label:'', color:'var(--coral)' };
   const unlocked = getOpened().includes(c.id);
@@ -707,15 +712,19 @@ function renderCapsule(c){
   `;
   const head = div.querySelector('.capsule-head');
   const btn = div.querySelector('.capsule-open-btn');
-  btn.addEventListener('click', (e) => {
-    div.classList.add('unlocked', 'expanded');
+  updateCapsuleBtnLabel(div);
+
+  const toggle = (e) => {
+    const wasExpanded = div.classList.contains('expanded');
+    div.classList.add('unlocked');
+    div.classList.toggle('expanded');
     markOpened(c.id);
-    burstConfetti(e.clientX, e.clientY);
-  });
-  head.addEventListener('click', () => {
-    if(div.classList.contains('unlocked')){
-      div.classList.toggle('expanded');
-    }
+    updateCapsuleBtnLabel(div);
+    if(!wasExpanded) burstConfetti(e.clientX, e.clientY);
+  };
+  btn.addEventListener('click', toggle);
+  head.addEventListener('click', (e) => {
+    if(div.classList.contains('unlocked')) toggle(e);
   });
   return div;
 }
