@@ -632,13 +632,56 @@ function renderSite(data){
 
 function showSite(){
   document.getElementById('gate').style.display = 'none';
+  document.getElementById('reveal-screen').classList.remove('show');
   document.getElementById('site').style.display = 'block';
+}
+
+function playReveal(data, onDone){
+  document.getElementById('gate').style.display = 'none';
+  const screen = document.getElementById('reveal-screen');
+  const photo = document.getElementById('reveal-photo');
+  const caption = document.getElementById('reveal-caption');
+  const continueBtn = document.getElementById('reveal-continue');
+
+  photo.src = 'media/' + (data.site.revealPhoto || '');
+  photo.classList.remove('pop');
+  caption.classList.remove('show-text');
+  continueBtn.classList.remove('show-text');
+  screen.classList.add('show');
+
+  requestAnimationFrame(() => {
+    photo.classList.add('pop');
+    caption.classList.add('show-text');
+    continueBtn.classList.add('show-text');
+    for(let i=0;i<3;i++){
+      setTimeout(() => burstConfetti(
+        window.innerWidth/2 + (Math.random()-0.5)*160,
+        window.innerHeight/2 - 40
+      ), 200 + i*180);
+    }
+  });
+
+  let done = false;
+  const finish = () => {
+    if(done) return;
+    done = true;
+    onDone();
+  };
+  continueBtn.onclick = finish;
+  setTimeout(finish, 2600);
 }
 
 fetch('content.json')
   .then(r => r.json())
   .then(data => {
     document.getElementById('gate-subtitle').textContent = data.site.subtitle || '';
+
+    const gatePhoto = document.getElementById('gate-photo');
+    if(data.site.gatePhoto){
+      gatePhoto.onload = () => gatePhoto.hidden = false;
+      gatePhoto.onerror = () => gatePhoto.hidden = true;
+      gatePhoto.src = 'media/' + data.site.gatePhoto;
+    }
 
     if(localStorage.getItem(UNLOCK_KEY) === '1'){
       renderSite(data);
@@ -651,7 +694,7 @@ fetch('content.json')
       if(val === (data.site.password || '')){
         localStorage.setItem(UNLOCK_KEY, '1');
         renderSite(data);
-        showSite();
+        playReveal(data, showSite);
       } else {
         const card = document.getElementById('gate-card');
         const err = document.getElementById('gate-error');
