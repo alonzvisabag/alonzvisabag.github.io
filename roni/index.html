@@ -147,6 +147,27 @@
     font-weight:500;
   }
 
+  #hint-toggle{
+    display:block;
+    margin:14px auto 0;
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-family:'Rubik', sans-serif;
+    font-size:0.82rem;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+
+  #hint-text{
+    font-size:0.9rem;
+    font-weight:700;
+    color:var(--coral-dark);
+    margin-top:8px;
+    display:none;
+  }
+  #hint-text.show{ display:block; }
+
   @keyframes shake{
     0%,100%{ transform:translateX(0) rotate(-0.6deg); }
     20%{ transform:translateX(-8px) rotate(-0.6deg); }
