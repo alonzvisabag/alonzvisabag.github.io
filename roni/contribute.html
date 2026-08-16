@@ -287,11 +287,10 @@ function renderList(data){
   const list = document.createElement('div');
   list.className = 'cap-list';
   visibleCapsules.forEach(c => {
-    const meta = TYPE_META[c.type] || { label:'', color:'var(--coral)' };
     const btn = document.createElement('button');
     btn.className = 'cap-item';
     btn.type = 'button';
-    btn.innerHTML = `<span class="badge" style="background:${meta.color}">${meta.label}</span><span>${c.trigger}</span>`;
+    btn.innerHTML = `<span>${c.trigger}</span>`;
     btn.addEventListener('click', () => openCompose({ capsuleId: c.id, trigger: c.trigger }));
     list.appendChild(btn);
   });
