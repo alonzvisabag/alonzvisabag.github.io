@@ -426,6 +426,12 @@ async function submitContribution(){
   const fileInput = document.getElementById('file-input');
   const file = fileInput.files[0] || null;
 
+  if(!from){
+    statusEl.textContent = 'צריך לכתוב מי אתם';
+    statusEl.className = 'err';
+    return;
+  }
+
   const isNew = !selectedCapsuleId;
   let newCapsule = null;
   if(isNew){
