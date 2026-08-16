@@ -504,10 +504,12 @@ function markOpened(id){
 }
 
 function burstConfetti(x, y){
-  for(let i=0;i<10;i++){
+  for(let i=0;i<12;i++){
     const piece = document.createElement('div');
     piece.className = 'confetti-piece';
-    piece.textContent = CONFETTI[Math.floor(Math.random()*CONFETTI.length)];
+    const color = CONFETTI_COLORS[Math.floor(Math.random()*CONFETTI_COLORS.length)];
+    piece.style.background = color;
+    if(Math.random() > 0.5) piece.style.borderRadius = '50%';
     const angle = Math.random()*Math.PI*2;
     const dist = 60 + Math.random()*70;
     const ex = Math.cos(angle)*dist;
