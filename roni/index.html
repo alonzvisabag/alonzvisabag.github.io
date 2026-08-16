@@ -650,18 +650,17 @@ function playReveal(data, onDone){
   caption.classList.remove('show-text');
   continueBtn.classList.remove('show-text');
   screen.classList.add('show');
+  void screen.offsetWidth;
 
-  requestAnimationFrame(() => {
-    photo.classList.add('pop');
-    caption.classList.add('show-text');
-    continueBtn.classList.add('show-text');
-    for(let i=0;i<3;i++){
-      setTimeout(() => burstConfetti(
-        window.innerWidth/2 + (Math.random()-0.5)*160,
-        window.innerHeight/2 - 40
-      ), 200 + i*180);
-    }
-  });
+  photo.classList.add('pop');
+  caption.classList.add('show-text');
+  continueBtn.classList.add('show-text');
+  for(let i=0;i<3;i++){
+    setTimeout(() => burstConfetti(
+      window.innerWidth/2 + (Math.random()-0.5)*160,
+      window.innerHeight/2 - 40
+    ), 200 + i*180);
+  }
 
   let done = false;
   const finish = () => {
