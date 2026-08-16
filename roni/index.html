@@ -827,6 +827,78 @@ document.getElementById('reset-link').addEventListener('click', () => {
     location.reload();
   }
 });
+
+const MEMORY_PHOTOS = ['photo-07.jpg','photo-14.jpg','photo-18.jpg','photo-19.jpg','photo-13.jpg','photo-01.jpg','photo-03.jpg','photo-12.jpg'];
+let memoryState = { firstCard: null, secondCard: null, lock: false, matched: 0 };
+
+function shuffle(arr){
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function startMemoryGame(){
+  memoryState = { firstCard: null, secondCard: null, lock: false, matched: 0 };
+  document.getElementById('memory-win').style.display = 'none';
+  const deck = shuffle([...MEMORY_PHOTOS, ...MEMORY_PHOTOS]);
+  const grid = document.getElementById('memory-grid');
+  grid.innerHTML = '';
+  deck.forEach(photo => {
+    const card = document.createElement('div');
+    card.className = 'memory-card';
+    card.dataset.photo = photo;
+    card.innerHTML = `<img src="media/${photo}" alt="">`;
+    card.addEventListener('click', () => flipMemoryCard(card));
+    grid.appendChild(card);
+  });
+}
+
+function flipMemoryCard(card){
+  if(memoryState.lock || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+  card.classList.add('flipped');
+
+  if(!memoryState.firstCard){
+    memoryState.firstCard = card;
+    return;
+  }
+
+  memoryState.secondCard = card;
+  memoryState.lock = true;
+
+  if(memoryState.firstCard.dataset.photo === memoryState.secondCard.dataset.photo){
+    memoryState.firstCard.classList.add('matched');
+    memoryState.secondCard.classList.add('matched');
+    memoryState.matched++;
+    memoryState.firstCard = null;
+    memoryState.secondCard = null;
+    memoryState.lock = false;
+    if(memoryState.matched === MEMORY_PHOTOS.length){
+      setTimeout(() => {
+        document.getElementById('memory-win').style.display = 'block';
+        burstConfetti(window.innerWidth / 2, window.innerHeight / 2);
+      }, 350);
+    }
+  } else {
+    setTimeout(() => {
+      memoryState.firstCard.classList.remove('flipped');
+      memoryState.secondCard.classList.remove('flipped');
+      memoryState.firstCard = null;
+      memoryState.secondCard = null;
+      memoryState.lock = false;
+    }, 800);
+  }
+}
+
+document.getElementById('memory-open-btn').addEventListener('click', () => {
+  document.getElementById('memory-view').classList.add('show');
+  startMemoryGame();
+});
+document.getElementById('memory-back-btn').addEventListener('click', () => {
+  document.getElementById('memory-view').classList.remove('show');
+});
+document.getElementById('memory-replay-btn').addEventListener('click', startMemoryGame);
 </script>
 
 </body>
