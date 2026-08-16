@@ -594,9 +594,7 @@ function renderAct(act, index, extraClass){
 
 function renderHeroPhotos(photos){
   const wrap = document.getElementById('hero-photos');
-  const emojis = document.getElementById('hero-emojis');
   if(photos && photos.length){
-    emojis.style.display = 'none';
     wrap.innerHTML = photos.map(p => `<div class="polaroid"><img src="media/${p}" alt=""></div>`).join('');
   } else {
     wrap.innerHTML = '';
