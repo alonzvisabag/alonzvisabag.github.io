@@ -40,14 +40,16 @@
     -webkit-font-smoothing:antialiased;
     background:linear-gradient(120deg, var(--bg1), var(--bg2) 45%, var(--bg3) 100%);
     background-size:200% 200%;
-    animation:flow 18s ease-in-out infinite;
+    animation:flow 110s ease-in-out infinite;
     overflow-x:hidden;
     position:relative;
   }
 
   @keyframes flow{
     0%{ background-position:0% 30%; }
+    25%{ background-position:70% 10%; }
     50%{ background-position:100% 70%; }
+    75%{ background-position:30% 90%; }
     100%{ background-position:0% 30%; }
   }
 
@@ -58,10 +60,18 @@
     opacity:0.35;
     z-index:0;
     pointer-events:none;
+    animation:drift 60s ease-in-out infinite;
   }
-  .blob1{ width:340px; height:340px; background:var(--coral); top:-100px; right:-100px; }
-  .blob2{ width:280px; height:280px; background:var(--sky); bottom:0; left:-120px; }
-  .blob3{ width:220px; height:220px; background:var(--sun); top:40%; right:-100px; }
+  .blob1{ width:340px; height:340px; background:var(--coral); top:-100px; right:-100px; animation-duration:65s; }
+  .blob2{ width:280px; height:280px; background:var(--sky); bottom:0; left:-120px; animation-duration:82s; animation-delay:-20s; }
+  .blob3{ width:220px; height:220px; background:var(--sun); top:40%; right:-100px; animation-duration:54s; animation-delay:-38s; }
+
+  @keyframes drift{
+    0%{ transform:translate(0,0) scale(1); }
+    33%{ transform:translate(-30px,25px) scale(1.08); }
+    66%{ transform:translate(25px,-20px) scale(0.95); }
+    100%{ transform:translate(0,0) scale(1); }
+  }
 
   /* ── GATE ── */
   #gate{
