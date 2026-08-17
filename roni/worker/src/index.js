@@ -20,11 +20,20 @@ function mediaKindLabel(filename) {
 }
 
 async function notify(env, text) {
-  if (!env.NTFY_TOPIC) return;
+  const topic = (env.NTFY_TOPIC || '').trim();
+  if (!topic) {
+    console.log('notify: no NTFY_TOPIC configured, skipping');
+    return;
+  }
   try {
-    await fetch(`https://ntfy.sh/${env.NTFY_TOPIC}`, { method: 'POST', body: text });
+    const res = await fetch(`https://ntfy.sh/${encodeURIComponent(topic)}`, { method: 'POST', body: text });
+    if (!res.ok) {
+      console.error('notify: ntfy publish failed', res.status, await res.text());
+    } else {
+      console.log('notify: ntfy publish ok');
+    }
   } catch (e) {
-    // best-effort only, never block the real save on this
+    console.error('notify: ntfy publish threw', e.message);
   }
 }
 
