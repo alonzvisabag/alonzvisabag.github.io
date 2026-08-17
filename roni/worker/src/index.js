@@ -137,9 +137,6 @@ async function handleContribute(request, env) {
   if (typeof from === 'string' && from.length > 60) {
     return json({ ok: false, error: 'name too long' }, 400);
   }
-  if (typeof text === 'string' && text.length > 4000) {
-    return json({ ok: false, error: 'text too long' }, 400);
-  }
 
   const hasExisting = typeof capsuleId === 'string' && capsuleId.length > 0;
   let cleanNewCapsule = null;
