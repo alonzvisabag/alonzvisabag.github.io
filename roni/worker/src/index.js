@@ -7,18 +7,6 @@ const ALLOWED_ORIGIN = 'https://alonzvisabag.github.io';
 const MEDIA_EXT_WHITELIST = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3', 'wav', 'm4a', 'ogg', 'aac', 'mp4', 'mov', 'webm', 'm4v'];
 const VALID_TYPES = ['letter', 'audio', 'video', 'photo'];
 
-const AUDIO_EXT = ['mp3', 'wav', 'm4a', 'ogg', 'aac'];
-const VIDEO_EXT = ['mp4', 'mov', 'webm', 'm4v'];
-const IMG_EXT = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-
-function mediaKindLabel(filename) {
-  const ext = (filename.split('.').pop() || '').toLowerCase();
-  if (AUDIO_EXT.includes(ext)) return 'הקלטה';
-  if (VIDEO_EXT.includes(ext)) return 'וידאו';
-  if (IMG_EXT.includes(ext)) return 'תמונה';
-  return 'קובץ';
-}
-
 async function notify(env, text) {
   const token = (env.TELEGRAM_BOT_TOKEN || '').trim();
   const chatId = (env.TELEGRAM_CHAT_ID || '').trim();
@@ -201,7 +189,7 @@ async function handleContribute(request, env) {
     );
     if (!res.ok) {
       const errText = await res.text();
-      await notify(env, `⚠️ תקלה בהעלאת קובץ לרוני (${res.status})`);
+      await notify(env, 'עדכון');
       return json({ ok: false, error: `media upload failed: ${res.status} ${errText}` }, 500);
     }
   }
@@ -216,13 +204,11 @@ async function handleContribute(request, env) {
   try {
     savedCapsule = await addItemToContent(env, { capsuleId: hasExisting ? capsuleId : null, newCapsule: cleanNewCapsule }, item);
   } catch (e) {
-    await notify(env, `⚠️ תקלה בשמירת תרומה לרוני\n${e.message}`);
+    await notify(env, 'עדכון');
     return json({ ok: false, error: e.message }, 500);
   }
 
-  const kind = mediaFilename ? mediaKindLabel(mediaFilename) : 'מכתב';
-  const notifyEmoji = hasExisting ? '📩' : '🆕 סיטואציה חדשה +';
-  await notify(env, `${notifyEmoji} ${kind} נוסף לרוני\nלסיטואציה: "${savedCapsule.trigger}"`);
+  await notify(env, 'עדכון');
 
   return json({ ok: true });
 }
