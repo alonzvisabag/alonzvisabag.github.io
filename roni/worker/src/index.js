@@ -20,20 +20,25 @@ function mediaKindLabel(filename) {
 }
 
 async function notify(env, text) {
-  const topic = (env.NTFY_TOPIC || '').trim();
-  if (!topic) {
-    console.log('notify: no NTFY_TOPIC configured, skipping');
+  const token = (env.TELEGRAM_BOT_TOKEN || '').trim();
+  const chatId = (env.TELEGRAM_CHAT_ID || '').trim();
+  if (!token || !chatId) {
+    console.log('notify: telegram not configured, skipping');
     return;
   }
   try {
-    const res = await fetch(`https://ntfy.sh/${encodeURIComponent(topic)}`, { method: 'POST', body: text });
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text }),
+    });
     if (!res.ok) {
-      console.error('notify: ntfy publish failed', res.status, await res.text());
+      console.error('notify: telegram send failed', res.status, await res.text());
     } else {
-      console.log('notify: ntfy publish ok');
+      console.log('notify: telegram send ok');
     }
   } catch (e) {
-    console.error('notify: ntfy publish threw', e.message);
+    console.error('notify: telegram send threw', e.message);
   }
 }
 
