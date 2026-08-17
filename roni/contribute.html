@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>עזרו לרוני</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="alternate icon" href="favicon-32.png">
+<link rel="apple-touch-icon" href="favicon-180.png">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self' blob:; connect-src 'self' https://roni-contribute.alonzvisabag.workers.dev; object-src 'none'; base-uri 'self'; form-action 'self' https://roni-contribute.alonzvisabag.workers.dev;">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -237,7 +241,12 @@
       </div>
 
       <label class="field-label">השם שלכם</label>
-      <input type="text" id="from-name" placeholder="מי אתם?" required>
+      <input type="text" id="from-name" placeholder="מי אתם?" required maxlength="60">
+
+      <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
 
       <label class="field-label">מכתב (רשות)</label>
       <textarea id="letter-text" placeholder="כתבו כאן..."></textarea>
@@ -265,6 +274,16 @@ const WORKER_URL = 'https://roni-contribute.alonzvisabag.workers.dev/contribute'
 
 const SECTION_LABELS = { act1: 'החודש הראשון יחד', act2: 'נקודת המפנה', act3: 'חודש שני ואילך', extra: 'רגעים נוספים' };
 
+function escapeHTML(str){
+  return String(str).replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[ch]));
+}
+
 let selectedCapsuleId = null;
 let recordedBlob = null;
 let recordedExt = null;
@@ -284,7 +303,7 @@ function renderList(data){
     const btn = document.createElement('button');
     btn.className = 'cap-item';
     btn.type = 'button';
-    btn.innerHTML = `<span>${c.trigger}</span>`;
+    btn.innerHTML = `<span>${escapeHTML(c.trigger)}</span>`;
     btn.addEventListener('click', () => openCompose({ capsuleId: c.id, trigger: c.trigger }));
     list.appendChild(btn);
   });
@@ -313,6 +332,7 @@ function openCompose({ capsuleId, trigger, isNew }){
   document.getElementById('letter-text').value = '';
   document.getElementById('new-trigger').value = '';
   document.getElementById('file-input').value = '';
+  document.getElementById('website').value = '';
   document.getElementById('status-msg').textContent = '';
   document.getElementById('status-msg').className = '';
   resetRecording();
@@ -415,6 +435,14 @@ async function submitContribution(){
   const text = document.getElementById('letter-text').value.trim();
   const fileInput = document.getElementById('file-input');
   const file = fileInput.files[0] || null;
+  const honeypot = document.getElementById('website').value;
+
+  if(honeypot){
+    statusEl.textContent = 'תודה, זה נשמר לרוני!';
+    statusEl.className = 'ok';
+    setTimeout(() => { backToList(); loadCapsules(); }, 1400);
+    return;
+  }
 
   if(!from){
     statusEl.textContent = 'צריך לכתוב מי אתם';
@@ -471,7 +499,8 @@ async function submitContribution(){
       from: from || undefined,
       text: text || undefined,
       mediaBase64: mediaBase64 || undefined,
-      mediaExt: mediaExt || undefined
+      mediaExt: mediaExt || undefined,
+      website: honeypot || undefined
     };
 
     const res = await fetch(WORKER_URL, {

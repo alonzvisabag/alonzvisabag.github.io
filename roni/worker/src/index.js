@@ -128,7 +128,15 @@ async function handleContribute(request, env) {
     return json({ ok: false, error: 'invalid json' }, 400);
   }
 
-  const { capsuleId, newCapsule, from, text, mediaBase64, mediaExt } = body;
+  const { capsuleId, newCapsule, from, text, mediaBase64, mediaExt, website } = body;
+
+  if (typeof website === 'string' && website.trim()) {
+    return json({ ok: true });
+  }
+
+  if (typeof from === 'string' && from.length > 60) {
+    return json({ ok: false, error: 'name too long' }, 400);
+  }
 
   const hasExisting = typeof capsuleId === 'string' && capsuleId.length > 0;
   let cleanNewCapsule = null;
