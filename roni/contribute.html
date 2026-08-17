@@ -265,6 +265,16 @@ const WORKER_URL = 'https://roni-contribute.alonzvisabag.workers.dev/contribute'
 
 const SECTION_LABELS = { act1: 'החודש הראשון יחד', act2: 'נקודת המפנה', act3: 'חודש שני ואילך', extra: 'רגעים נוספים' };
 
+function escapeHTML(str){
+  return String(str).replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[ch]));
+}
+
 let selectedCapsuleId = null;
 let recordedBlob = null;
 let recordedExt = null;
@@ -284,7 +294,7 @@ function renderList(data){
     const btn = document.createElement('button');
     btn.className = 'cap-item';
     btn.type = 'button';
-    btn.innerHTML = `<span>${c.trigger}</span>`;
+    btn.innerHTML = `<span>${escapeHTML(c.trigger)}</span>`;
     btn.addEventListener('click', () => openCompose({ capsuleId: c.id, trigger: c.trigger }));
     list.appendChild(btn);
   });

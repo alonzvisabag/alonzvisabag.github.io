@@ -844,6 +844,16 @@ function burstConfetti(x, y){
   }
 }
 
+function escapeHTML(str){
+  return String(str).replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[ch]));
+}
+
 const AUDIO_EXT = ['mp3','wav','m4a','ogg','aac'];
 const VIDEO_EXT = ['mp4','mov','webm','m4v'];
 const IMG_EXT   = ['jpg','jpeg','png','gif','webp'];
@@ -878,10 +888,10 @@ function mediaTag(media){
 function itemHTML(item){
   const parts = [];
   if(item.from){
-    parts.push(`<div class="item-from">מ${item.from}</div>`);
+    parts.push(`<div class="item-from">מ${escapeHTML(item.from)}</div>`);
   }
   if(item.text){
-    parts.push(`<div class="letter-text">${item.text.replace(/</g,'&lt;')}</div>`);
+    parts.push(`<div class="letter-text">${escapeHTML(item.text)}</div>`);
   }
   if(item.media){
     parts.push(mediaTag(item.media));
@@ -919,7 +929,7 @@ function renderCapsule(c){
   div.dataset.id = c.id;
   div.innerHTML = `
     <div class="capsule-head">
-      <span class="capsule-trigger">${c.trigger}</span>
+      <span class="capsule-trigger">${escapeHTML(c.trigger)}</span>
       <span class="capsule-chevron">▾</span>
       <span class="capsule-type" style="background:${meta.color}">${meta.label}</span>
     </div>
