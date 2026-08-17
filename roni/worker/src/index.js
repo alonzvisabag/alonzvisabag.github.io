@@ -6,7 +6,27 @@ const ALLOWED_ORIGIN = 'https://alonzvisabag.github.io';
 
 const MEDIA_EXT_WHITELIST = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3', 'wav', 'm4a', 'ogg', 'aac', 'mp4', 'mov', 'webm', 'm4v'];
 const VALID_TYPES = ['letter', 'audio', 'video', 'photo'];
-const VALID_SECTIONS = ['act1', 'act2', 'act3', 'extra'];
+
+const AUDIO_EXT = ['mp3', 'wav', 'm4a', 'ogg', 'aac'];
+const VIDEO_EXT = ['mp4', 'mov', 'webm', 'm4v'];
+const IMG_EXT = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+function mediaKindLabel(filename) {
+  const ext = (filename.split('.').pop() || '').toLowerCase();
+  if (AUDIO_EXT.includes(ext)) return 'הקלטה';
+  if (VIDEO_EXT.includes(ext)) return 'וידאו';
+  if (IMG_EXT.includes(ext)) return 'תמונה';
+  return 'קובץ';
+}
+
+async function notify(env, text) {
+  if (!env.NTFY_TOPIC) return;
+  try {
+    await fetch(`https://ntfy.sh/${env.NTFY_TOPIC}`, { method: 'POST', body: text });
+  } catch (e) {
+    // best-effort only, never block the real save on this
+  }
+}
 
 function corsHeaders() {
   return {
@@ -69,20 +89,7 @@ async function putFile(env, path, contentBase64, message, sha) {
 }
 
 function findCapsule(json, capsuleId) {
-  for (const act of json.acts || []) {
-    const found = (act.capsules || []).find((c) => c.id === capsuleId);
-    if (found) return found;
-  }
-  if (json.extra) {
-    const found = (json.extra.capsules || []).find((c) => c.id === capsuleId);
-    if (found) return found;
-  }
-  return null;
-}
-
-function findSection(data, sectionId) {
-  if (sectionId === 'extra') return data.extra || null;
-  return (data.acts || []).find((a) => a.id === sectionId) || null;
+  return (json.capsules || []).find((c) => c.id === capsuleId) || null;
 }
 
 async function addItemToContent(env, { capsuleId, newCapsule }, item) {
@@ -94,17 +101,16 @@ async function addItemToContent(env, { capsuleId, newCapsule }, item) {
     let capsule = capsuleId ? findCapsule(data, capsuleId) : null;
 
     if (!capsule && newCapsule) {
-      const section = findSection(data, newCapsule.section);
-      if (!section) throw new Error(`invalid section: ${newCapsule.section}`);
-      if (!section.capsules) section.capsules = [];
+      if (!data.capsules) data.capsules = [];
       capsule = {
         id: `friend-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         trigger: newCapsule.trigger,
         type: newCapsule.type,
         desc: null,
         items: [],
+        openToFriends: true,
       };
-      section.capsules.push(capsule);
+      data.capsules.push(capsule);
     }
 
     if (!capsule) throw new Error(`capsule not found: ${capsuleId}`);
@@ -112,7 +118,7 @@ async function addItemToContent(env, { capsuleId, newCapsule }, item) {
     capsule.items.push(item);
     const newBase64 = utf8ToBase64(JSON.stringify(data, null, 2) + '\n');
     const res = await putFile(env, CONTENT_PATH, newBase64, `contribute: add item to ${capsule.id}`, file.sha);
-    if (res.ok) return;
+    if (res.ok) return capsule;
     if (res.status === 409 && attempt < 2) continue;
     const errText = await res.text();
     throw new Error(`failed to update content.json: ${res.status} ${errText}`);
@@ -143,7 +149,6 @@ async function handleContribute(request, env) {
   if (!hasExisting) {
     if (
       !newCapsule ||
-      !VALID_SECTIONS.includes(newCapsule.section) ||
       !VALID_TYPES.includes(newCapsule.type) ||
       typeof newCapsule.trigger !== 'string' ||
       !newCapsule.trigger.trim() ||
@@ -152,7 +157,6 @@ async function handleContribute(request, env) {
       return json({ ok: false, error: 'missing capsuleId or invalid newCapsule' }, 400);
     }
     cleanNewCapsule = {
-      section: newCapsule.section,
       type: newCapsule.type,
       trigger: newCapsule.trigger.trim(),
     };
@@ -183,6 +187,7 @@ async function handleContribute(request, env) {
     );
     if (!res.ok) {
       const errText = await res.text();
+      await notify(env, `⚠️ תקלה בהעלאת קובץ לרוני (${res.status})`);
       return json({ ok: false, error: `media upload failed: ${res.status} ${errText}` }, 500);
     }
   }
@@ -193,11 +198,17 @@ async function handleContribute(request, env) {
     media: mediaFilename,
   };
 
+  let savedCapsule;
   try {
-    await addItemToContent(env, { capsuleId: hasExisting ? capsuleId : null, newCapsule: cleanNewCapsule }, item);
+    savedCapsule = await addItemToContent(env, { capsuleId: hasExisting ? capsuleId : null, newCapsule: cleanNewCapsule }, item);
   } catch (e) {
+    await notify(env, `⚠️ תקלה בשמירת תרומה לרוני\n${e.message}`);
     return json({ ok: false, error: e.message }, 500);
   }
+
+  const kind = mediaFilename ? mediaKindLabel(mediaFilename) : 'מכתב';
+  const notifyEmoji = hasExisting ? '📩' : '🆕 סיטואציה חדשה +';
+  await notify(env, `${notifyEmoji} ${kind} נוסף לרוני\nלסיטואציה: "${savedCapsule.trigger}"`);
 
   return json({ ok: true });
 }

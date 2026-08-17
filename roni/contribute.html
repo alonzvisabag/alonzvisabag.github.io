@@ -227,8 +227,6 @@
       <div class="trigger-label" id="compose-trigger"></div>
 
       <div id="new-cap-fields">
-        <label class="field-label">באיזה חלק באתר זה יופיע?</label>
-        <select id="new-section"></select>
         <label class="field-label">איזה סוג תוכן זה?</label>
         <select id="new-type">
           <option value="letter">מכתב</option>
@@ -272,8 +270,6 @@
 <script>
 const WORKER_URL = 'https://roni-contribute.alonzvisabag.workers.dev/contribute';
 
-const SECTION_LABELS = { act1: 'החודש הראשון יחד', act2: 'נקודת המפנה', act3: 'חודש שני ואילך', extra: 'רגעים נוספים' };
-
 function escapeHTML(str){
   return String(str).replace(/[&<>"']/g, (ch) => ({
     '&': '&amp;',
@@ -294,7 +290,7 @@ function renderList(data){
   const wrap = document.getElementById('list-view');
   wrap.innerHTML = '';
 
-  const allCapsules = [...data.acts.flatMap(a => a.capsules), ...data.extra.capsules];
+  const allCapsules = data.capsules || [];
   const visibleCapsules = allCapsules.filter(c => c.openToFriends === true);
 
   const list = document.createElement('div');
@@ -315,11 +311,6 @@ function renderList(data){
   newBtn.textContent = '+ צרו סיטואציה משלכם';
   newBtn.addEventListener('click', () => openCompose({ isNew: true }));
   wrap.appendChild(newBtn);
-}
-
-function populateSectionSelect(){
-  const sel = document.getElementById('new-section');
-  sel.innerHTML = Object.entries(SECTION_LABELS).map(([id, label]) => `<option value="${id}">${label}</option>`).join('');
 }
 
 function openCompose({ capsuleId, trigger, isNew }){
@@ -460,7 +451,6 @@ async function submitContribution(){
       return;
     }
     newCapsule = {
-      section: document.getElementById('new-section').value,
       type: document.getElementById('new-type').value,
       trigger
     };
@@ -530,7 +520,6 @@ function loadCapsules(){
     .then(data => { renderList(data); return data; });
 }
 
-populateSectionSelect();
 loadCapsules();
 document.getElementById('rec-btn').addEventListener('click', toggleRecording);
 document.getElementById('back-btn').addEventListener('click', backToList);

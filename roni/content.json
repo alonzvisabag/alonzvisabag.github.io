@@ -29,247 +29,172 @@
     ],
     "passwordHint": "את"
   },
-  "acts": [
+  "capsules": [
     {
-      "id": "act1",
-      "title": "החודש הראשון יחד",
-      "subtitle": "לפתוח כששניכם שם",
-      "capsules": [
-        {
-          "id": "a1-1",
-          "trigger": "ברגע שרוני ואלון נכנסים לדירה בפעם הראשונה ביחד",
-          "type": "letter",
-          "desc": "מכתב/הקלטה מהחברים שמברכים את שניכם על הנחיתה ומזכירים לו לעזור לך לסחוב את המזוודות.",
-          "items": [],
-          "openToFriends": true
-        },
-        {
-          "id": "a1-2",
-          "trigger": "ברגע שרוני ואלון רבים על שטות (או על הרכבת רהיט מאיקאה)",
-          "type": "audio",
-          "desc": "הקלטה מצחיקה של חבר שמשמש כ\"בורר\" ומזכיר לכם שאתם באותו צוות.",
-          "items": [],
-          "openToFriends": true
-        },
-        {
-          "id": "a1-3",
-          "trigger": "ברגע שרוני ואלון מוצאים את ה\"מקום שלנו\" בעיר",
-          "type": "idea",
-          "desc": "פתק שמבקש מכם להרים כוסית משותפת ולשלוח סלפי מיידי לקבוצה.",
-          "items": [],
-          "openToFriends": true
-        },
-        {
-          "id": "a1-4",
-          "trigger": "ברגע שאלון עושה לך פדיחה מול מקומיים",
-          "type": "photo",
-          "desc": "תמונה מביכה שלו מהעבר שתזכיר לך שזה האופי ואין מה לעשות.",
-          "items": [],
-          "openToFriends": true
-        },
-        {
-          "id": "a1-5",
-          "trigger": "ברגע של הדייט/הערב האחרון שלכם יחד לפני שאלון טס",
-          "type": "letter",
-          "desc": "מכתב אישי ומרגש ממך על החודש המדהים שהיה ועל כמה שאת מאמינה בו להמשך.",
-          "items": [],
-          "openToFriends": true
-        }
-      ]
+      "id": "a2-2",
+      "trigger": "הפעם הראשונה שאת חוזרת לדירה לבד (אחרי שהתפצלתם)",
+      "type": "video",
+      "desc": "הקלטת חיבוק ענקית מכל החברים שמחכים לפתוח איתך שיחת וידאו כדי שלא תרגישי את השקט.",
+      "items": [],
+      "openToFriends": true
     },
     {
-      "id": "act2",
-      "title": "נקודת המפנה",
-      "subtitle": "רגעי הפרידה והמעבר לעצמאות",
-      "capsules": [
-        {
-          "id": "a2-1",
-          "trigger": "ברגע שאלון אורז את המזוודה שלו לחזור לארץ",
-          "type": "audio",
-          "desc": "הקלטה קצרה של \"זה לא באמת פרידה, רק מעבירים את השרביט\".",
-          "items": [],
-          "openToFriends": true
-        },
-        {
-          "id": "a2-2",
-          "trigger": "ברגע שאת חוזרת לדירה בפעם הראשונה לבד (אחרי שנפרדתם)",
-          "type": "video",
-          "desc": "הקלטת חיבוק ענקית מכל החברים שמחכים לפתוח איתך שיחת וידאו כדי שלא תרגישי את השקט.",
-          "items": [],
-          "openToFriends": true
-        },
-        {
-          "id": "a2-3",
-          "trigger": "ברגע של הבוקר הראשון שאת קמה ומכינה קפה לבד",
-          "type": "letter",
-          "desc": "תזכורת כתובה שאת לגמרי מסוגלת לזה ושזה הרגע שבו ההרפתקה האמיתית שלך מתחילה.",
-          "items": [],
-          "openToFriends": true
-        },
-        {
-          "id": "a2-4",
-          "trigger": "ברגע של ארוחת הערב הראשונה שאת אוכלת לבד בדירה",
-          "type": "playlist",
-          "desc": "רשימת שירים מרימה או פודקאסט מומלץ שיעשו רעש וכיף ברקע.",
-          "items": [],
-          "openToFriends": true
-        },
-        {
-          "id": "a2-5",
-          "trigger": "ברגע שאת רוצה לספר לאלון משהו דחוף והוא בדיוק על הטיסה/לא זמין",
-          "type": "idea",
-          "desc": "פנקס קטן ייעודי לפריקת מחשבות עד שתדברו.",
-          "items": [],
-          "openToFriends": true
-        }
-      ]
+      "id": "a2-3",
+      "trigger": "הבוקר הראשון שאת קמה ומכינה לעצמך קפה, לגמרי לבד",
+      "type": "letter",
+      "desc": "תזכורת כתובה שאת לגמרי מסוגלת לזה ושזה הרגע שבו ההרפתקה האמיתית שלך מתחילה.",
+      "items": [],
+      "openToFriends": true
     },
     {
-      "id": "act3",
-      "title": "חודש שני ואילך",
-      "subtitle": "שגרה עצמאית",
-      "capsules": [
+      "id": "a2-4",
+      "trigger": "ארוחת הערב הראשונה שאת אוכלת לבד בדירה",
+      "type": "playlist",
+      "desc": "רשימת שירים מרימה או פודקאסט מומלץ שיעשו רעש וכיף ברקע.",
+      "items": [],
+      "openToFriends": true
+    },
+    {
+      "id": "a2-5",
+      "trigger": "כשבא לך לספר לאלון משהו דחוף והוא דווקא על טיסה או לא זמין",
+      "type": "idea",
+      "desc": "פנקס קטן ייעודי לפריקת מחשבות עד שתדברו.",
+      "items": [],
+      "openToFriends": true
+    },
+    {
+      "id": "a3-1",
+      "trigger": "היום שאת מארחת חברים חדשים בדירה, לגמרי בעצמך",
+      "type": "letter",
+      "desc": "מכתב גאווה על הבית שבנית לעצמך.",
+      "items": [],
+      "openToFriends": true
+    },
+    {
+      "id": "a3-2",
+      "trigger": "פתאום את שמה לב שאת מסתדרת בעיר לבד, בלי עזרה ובלי מפות",
+      "type": "letter",
+      "desc": "תזכורת לכמה היית לחוצה בהתחלה ואיזה דרך מטורפת עשית.",
+      "items": [],
+      "openToFriends": true
+    },
+    {
+      "id": "a3-3",
+      "trigger": "כשמתחיל הגעגוע האמיתי לשגרה עם אלון והחבר'ה",
+      "type": "photo",
+      "desc": "אלבום תמונות קטן של הרגעים הכי יפים מהחודש הראשון בעיר.",
+      "items": [
         {
-          "id": "a3-1",
-          "trigger": "ברגע שאת מארחת חברים חדשים בדירה לגמרי בעצמך",
-          "type": "letter",
-          "desc": "מכתב גאווה על הבית שבנית לעצמך.",
-          "items": [],
-          "openToFriends": true
+          "from": null,
+          "text": null,
+          "media": "photo-01.jpg"
         },
         {
-          "id": "a3-2",
-          "trigger": "ברגע שאת תופסת את עצמך מסתדרת בעיר בלי עזרה ובלי מפות",
-          "type": "letter",
-          "desc": "תזכורת לכמה היית לחוצה בהתחלה ואיזה דרך מטורפת עשית.",
-          "items": [],
-          "openToFriends": true
+          "from": null,
+          "text": null,
+          "media": "photo-03.jpg"
         },
         {
-          "id": "a3-3",
-          "trigger": "ברגע שמתחיל הגעגוע האמיתי לשגרה עם אלון והחברים",
-          "type": "photo",
-          "desc": "אלבום תמונות קטן של הרגעים הכי יפים מהחודש הראשון בעיר.",
-          "items": [
-            {
-              "from": null,
-              "text": null,
-              "media": "photo-01.jpg"
-            },
-            {
-              "from": null,
-              "text": null,
-              "media": "photo-03.jpg"
-            },
-            {
-              "from": null,
-              "text": null,
-              "media": "photo-05.jpg"
-            },
-            {
-              "from": null,
-              "text": null,
-              "media": "photo-06.jpg"
-            },
-            {
-              "from": null,
-              "text": null,
-              "media": "photo-09.jpg"
-            },
-            {
-              "from": null,
-              "text": null,
-              "media": "photo-11.jpg"
-            },
-            {
-              "from": null,
-              "text": null,
-              "media": "photo-12.jpg"
-            },
-            {
-              "from": null,
-              "text": null,
-              "media": "photo-16.jpg"
-            }
-          ],
-          "openToFriends": true
+          "from": null,
+          "text": null,
+          "media": "photo-05.jpg"
+        },
+        {
+          "from": null,
+          "text": null,
+          "media": "photo-06.jpg"
+        },
+        {
+          "from": null,
+          "text": null,
+          "media": "photo-09.jpg"
+        },
+        {
+          "from": null,
+          "text": null,
+          "media": "photo-11.jpg"
+        },
+        {
+          "from": null,
+          "text": null,
+          "media": "photo-12.jpg"
+        },
+        {
+          "from": null,
+          "text": null,
+          "media": "photo-16.jpg"
+        }
+      ],
+      "openToFriends": true
+    },
+    {
+      "id": "x-1",
+      "trigger": "לילה ראשון לגמרי לבד, במעונות או בדירה",
+      "type": "audio",
+      "desc": "הקלטה קצרה מהחברים, סתם בשביל קול מוכר ברקע.",
+      "items": [],
+      "openToFriends": true
+    },
+    {
+      "id": "x-2",
+      "trigger": "בוקר ראשון שאת מתעוררת חולה ואף אחד מוכר לא בסביבה",
+      "type": "letter",
+      "desc": "מכתב חיבוק והוראות שימוש: תשתי, תנוחי, תתקשרי הביתה.",
+      "items": [],
+      "openToFriends": true
+    },
+    {
+      "id": "x-3",
+      "trigger": "יום שבו את ממש רוצה לוותר ולחזור הביתה",
+      "type": "video",
+      "desc": "וידאו מהחברים שמזכיר לך למה יצאת לדרך הזו מלכתחילה.",
+      "items": [],
+      "openToFriends": true
+    },
+    {
+      "id": "x-4",
+      "trigger": "תקופת בחינות ולחץ לימודים",
+      "type": "audio",
+      "desc": "הקלטת עידוד קצרה, את כבר עברת דברים יותר קשים מזה.",
+      "items": [],
+      "openToFriends": true
+    },
+    {
+      "id": "x-5",
+      "trigger": "חג או יום הולדת שאת מבלה רחוק מהבית",
+      "type": "video",
+      "desc": "ברכה חמה מכל מי שמתגעגע אלייך היום.",
+      "items": [],
+      "openToFriends": true
+    },
+    {
+      "id": "x-6",
+      "trigger": "יום שהכל פתאום מרגיש זר ורחוק (culture shock)",
+      "type": "letter",
+      "desc": "תזכורת שזה שלב נורמלי בכל חוויה כזו, ושהוא חולף.",
+      "items": [],
+      "openToFriends": true
+    },
+    {
+      "id": "x-7",
+      "trigger": "בפעם הראשונה שאלון ושירי יושבים ביחד באותה ישיבה",
+      "type": "photo",
+      "desc": "רגע היסטורי, מגניב לתעד",
+      "items": [],
+      "openToFriends": false
+    },
+    {
+      "id": "friend-1786887607075-1qv7",
+      "trigger": "בא לך סיגריה עם מישהו לא כדי לדבר , כדי לשתוק , ביחד",
+      "type": "photo",
+      "desc": null,
+      "items": [
+        {
+          "from": "תומי",
+          "text": "יייאלה כולה יום רע \nגלגלי סיגריה ותסתמי , איתי",
+          "media": "custom-1786887605267.jpeg"
         }
       ]
     }
-  ],
-  "extra": {
-    "title": "רגעים נוספים",
-    "subtitle": "בשבילך, לכל מיני ימים — הצעות שלנו, אפשר לערוך ולהוסיף",
-    "capsules": [
-      {
-        "id": "x-1",
-        "trigger": "לילה ראשון לגמרי לבד, במעונות או בדירה",
-        "type": "audio",
-        "desc": "הקלטה קצרה מהחברים, סתם בשביל קול מוכר ברקע.",
-        "items": [],
-        "openToFriends": true
-      },
-      {
-        "id": "x-2",
-        "trigger": "בוקר ראשון שאת מתעוררת חולה ואף אחד מוכר לא בסביבה",
-        "type": "letter",
-        "desc": "מכתב חיבוק והוראות שימוש: תשתי, תנוחי, תתקשרי הביתה.",
-        "items": [],
-        "openToFriends": true
-      },
-      {
-        "id": "x-3",
-        "trigger": "יום שבו את ממש רוצה לוותר ולחזור הביתה",
-        "type": "video",
-        "desc": "וידאו מהחברים שמזכיר לך למה יצאת לדרך הזו מלכתחילה.",
-        "items": [],
-        "openToFriends": true
-      },
-      {
-        "id": "x-4",
-        "trigger": "תקופת בחינות ולחץ לימודים",
-        "type": "audio",
-        "desc": "הקלטת עידוד קצרה, את כבר עברת דברים יותר קשים מזה.",
-        "items": [],
-        "openToFriends": true
-      },
-      {
-        "id": "x-5",
-        "trigger": "חג או יום הולדת שאת מבלה רחוק מהבית",
-        "type": "video",
-        "desc": "ברכה חמה מכל מי שמתגעגע אלייך היום.",
-        "items": [],
-        "openToFriends": true
-      },
-      {
-        "id": "x-6",
-        "trigger": "יום שהכל פתאום מרגיש זר ורחוק (culture shock)",
-        "type": "letter",
-        "desc": "תזכורת שזה שלב נורמלי בכל חוויה כזו, ושהוא חולף.",
-        "items": [],
-        "openToFriends": true
-      },
-      {
-        "id": "x-7",
-        "trigger": "בפעם הראשונה שאלון ושירי יושבים ביחד באותה ישיבה",
-        "type": "photo",
-        "desc": "רגע היסטורי, מגניב לתעד",
-        "items": [],
-        "openToFriends": false
-      },
-      {
-        "id": "friend-1786887607075-1qv7",
-        "trigger": "בא לך סיגריה עם מישהו לא כדי לדבר , כדי לשתוק , ביחד",
-        "type": "photo",
-        "desc": null,
-        "items": [
-          {
-            "from": "תומי",
-            "text": "יייאלה כולה יום רע \nגלגלי סיגריה ותסתמי , איתי",
-            "media": "custom-1786887605267.jpeg"
-          }
-        ]
-      }
-    ]
-  }
+  ]
 }
