@@ -112,7 +112,7 @@ async function addItemToContent(env, { capsuleId, newCapsule }, item) {
         items: [],
         openToFriends: true,
       };
-      data.capsules.push(capsule);
+      data.capsules.unshift(capsule);
     }
 
     if (!capsule) throw new Error(`capsule not found: ${capsuleId}`);
