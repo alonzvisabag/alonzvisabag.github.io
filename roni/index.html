@@ -7,6 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="alternate icon" href="favicon-32.png">
 <link rel="apple-touch-icon" href="favicon-180.png">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://api.open-meteo.com; object-src 'none'; base-uri 'self';">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -885,7 +886,7 @@ function mediaTag(media){
   if(AUDIO_EXT.includes(ext)) return `<audio controls src="${src}"></audio>`;
   if(VIDEO_EXT.includes(ext)) return `<video controls src="${src}"></video>`;
   if(IMG_EXT.includes(ext))   return `<img src="${src}" alt="">`;
-  return `<a href="${src}" target="_blank">פתחי קובץ</a>`;
+  return `<a href="${src}" target="_blank" rel="noopener noreferrer">פתחי קובץ</a>`;
 }
 
 function itemHTML(item){
