@@ -160,7 +160,7 @@
       "type": "letter",
       "desc": "מכתב חיבוק והוראות שימוש: תשתי, תנוחי, תתקשרי הביתה.",
       "items": [],
-      "openToFriends": false
+      "openToFriends": true
     },
     {
       "id": "x-3",
@@ -276,7 +276,7 @@
           "media": "custom-1787040084018.m4a"
         }
       ],
-      "openToFriends": true
+      "openToFriends": false
     }
   ]
 }
