@@ -1003,7 +1003,12 @@ function renderSite(data){
   main.innerHTML = '';
   const list = document.createElement('div');
   list.className = 'capsule-list';
-  const allCapsules = data.capsules || [];
+  const allCapsules = [...(data.capsules || [])].sort((a, b) => {
+    const aFilled = (a.items || []).length > 0;
+    const bFilled = (b.items || []).length > 0;
+    if (aFilled === bFilled) return 0;
+    return aFilled ? -1 : 1;
+  });
   allCapsules.forEach((c, i) => {
     const colors = ACT_COLORS[i % ACT_COLORS.length];
     const capsule = renderCapsule(c);
