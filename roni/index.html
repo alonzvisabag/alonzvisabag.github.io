@@ -1005,7 +1005,7 @@ async function initHomeStrip(){
 function renderSite(data){
   document.getElementById('site-title').textContent = data.site.title || 'לרונני';
   document.getElementById('site-subtitle').textContent = data.site.subtitle || '';
-  document.getElementById('nickname-greeting').textContent = 'היי ' + NICKNAMES[Math.floor(Math.random() * NICKNAMES.length)] + '!';
+  document.getElementById('nickname-greeting').textContent = 'ל' + NICKNAMES[Math.floor(Math.random() * NICKNAMES.length)] + '!';
   renderHeroPhotos(data.site.heroPhotos);
   initHomeStrip();
   const main = document.getElementById('main');
