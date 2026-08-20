@@ -286,12 +286,20 @@ let recordedExt = null;
 let mediaRecorder = null;
 let recChunks = [];
 
+function shuffle(arr){
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 function renderList(data){
   const wrap = document.getElementById('list-view');
   wrap.innerHTML = '';
 
   const allCapsules = data.capsules || [];
-  const visibleCapsules = allCapsules.filter(c => c.openToFriends === true);
+  const visibleCapsules = shuffle(allCapsules.filter(c => c.openToFriends === true));
 
   const list = document.createElement('div');
   list.className = 'cap-list';
