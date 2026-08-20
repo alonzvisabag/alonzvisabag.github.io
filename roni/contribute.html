@@ -7,7 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="alternate icon" href="favicon-32.png">
 <link rel="apple-touch-icon" href="favicon-180.png">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self' blob:; connect-src 'self' https://roni-contribute.alonzvisabag.workers.dev; object-src 'none'; base-uri 'self'; form-action 'self' https://roni-contribute.alonzvisabag.workers.dev;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self' blob:; connect-src 'self' https://roni-contribute.alonzvisabag.workers.dev; frame-src https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self' https://roni-contribute.alonzvisabag.workers.dev;">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -207,6 +207,37 @@
   #status-msg.err{ color:var(--coral-dark); }
 
   #new-cap-fields{ display:none; }
+
+  .song-note{
+    text-align:center;
+    font-size:0.85rem;
+    color:var(--muted);
+    font-weight:600;
+    margin-bottom:10px;
+  }
+
+  .song-embed{
+    max-width:480px;
+    margin:0 auto 30px;
+    padding:0 20px;
+  }
+
+  .song-embed .frame{
+    position:relative;
+    width:100%;
+    padding-top:56.25%;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 8px 24px rgba(0,0,0,0.08);
+  }
+
+  .song-embed iframe{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    border:none;
+  }
 </style>
 </head>
 <body>
@@ -217,6 +248,13 @@
   <p class="sig">תודה על שיתוף הפעולה, אלונזו</p>
   <p class="sig">נ.ב. אני נודר נדר שאני לא אציץ במה שכתבתם לה אז תרגישו בנוח לכתוב מה שתרצו :)</p>
 </header>
+
+<div class="song-embed">
+  <p class="song-note">🎵 מילה טובה - יהודית רביץ, בזמן שאתם כותבים</p>
+  <div class="frame">
+    <iframe src="https://www.youtube.com/embed/32Zn4Rzga1o" title="מילה טובה - יהודית רביץ" allow="encrypted-media" allowfullscreen></iframe>
+  </div>
+</div>
 
 <main>
   <div id="list-view"></div>
