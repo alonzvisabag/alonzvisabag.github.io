@@ -198,6 +198,7 @@ async function handleContribute(request, env) {
     from: typeof from === 'string' && from.trim() ? from.trim() : null,
     text: hasText ? text.trim() : null,
     media: mediaFilename,
+    sentAt: new Date().toISOString(),
   };
 
   let savedCapsule;
