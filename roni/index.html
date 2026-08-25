@@ -458,8 +458,11 @@
     font-weight:700;
     color:var(--muted);
   }
-  .capsule-body .item-from .item-date{
+  .capsule-body .item-date{
+    font-size:0.78rem;
     font-weight:500;
+    color:var(--muted);
+    margin-top:10px;
   }
 
   .capsule-body img, .capsule-body video{
@@ -879,18 +882,18 @@ function formatItemDate(iso){
 
 function itemHTML(item){
   const parts = [];
-  if(item.from || item.sentAt){
-    const bits = [];
-    if(item.from) bits.push('מ' + escapeHTML(item.from));
-    const dateStr = item.sentAt ? formatItemDate(item.sentAt) : '';
-    if(dateStr) bits.push(`<span class="item-date">${dateStr}</span>`);
-    parts.push(`<div class="item-from">${bits.join(' · ')}</div>`);
+  if(item.from){
+    parts.push(`<div class="item-from">מ${escapeHTML(item.from)}</div>`);
   }
   if(item.text){
     parts.push(`<div class="letter-text">${escapeHTML(item.text)}</div>`);
   }
   if(item.media){
     parts.push(mediaTag(item.media));
+  }
+  if(item.sentAt){
+    const dateStr = formatItemDate(item.sentAt);
+    if(dateStr) parts.push(`<div class="item-date">${dateStr}</div>`);
   }
   return `<div class="item">${parts.join('')}</div>`;
 }
