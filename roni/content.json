@@ -432,6 +432,20 @@
         }
       ],
       "openToFriends": true
+    },
+    {
+      "id": "friend-1787827026983-6eyh",
+      "trigger": "להיזכר ברגע טוב",
+      "type": "letter",
+      "desc": null,
+      "items": [
+        {
+          "from": "אלמוג",
+          "text": null,
+          "media": "custom-1787827023982.m4a"
+        }
+      ],
+      "openToFriends": true
     }
   ]
 }
