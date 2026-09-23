@@ -299,6 +299,48 @@
     padding:10px 20px 100px;
   }
 
+  .love-counter{
+    max-width:640px;
+    margin:0 auto 30px;
+    padding:0 20px;
+    text-align:center;
+  }
+  .love-counter .label{
+    font-size:0.95rem;
+    font-weight:700;
+    color:var(--coral-dark);
+    margin-bottom:18px;
+  }
+  .heart{
+    position:relative;
+    width:84px;
+    height:84px;
+    margin:0 auto 40px;
+    transform:rotate(45deg);
+    background:linear-gradient(135deg, var(--coral), var(--sun));
+    box-shadow:0 8px 20px rgba(232,81,47,0.25);
+  }
+  .heart::before, .heart::after{
+    content:"";
+    position:absolute;
+    width:84px;
+    height:84px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--coral), var(--sun));
+  }
+  .heart::before{ top:-42px; left:0; }
+  .heart::after{ left:-42px; top:0; }
+  .heart .count{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) rotate(-45deg);
+    z-index:1;
+    color:#fff;
+    font-weight:900;
+    font-size:1.6rem;
+  }
+
   #home-strip{
     max-width:640px;
     margin:0 auto 30px;
@@ -725,6 +767,11 @@
     <p id="site-subtitle">כמה דברים שהחברים שלך רצו שיחכו לך כאן</p>
   </header>
 
+  <div class="love-counter">
+    <p class="label">מספר האנשים שהשקיעו בשבילך</p>
+    <div class="heart"><span class="count" id="love-count">0</span></div>
+  </div>
+
   <div id="home-strip">
     <div class="home-card">
       <h3>ישראל</h3>
@@ -1019,6 +1066,8 @@ function renderSite(data){
   document.getElementById('site-subtitle').textContent = data.site.subtitle || '';
   renderHeroPhotos(data.site.heroPhotos);
   initHomeStrip();
+  const loveCount = (data.capsules || []).reduce((sum, c) => sum + (c.items || []).filter(i => i.from).length, 0);
+  document.getElementById('love-count').textContent = loveCount;
   const main = document.getElementById('main');
   main.innerHTML = '';
   const list = document.createElement('div');
