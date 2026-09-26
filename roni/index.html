@@ -579,7 +579,7 @@
     margin-bottom:16px;
   }
 
-  #memory-open-btn, #nickname-open-btn{
+  #memory-open-btn, #nickname-open-btn, #bored-open-btn{
     padding:12px 26px;
   }
 
@@ -717,6 +717,35 @@
     margin-bottom:14px;
   }
   #nickname-btn-row .btn{ flex:1; padding:12px; }
+
+  #bored-view{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:60;
+    overflow-y:auto;
+    background:linear-gradient(120deg, var(--bg1), var(--bg2) 45%, var(--bg3) 100%);
+    padding:20px;
+  }
+  #bored-view.show{ display:block; }
+
+  #bored-card{
+    max-width:420px;
+    margin:40px auto 0;
+    background:var(--card);
+    border-radius:20px;
+    padding:40px 24px;
+    text-align:center;
+    box-shadow:0 12px 40px rgba(0,0,0,0.08);
+  }
+  #bored-suggestion{
+    font-size:1.25rem;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.6;
+    margin-bottom:28px;
+    min-height:3.2em;
+  }
   #nickname-skip-btn{
     flex:1;
     background:none;
@@ -794,6 +823,7 @@
     <div class="footer-buttons">
       <button id="memory-open-btn" class="btn">משחק זיכרון</button>
       <button id="nickname-open-btn" class="btn">פאזל כינויים</button>
+      <button id="bored-open-btn" class="btn">משעמם לי</button>
     </div>
     <button id="reset-link">נעלי הכל מחדש</button>
   </footer>
@@ -826,6 +856,17 @@
     </div>
     <p id="nickname-feedback"></p>
     <button id="nickname-replay-btn" class="btn" type="button" style="display:none">שחקי שוב</button>
+  </div>
+</div>
+
+<div id="bored-view">
+  <div id="memory-header">
+    <button id="bored-back-btn" type="button">← חזרה</button>
+    <h2>משעמם לך?</h2>
+  </div>
+  <div id="bored-card">
+    <p id="bored-suggestion"></p>
+    <button id="bored-again-btn" class="btn" type="button">רעיון נוסף</button>
   </div>
 </div>
 
@@ -1345,6 +1386,54 @@ document.getElementById('nickname-input').addEventListener('keydown', (e) => {
 });
 document.getElementById('nickname-skip-btn').addEventListener('click', skipNickname);
 document.getElementById('nickname-replay-btn').addEventListener('click', startNicknameGame);
+
+const BORED_IDEAS = [
+  'לצייר או לשרבט משהו, סתם ככה',
+  'לכתוב לעצמך מכתב לעתיד',
+  'לצאת להליכה בלי יעד',
+  'לעשות כמה מתיחות',
+  'לצאת לרכיבה על אופניים',
+  'לנסות לעמוד על הידיים',
+  'לצפות בפרק או בסרט שבא לך',
+  'ללמוד כמה מילים חדשות בגרמנית',
+  'להאזין לפודקאסט מעניין',
+  'לצפות בהרצאת טד קצרה',
+  'לנסות מתכון חדש או טריק בישול',
+  'להתקלח לאט עם משהו נעים ברקע',
+  'להכין משקה חם ולשבת איתו בלי הטלפון',
+  'לשים מסכת פנים ולפנק את עצמך',
+  'לסדר את החדר או השולחן',
+  'ללכת לבית קפה חדש שעוד לא היית בו',
+  'לחפש רחוב או פינה בעיר שעוד לא ראית',
+  'ללכת לפארק ולשבת שם בלי טלפון',
+  'לבקר במוזיאון או בגלריה קטנה',
+  'לענות סוף סוף על כמה הודעות שדחית',
+  'לסדר את התמונות בטלפון',
+  'לתכנן ארוחה טעימה למחר',
+  'למיין ולזרוק דברים מיותרים',
+  'לנשום עמוק כמה דקות, בלי כלום',
+  'לשכב על הרצפה ולהקשיב למוזיקה עם עיניים עצומות',
+  'לכתוב רשימה של דברים שאת מחכה להם',
+];
+let lastBoredIdea = null;
+
+function showBoredIdea(){
+  let idea;
+  do {
+    idea = BORED_IDEAS[Math.floor(Math.random() * BORED_IDEAS.length)];
+  } while (idea === lastBoredIdea && BORED_IDEAS.length > 1);
+  lastBoredIdea = idea;
+  document.getElementById('bored-suggestion').textContent = idea;
+}
+
+document.getElementById('bored-open-btn').addEventListener('click', () => {
+  document.getElementById('bored-view').classList.add('show');
+  showBoredIdea();
+});
+document.getElementById('bored-back-btn').addEventListener('click', () => {
+  document.getElementById('bored-view').classList.remove('show');
+});
+document.getElementById('bored-again-btn').addEventListener('click', showBoredIdea);
 </script>
 
 </body>
