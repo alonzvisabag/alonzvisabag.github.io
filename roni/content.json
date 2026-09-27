@@ -338,14 +338,6 @@
       "openToFriends": true
     },
     {
-      "id": "x-7",
-      "trigger": "בפעם הראשונה שאלון ושירי יושבים ביחד באותה ישיבה",
-      "type": "photo",
-      "desc": "רגע היסטורי, מגניב לתעד",
-      "items": [],
-      "openToFriends": false
-    },
-    {
       "id": "x-8",
       "trigger": "יום גשום שאת רק רוצה להישאר במיטה עם נטפליקס",
       "type": "idea",
