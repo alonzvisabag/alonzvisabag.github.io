@@ -746,6 +746,45 @@
     margin-bottom:28px;
     min-height:3.2em;
   }
+
+  #pace-view{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:70;
+    overflow-y:auto;
+    background:linear-gradient(120deg, var(--bg1), var(--bg2) 45%, var(--bg3) 100%);
+    padding:20px;
+  }
+  #pace-view.show{ display:flex; align-items:center; }
+  #pace-card{
+    max-width:420px;
+    margin:0 auto;
+    background:var(--card);
+    border-radius:20px;
+    padding:34px 24px;
+    text-align:center;
+    box-shadow:0 12px 40px rgba(0,0,0,0.08);
+  }
+  #pace-text{
+    font-size:1.1rem;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.6;
+    margin-bottom:26px;
+  }
+  #pace-card .footer-buttons{ margin-bottom:22px; }
+  #pace-dismiss-btn{
+    font-size:0.85rem;
+    color:var(--muted);
+    text-decoration:underline;
+    cursor:pointer;
+    background:none;
+    border:none;
+    font-family:'Rubik', sans-serif;
+    font-weight:500;
+  }
+
   #nickname-skip-btn{
     flex:1;
     background:none;
@@ -867,6 +906,18 @@
   <div id="bored-card">
     <p id="bored-suggestion"></p>
     <button id="bored-again-btn" class="btn" type="button">רעיון נוסף</button>
+  </div>
+</div>
+
+<div id="pace-view">
+  <div id="pace-card">
+    <p id="pace-text">רגע רגע... חבל להרוס את ההפתעה בבת אחת. תשמרי קצת תיאבון לפעם הבאה 🙂<br>אולי בינתיים תשחקי במשהו?</p>
+    <div class="footer-buttons">
+      <button id="pace-memory-btn" class="btn">משחק זיכרון</button>
+      <button id="pace-nickname-btn" class="btn">פאזל כינויים</button>
+      <button id="pace-bored-btn" class="btn">משעמם לי<br>מה לעשות?</button>
+    </div>
+    <button id="pace-dismiss-btn" type="button">המשיכי בכל זאת</button>
   </div>
 </div>
 
@@ -1012,6 +1063,11 @@ function updateCapsuleBtnLabel(div){
   btn.textContent = div.classList.contains('expanded') ? 'סגרי' : 'זה קורה לי עכשיו';
 }
 
+let consecutiveOpens = 0;
+function showPaceReminder(){
+  document.getElementById('pace-view').classList.add('show');
+}
+
 function renderCapsule(c){
   const meta = TYPE_META[effectiveType(c)] || { label:'', color:'var(--coral)' };
   const unlocked = getOpened().includes(c.id);
@@ -1037,7 +1093,14 @@ function renderCapsule(c){
     div.classList.toggle('expanded');
     markOpened(c.id);
     updateCapsuleBtnLabel(div);
-    if(!wasExpanded) burstConfetti(e.clientX, e.clientY);
+    if(!wasExpanded){
+      burstConfetti(e.clientX, e.clientY);
+      consecutiveOpens++;
+      if(consecutiveOpens >= 3){
+        consecutiveOpens = 0;
+        setTimeout(showPaceReminder, 600);
+      }
+    }
   };
   btn.addEventListener('click', toggle);
   head.addEventListener('click', (e) => {
@@ -1448,6 +1511,22 @@ document.getElementById('bored-back-btn').addEventListener('click', () => {
   document.getElementById('bored-view').classList.remove('show');
 });
 document.getElementById('bored-again-btn').addEventListener('click', showBoredIdea);
+
+document.getElementById('pace-dismiss-btn').addEventListener('click', () => {
+  document.getElementById('pace-view').classList.remove('show');
+});
+document.getElementById('pace-memory-btn').addEventListener('click', () => {
+  document.getElementById('pace-view').classList.remove('show');
+  document.getElementById('memory-open-btn').click();
+});
+document.getElementById('pace-nickname-btn').addEventListener('click', () => {
+  document.getElementById('pace-view').classList.remove('show');
+  document.getElementById('nickname-open-btn').click();
+});
+document.getElementById('pace-bored-btn').addEventListener('click', () => {
+  document.getElementById('pace-view').classList.remove('show');
+  document.getElementById('bored-open-btn').click();
+});
 </script>
 
 </body>
