@@ -606,14 +606,14 @@
   }
   #memory-view.show{ display:block; }
 
-  #memory-header{
+  .view-header{
     display:flex;
     align-items:center;
     justify-content:space-between;
     max-width:520px;
     margin:0 auto 18px;
   }
-  #memory-header h2{ font-size:1.3rem; font-weight:800; }
+  .view-header h2{ font-size:1.3rem; font-weight:800; }
   #memory-back-btn{
     background:none;
     border:none;
@@ -1047,7 +1047,7 @@
 </div>
 
 <div id="memory-view">
-  <div id="memory-header">
+  <div class="view-header">
     <button id="memory-back-btn" type="button">← חזרה</button>
     <h2>משחק זיכרון</h2>
   </div>
@@ -1059,7 +1059,7 @@
 </div>
 
 <div id="nickname-view">
-  <div id="memory-header">
+  <div class="view-header">
     <button id="nickname-back-btn" type="button">← חזרה</button>
     <h2>פאזל כינויים</h2>
   </div>
@@ -1077,7 +1077,7 @@
 </div>
 
 <div id="bored-view">
-  <div id="memory-header">
+  <div class="view-header">
     <button id="bored-back-btn" type="button">← חזרה</button>
     <h2>משעמם לך?</h2>
   </div>
@@ -1185,7 +1185,7 @@ function effectiveType(c){
 function mediaTag(media){
   if(!media) return null;
   const ext = media.split('.').pop().toLowerCase();
-  const src = 'media/' + media;
+  const src = escapeHTML('media/' + encodeURIComponent(media));
   if(AUDIO_EXT.includes(ext)) return `<audio controls src="${src}"></audio>`;
   if(VIDEO_EXT.includes(ext)) return `<video controls src="${src}"></video>`;
   if(IMG_EXT.includes(ext))   return `<img data-src="${src}" alt="">`;
@@ -1231,7 +1231,7 @@ function capsuleBodyHTML(c){
     return `<div class="placeholder">התוכן בדרך אליך... (עוד לא הועלה)</div>`;
   }
   if(items.length > 1 && items.every(isPhotoOnly)){
-    const imgs = items.map(i => `<img data-src="media/${i.media}" alt="">`).join('');
+    const imgs = items.map(i => `<img data-src="${escapeHTML('media/' + encodeURIComponent(i.media))}" alt="">`).join('');
     return `<div class="photo-grid">${imgs}</div>`;
   }
   return items.map(itemHTML).join('');

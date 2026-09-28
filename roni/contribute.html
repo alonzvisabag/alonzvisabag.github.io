@@ -370,6 +370,10 @@ function openCompose({ capsuleId, trigger, isNew }){
 function backToList(){
   document.getElementById('compose').style.display = 'none';
   document.getElementById('list-view').style.display = 'block';
+  if(mediaRecorder && mediaRecorder.state === 'recording'){
+    mediaRecorder.onstop = null;
+    mediaRecorder.stop();
+  }
   stopRecordingStream();
 }
 
@@ -379,7 +383,9 @@ function resetRecording(){
   recChunks = [];
   const preview = document.getElementById('rec-preview');
   preview.style.display = 'none';
-  preview.src = '';
+  if(preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
+  preview.removeAttribute('src');
+  preview.load();
   document.getElementById('rec-btn').textContent = 'הקליטו';
   document.getElementById('rec-btn').classList.remove('recording');
   document.getElementById('rec-status').textContent = '';
@@ -634,9 +640,43 @@ function extFromFilename(name){
   return (name.split('.').pop() || '').toLowerCase();
 }
 
+// The worker caps base64 at 15M characters, which is about 11.25MB of file.
+const MAX_MEDIA_BYTES = 11_000_000;
+const MEDIA_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3', 'wav', 'm4a', 'ogg', 'aac', 'mp4', 'mov', 'webm', 'm4v'];
+const ERROR_TEXT = {
+  'file too large': 'הקובץ גדול מדי (עד 11MB)',
+  'unsupported file type': 'אפשר לצרף רק תמונה, סרטון או הקלטה',
+  'name too long': 'השם ארוך מדי',
+  'text too long': 'ההודעה ארוכה מדי',
+  'nothing to save': 'צריך לכתוב, להקליט או לצרף משהו',
+  'situation not available': 'אי אפשר להוסיף לסיטואציה הזאת',
+  'too many requests': 'יש עומס כרגע, נסו שוב בעוד כמה דקות'
+};
+
+function finishRecording(){
+  return new Promise((resolve) => {
+    if(!mediaRecorder || mediaRecorder.state !== 'recording'){ resolve(); return; }
+    mediaRecorder.addEventListener('stop', () => setTimeout(resolve, 0), { once: true });
+    mediaRecorder.stop();
+  });
+}
+
+let sending = false;
+
 async function submitContribution(){
+  if(sending) return;
   const statusEl = document.getElementById('status-msg');
   const submitBtn = document.getElementById('submit-btn');
+  const fail = (msg) => {
+    statusEl.textContent = msg;
+    statusEl.className = 'err';
+    sending = false;
+    submitBtn.disabled = false;
+  };
+  sending = true;
+  submitBtn.disabled = true;
+  await finishRecording();
+
   const from = document.getElementById('from-name').value.trim();
   const text = document.getElementById('letter-text').value.trim();
   const fileInput = document.getElementById('file-input');
@@ -646,66 +686,48 @@ async function submitContribution(){
   if(honeypot){
     statusEl.textContent = 'תודה, זה נשמר לרוני!';
     statusEl.className = 'ok';
-    setTimeout(() => { backToList(); loadCapsules(); }, 1400);
+    setTimeout(() => { sending = false; submitBtn.disabled = false; backToList(); loadCapsules(); }, 1400);
     return;
   }
 
-  if(!from){
-    statusEl.textContent = 'צריך לכתוב מי אתם';
-    statusEl.className = 'err';
-    return;
-  }
+  if(!from) return fail('צריך לכתוב מי אתם');
 
   const isNew = !selectedCapsuleId;
   let newCapsule = null;
   if(isNew){
     const trigger = document.getElementById('new-trigger').value.trim();
-    if(!trigger){
-      statusEl.textContent = 'צריך לכתוב מתי כדאי לה לפתוח את זה';
-      statusEl.className = 'err';
-      return;
-    }
+    if(!trigger) return fail('צריך לכתוב מתי כדאי לה לפתוח את זה');
     newCapsule = {
       type: document.getElementById('new-type').value,
       trigger
     };
   }
 
-  if(!text && !recordedBlob && !file){
-    statusEl.textContent = 'צריך לכתוב, להקליט או לצרף משהו';
-    statusEl.className = 'err';
-    return;
+  if(!text && !recordedBlob && !file) return fail('צריך לכתוב, להקליט או לצרף משהו');
+
+  let media = null;
+  let mediaExt = null;
+  if(recordedBlob){
+    mediaExt = recordedExt;
+    media = recordedExt === 'm4a' ? await standardizeAudio(recordedBlob) : recordedBlob;
+    if(media.size > MAX_MEDIA_BYTES) return fail('ההקלטה ארוכה מדי, נסו הקלטה קצרה יותר');
+  } else if(file){
+    mediaExt = extFromFilename(file.name);
+    if(!MEDIA_EXTS.includes(mediaExt)) return fail(ERROR_TEXT['unsupported file type']);
+    if(file.size > MAX_MEDIA_BYTES) return fail(ERROR_TEXT['file too large']);
+    media = mediaExt === 'm4a' ? await standardizeAudio(file) : file;
   }
 
-  submitBtn.disabled = true;
   statusEl.textContent = 'שולח...';
   statusEl.className = '';
 
   try{
-    let mediaBase64 = null;
-    let mediaExt = null;
-    if(recordedBlob){
-      const ready = recordedExt === 'm4a' ? await standardizeAudio(recordedBlob) : recordedBlob;
-      mediaBase64 = await blobToBase64(ready);
-      mediaExt = recordedExt;
-    } else if(file){
-      if(file.size > 12_000_000){
-        statusEl.textContent = 'הקובץ גדול מדי (מקסימום 12MB)';
-        statusEl.className = 'err';
-        submitBtn.disabled = false;
-        return;
-      }
-      mediaExt = extFromFilename(file.name);
-      const ready = mediaExt === 'm4a' ? await standardizeAudio(file) : file;
-      mediaBase64 = await blobToBase64(ready);
-    }
-
     const payload = {
       capsuleId: selectedCapsuleId || undefined,
       newCapsule: newCapsule || undefined,
       from: from || undefined,
       text: text || undefined,
-      mediaBase64: mediaBase64 || undefined,
+      mediaBase64: media ? await blobToBase64(media) : undefined,
       mediaExt: mediaExt || undefined,
       website: honeypot || undefined
     };
@@ -715,20 +737,17 @@ async function submitContribution(){
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({ ok: false, error: res.status === 413 ? 'file too large' : '' }));
     if(data.ok){
       statusEl.textContent = 'תודה, זה נשמר לרוני!';
       statusEl.className = 'ok';
-      setTimeout(() => { backToList(); loadCapsules(); }, 1400);
-    } else {
-      statusEl.textContent = 'משהו השתבש: ' + (data.error || 'שגיאה');
-      statusEl.className = 'err';
+      setTimeout(() => { sending = false; submitBtn.disabled = false; backToList(); loadCapsules(); }, 1400);
+      return;
     }
+    fail(ERROR_TEXT[data.error] || 'משהו השתבש בשמירה, נסו שוב בעוד רגע');
   } catch(e){
-    statusEl.textContent = 'לא הצלחנו לשלוח, בדקו את החיבור לאינטרנט ונסו שוב';
-    statusEl.className = 'err';
+    fail('לא הצלחנו לשלוח, בדקו את החיבור לאינטרנט ונסו שוב');
   }
-  submitBtn.disabled = false;
 }
 
 function loadCapsules(){
