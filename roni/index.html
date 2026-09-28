@@ -283,9 +283,10 @@
   #hero-photos .polaroid:nth-child(3n){ animation-delay:1.2s; }
   #hero-photos .polaroid img{ width:100%; height:84px; object-fit:cover; border-radius:4px; display:block; }
 
+  #hero-photos .polaroid{ rotate:var(--r, 0deg); }
   @keyframes bob{
-    0%,100%{ transform:translateY(0) rotate(var(--r,0deg)); }
-    50%{ transform:translateY(-10px) rotate(var(--r,0deg)); }
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-10px); }
   }
 
   header.hero h1{
@@ -905,13 +906,19 @@
   /* site entrance */
   #site.site-enter #hero-photos .polaroid{
     animation:
-      polaroid-drop .8s cubic-bezier(.34,1.3,.64,1) calc(250ms + var(--i, 0) * 90ms) backwards,
-      bob 4.5s ease-in-out calc(1050ms + var(--i, 0) * 90ms) infinite;
+      polaroid-drop .8s cubic-bezier(.34,1.3,.64,1) backwards,
+      bob 4.5s ease-in-out infinite;
   }
+  #site.site-enter #hero-photos .polaroid:nth-child(2n){ animation-name:polaroid-drop-b, bob; }
   @keyframes polaroid-drop{
-    0%{ opacity:0; transform:translateY(-90px) rotate(calc(var(--r, 0deg) * -3)) scale(1.2); box-shadow:0 34px 44px rgba(0,0,0,0.2); }
+    0%{ opacity:0; transform:translateY(-90px) rotate(-14deg) scale(1.2); box-shadow:0 34px 44px rgba(0,0,0,0.2); }
     60%{ opacity:1; }
-    100%{ opacity:1; transform:translateY(0) rotate(var(--r, 0deg)) scale(1); box-shadow:0 10px 24px rgba(0,0,0,0.12); }
+    100%{ opacity:1; transform:none; box-shadow:0 10px 24px rgba(0,0,0,0.12); }
+  }
+  @keyframes polaroid-drop-b{
+    0%{ opacity:0; transform:translateY(-90px) rotate(12deg) scale(1.2); box-shadow:0 34px 44px rgba(0,0,0,0.2); }
+    60%{ opacity:1; }
+    100%{ opacity:1; transform:none; box-shadow:0 10px 24px rgba(0,0,0,0.12); }
   }
   #site.site-enter header.hero h1{ animation:rise-in .7s cubic-bezier(.22,1,.36,1) .6s backwards; }
   #site.site-enter header.hero p{ animation:rise-in .7s cubic-bezier(.22,1,.36,1) .7s backwards; }
@@ -953,14 +960,25 @@
     to{ opacity:1; transform:none; }
   }
 
+  /* reduce motion: same moments, as soft fades instead of movement */
   @media (prefers-reduced-motion: reduce){
-    *, *::before, *::after{
-      animation-duration:.01ms !important;
-      animation-delay:0s !important;
-      animation-iteration-count:1 !important;
-      transition-duration:.01ms !important;
-      transition-delay:0s !important;
-    }
+    #hero-photos .polaroid{ animation:none; }
+    #site.site-enter #hero-photos .polaroid,
+    #site.site-enter #hero-photos .polaroid:nth-child(2n){ animation:fade-in .6s ease backwards; }
+    #site.site-enter header.hero h1,
+    #site.site-enter header.hero p,
+    #site.site-enter .love-counter .label,
+    #site.site-enter .heart,
+    #site.site-enter .home-card,
+    .capsule.expanded .capsule-body,
+    .view-enter #memory-grid,
+    .view-enter #nickname-card,
+    .view-enter #bored-card,
+    #pace-view.show #pace-card{ animation-name:fade-in; }
+    #reveal-photo.pop{ animation:fade-in .6s ease forwards; transform:none; }
+    .capsule.sr, footer.sr{ translate:none; }
+    .confetti-piece{ display:none; }
+    .shake{ animation:none; }
   }
 </style>
 </head>
@@ -1275,7 +1293,7 @@ function renderHeroPhotos(photos){
     const picked = shuffle([...photos]).slice(0, Math.min(5, photos.length));
     wrap.innerHTML = picked.map((p, i) => {
       const tilt = (Math.random() * 10 - 5).toFixed(1);
-      return `<div class="polaroid" style="--i:${i};--r:${tilt}deg"><img src="media/${p}" alt=""></div>`;
+      return `<div class="polaroid" style="--r:${tilt}deg;animation-delay:${250 + i * 90}ms,${1050 + i * 90}ms"><img src="media/${p}" alt=""></div>`;
     }).join('');
   } else {
     wrap.innerHTML = '';
@@ -1361,7 +1379,7 @@ function renderSite(data){
 }
 
 function animateCount(el, target, delay){
-  if(reduceMotion || target <= 0){ el.textContent = target; return; }
+  if(target <= 0){ el.textContent = target; return; }
   el.textContent = '0';
   setTimeout(() => {
     const duration = 1300;
@@ -1373,7 +1391,7 @@ function animateCount(el, target, delay){
       el.textContent = Math.round(eased * target);
       if(t < 1){
         requestAnimationFrame(tick);
-      } else if(el.animate){
+      } else if(el.animate && !reduceMotion){
         el.animate([
           { transform:'translate(-50%,-50%) rotate(-45deg) scale(1)' },
           { transform:'translate(-50%,-50%) rotate(-45deg) scale(1.22)' },
@@ -1386,7 +1404,7 @@ function animateCount(el, target, delay){
 }
 
 function setupScrollReveal(){
-  if(reduceMotion || !('IntersectionObserver' in window)) return;
+  if(!('IntersectionObserver' in window)) return;
   const els = document.querySelectorAll('#main .capsule, #site footer');
   els.forEach(el => el.classList.add('sr'));
   let firstBatch = true;
@@ -1408,13 +1426,9 @@ function showSite(){
   document.getElementById('gate').style.display = 'none';
   site.style.display = 'block';
   window.scrollTo(0, 0);
-  if(reduceMotion){
-    screen.classList.remove('show');
-  } else {
-    site.classList.add('site-enter');
-    screen.classList.add('leaving');
-    setTimeout(() => screen.classList.remove('show', 'leaving'), 420);
-  }
+  site.classList.add('site-enter');
+  screen.classList.add('leaving');
+  setTimeout(() => screen.classList.remove('show', 'leaving'), 420);
   animateCount(document.getElementById('love-count'), loveTotal, 1050);
   setupScrollReveal();
 }
@@ -1503,8 +1517,8 @@ function playReveal(data, onDone, fromRect, letter){
     flyPhoto(photo, fromRect);
     setTimeout(() => { gate.style.display = 'none'; }, 500);
   } else {
-    gate.style.display = 'none';
     photo.classList.add('pop');
+    setTimeout(() => { gate.style.display = 'none'; }, 500);
   }
   caption.classList.add('show-text');
   continueBtn.classList.add('show-text');
@@ -1672,16 +1686,22 @@ function coverRadius(pt){
   return Math.hypot(Math.max(pt.x, window.innerWidth - pt.x), Math.max(pt.y, window.innerHeight - pt.y)) + 20;
 }
 
+function fadeView(view, from, to, ms, done){
+  if(!view.animate){ if(done) done(); return; }
+  view.animate([{ opacity: from }, { opacity: to }], { duration: ms, easing: 'ease' }).onfinish = done || null;
+}
+
 function openView(view, pt, done){
   view.classList.add('show', 'view-enter');
-  if(reduceMotion){ if(done) done(); return; }
+  if(reduceMotion){ fadeView(view, 0, 1, 300, done); return; }
   view._origin = pt;
   clipCircle(view, pt, 0, coverRadius(pt), 600, done);
 }
 
 function closeView(view){
   const finish = () => view.classList.remove('show', 'view-enter');
-  if(reduceMotion || !view._origin){ finish(); return; }
+  if(reduceMotion){ fadeView(view, 1, 0, 250, finish); return; }
+  if(!view._origin){ finish(); return; }
   const pt = view._origin;
   clipCircle(view, pt, coverRadius(pt), 0, 450, finish);
 }
@@ -1851,8 +1871,13 @@ function showBoredIdea(){
   const el = document.getElementById('bored-suggestion');
   const finalIdea = randomIdea(lastBoredIdea);
   lastBoredIdea = finalIdea;
-  if(reduceMotion || !el.animate){
+  if(!el.animate){
     el.textContent = finalIdea;
+    return;
+  }
+  if(reduceMotion){
+    el.textContent = finalIdea;
+    el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 350, easing: 'ease' });
     return;
   }
   boredRolling = true;
@@ -1889,7 +1914,6 @@ document.getElementById('bored-again-btn').addEventListener('click', showBoredId
 
 function hidePace(){
   const pace = document.getElementById('pace-view');
-  if(reduceMotion){ pace.classList.remove('show'); return; }
   pace.classList.add('leaving');
   setTimeout(() => pace.classList.remove('show', 'leaving'), 300);
 }
