@@ -6,6 +6,9 @@ const ALLOWED_ORIGIN = 'https://alonzvisabag.github.io';
 
 const MEDIA_EXT_WHITELIST = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3', 'wav', 'm4a', 'ogg', 'aac', 'mp4', 'mov', 'webm', 'm4v'];
 const VALID_TYPES = ['letter', 'audio', 'video', 'photo'];
+const MAX_TEXT = 20000;
+const FLOOD_WINDOW_MS = 10 * 60 * 1000;
+const FLOOD_MAX = 30;
 
 async function notify(env, text) {
   const token = (env.TELEGRAM_BOT_TOKEN || '').trim();
@@ -77,7 +80,28 @@ async function getFile(env, path) {
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
   const data = await res.json();
-  return { sha: data.sha, contentBase64: data.content };
+  if (data.encoding === 'base64' && data.content) return { sha: data.sha, contentBase64: data.content };
+  // The contents API omits the body for files over 1MB; the blob API returns up to 100MB.
+  const blob = await ghFetch(env, `git/blobs/${data.sha}`);
+  if (!blob.ok) throw new Error(`GET blob for ${path} failed: ${blob.status}`);
+  return { sha: data.sha, contentBase64: (await blob.json()).content };
+}
+
+async function readContent(env) {
+  const file = await getFile(env, CONTENT_PATH);
+  if (!file) throw new Error('content.json not found');
+  return { sha: file.sha, data: JSON.parse(base64ToUtf8(file.contentBase64)) };
+}
+
+function recentCount(data) {
+  const since = Date.now() - FLOOD_WINDOW_MS;
+  let n = 0;
+  for (const c of data.capsules || []) {
+    for (const it of c.items || []) {
+      if (Date.parse(it.sentAt || '') > since) n++;
+    }
+  }
+  return n;
 }
 
 async function putFile(env, path, contentBase64, message, sha) {
@@ -96,9 +120,8 @@ function findCapsule(json, capsuleId) {
 
 async function addItemToContent(env, { capsuleId, newCapsule }, item) {
   for (let attempt = 0; attempt < 3; attempt++) {
-    const file = await getFile(env, CONTENT_PATH);
-    if (!file) throw new Error('content.json not found');
-    const data = JSON.parse(base64ToUtf8(file.contentBase64));
+    const file = await readContent(env);
+    const data = file.data;
 
     let capsule = capsuleId ? findCapsule(data, capsuleId) : null;
 
@@ -129,6 +152,10 @@ async function addItemToContent(env, { capsuleId, newCapsule }, item) {
 }
 
 async function handleContribute(request, env) {
+  if (request.headers.get('Origin') !== ALLOWED_ORIGIN) {
+    return json({ ok: false, error: 'forbidden' }, 403);
+  }
+
   let body;
   try {
     body = await request.json();
@@ -144,6 +171,10 @@ async function handleContribute(request, env) {
 
   if (typeof from === 'string' && from.length > 60) {
     return json({ ok: false, error: 'name too long' }, 400);
+  }
+
+  if (typeof text === 'string' && text.length > MAX_TEXT) {
+    return json({ ok: false, error: 'text too long' }, 400);
   }
 
   const hasExisting = typeof capsuleId === 'string' && capsuleId.length > 0;
@@ -170,15 +201,37 @@ async function handleContribute(request, env) {
     return json({ ok: false, error: 'nothing to save' }, 400);
   }
 
-  let mediaFilename = null;
+  let ext = null;
   if (hasMedia) {
-    const ext = (mediaExt || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    ext = (mediaExt || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     if (!MEDIA_EXT_WHITELIST.includes(ext)) {
       return json({ ok: false, error: 'unsupported file type' }, 400);
     }
     if (mediaBase64.length > 15_000_000) {
       return json({ ok: false, error: 'file too large' }, 400);
     }
+  }
+
+  // Validate against the live content before writing anything, so rejected requests leave no files behind.
+  let current;
+  try {
+    current = await readContent(env);
+  } catch (e) {
+    console.error('read content failed', e.message);
+    return json({ ok: false, error: 'server error' }, 500);
+  }
+  if (hasExisting) {
+    const target = findCapsule(current.data, capsuleId);
+    if (!target || target.openToFriends !== true) {
+      return json({ ok: false, error: 'situation not available' }, 400);
+    }
+  }
+  if (recentCount(current.data) >= FLOOD_MAX) {
+    return json({ ok: false, error: 'too many requests' }, 429);
+  }
+
+  let mediaFilename = null;
+  if (hasMedia) {
     const prefix = (hasExisting ? capsuleId : 'custom').replace(/[^a-zA-Z0-9-]/g, '');
     mediaFilename = `${prefix}-${Date.now()}.${ext}`;
     const res = await putFile(
@@ -188,9 +241,9 @@ async function handleContribute(request, env) {
       `contribute: add media for ${hasExisting ? capsuleId : 'new capsule'}`
     );
     if (!res.ok) {
-      const errText = await res.text();
+      console.error('media upload failed', res.status, await res.text());
       await notify(env, 'עדכון');
-      return json({ ok: false, error: `media upload failed: ${res.status} ${errText}` }, 500);
+      return json({ ok: false, error: 'server error' }, 500);
     }
   }
 
@@ -201,12 +254,12 @@ async function handleContribute(request, env) {
     sentAt: new Date().toISOString(),
   };
 
-  let savedCapsule;
   try {
-    savedCapsule = await addItemToContent(env, { capsuleId: hasExisting ? capsuleId : null, newCapsule: cleanNewCapsule }, item);
+    await addItemToContent(env, { capsuleId: hasExisting ? capsuleId : null, newCapsule: cleanNewCapsule }, item);
   } catch (e) {
+    console.error('save failed', e.message);
     await notify(env, 'עדכון');
-    return json({ ok: false, error: e.message }, 500);
+    return json({ ok: false, error: 'server error' }, 500);
   }
 
   await notify(env, 'עדכון');
