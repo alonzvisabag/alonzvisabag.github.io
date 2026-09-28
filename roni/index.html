@@ -530,12 +530,6 @@
     font-weight:700;
     color:var(--muted);
   }
-  .capsule-body .item-date{
-    font-size:0.78rem;
-    font-weight:500;
-    color:var(--muted);
-    margin-top:10px;
-  }
 
   .capsule-body img, .capsule-body video{
     width:100%;
@@ -1286,16 +1280,6 @@ function mediaTag(media){
   return `<a href="${src}" target="_blank" rel="noopener noreferrer">פתחי קובץ</a>`;
 }
 
-function formatItemDate(iso){
-  try{
-    const d = new Date(iso);
-    if(isNaN(d.getTime())) return '';
-    return new Intl.DateTimeFormat('he-IL', { day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' }).format(d);
-  }catch(e){
-    return '';
-  }
-}
-
 function itemHTML(item){
   const parts = [];
   if(item.from){
@@ -1306,10 +1290,6 @@ function itemHTML(item){
   }
   if(item.media){
     parts.push(mediaTag(item.media));
-  }
-  if(item.sentAt){
-    const dateStr = formatItemDate(item.sentAt);
-    if(dateStr) parts.push(`<div class="item-date">${dateStr}</div>`);
   }
   return `<div class="item">${parts.join('')}</div>`;
 }
