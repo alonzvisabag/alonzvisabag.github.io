@@ -450,6 +450,12 @@
     font-weight:500;
   }
 
+  .capsule-types{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    flex-shrink:0;
+  }
   .capsule-type{
     font-size:0.72rem;
     font-weight:700;
@@ -457,7 +463,7 @@
     padding:4px 11px;
     border-radius:20px;
     white-space:nowrap;
-    flex-shrink:0;
+    text-align:center;
   }
 
   .capsule-open-btn{
@@ -552,13 +558,6 @@
     display:block;
   }
 
-  .capsule-body .placeholder{
-    color:var(--muted);
-    font-size:0.92rem;
-    text-align:center;
-    padding:10px 0;
-    font-weight:500;
-  }
 
   /* confetti */
   .confetti-piece{
@@ -1264,13 +1263,17 @@ function detectMediaType(media){
   return null;
 }
 
-function effectiveType(c){
-  const withMedia = (c.items || []).find(i => i.media);
-  if(withMedia){
-    const detected = detectMediaType(withMedia.media);
-    if(detected) return detected;
-  }
-  return c.type;
+const CONTENT_ORDER = ['letter', 'photo', 'video', 'audio'];
+
+function contentTypes(c){
+  const found = new Set();
+  (c.items || []).forEach(i => {
+    if(i.text && i.text.trim()) found.add('letter');
+    const t = i.media && detectMediaType(i.media);
+    if(t) found.add(t);
+  });
+  const list = CONTENT_ORDER.filter(t => found.has(t));
+  return list.length ? list : [c.type];
 }
 
 function mediaTag(media){
@@ -1318,9 +1321,6 @@ function isPhotoOnly(item){
 
 function capsuleBodyHTML(c){
   const items = c.items || [];
-  if(!items.length){
-    return `<div class="placeholder">התוכן בדרך אליך... (עוד לא הועלה)</div>`;
-  }
   if(items.length > 1 && items.every(isPhotoOnly)){
     const imgs = items.map(i => `<img data-src="${escapeHTML('media/' + encodeURIComponent(i.media))}" alt="">`).join('');
     return `<div class="photo-grid">${imgs}</div>`;
@@ -1346,7 +1346,11 @@ function showPaceReminder(){
 }
 
 function renderCapsule(c){
-  const meta = TYPE_META[effectiveType(c)] || { label:'', color:'var(--coral)' };
+  const badges = contentTypes(c)
+    .map(t => TYPE_META[t])
+    .filter(Boolean)
+    .map(m => `<span class="capsule-type" style="background:${m.color}">${m.label}</span>`)
+    .join('');
   const unlocked = getOpened().includes(c.id);
   const div = document.createElement('div');
   div.className = 'capsule' + (unlocked ? ' unlocked' : '');
@@ -1355,7 +1359,7 @@ function renderCapsule(c){
     <div class="capsule-head">
       <span class="capsule-trigger">${escapeHTML(c.trigger)}</span>
       <span class="capsule-chevron">▾</span>
-      <span class="capsule-type" style="background:${meta.color}">${meta.label}</span>
+      <span class="capsule-types">${badges}</span>
     </div>
     <button class="capsule-open-btn" type="button">זה קורה לי עכשיו</button>
     <div class="capsule-body">${capsuleBodyHTML(c)}</div>
@@ -1571,13 +1575,8 @@ function renderSite(data){
   main.innerHTML = '';
   const list = document.createElement('div');
   list.className = 'capsule-list';
-  const allCapsules = [...(data.capsules || [])].sort((a, b) => {
-    const aFilled = (a.items || []).length > 0;
-    const bFilled = (b.items || []).length > 0;
-    if (aFilled === bFilled) return 0;
-    return aFilled ? -1 : 1;
-  });
-  allCapsules.forEach((c, i) => {
+  const filledCapsules = (data.capsules || []).filter(c => (c.items || []).length > 0);
+  filledCapsules.forEach((c, i) => {
     const colors = ACT_COLORS[i % ACT_COLORS.length];
     const capsule = renderCapsule(c);
     capsule.style.setProperty('--shadow-c', colors.shadow);
