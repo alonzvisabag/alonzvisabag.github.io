@@ -251,7 +251,15 @@
   #reveal-continue{
     opacity:0;
     pointer-events:none;
+    width:60px;
+    height:60px;
+    padding:0;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
+  #reveal-continue svg{ width:26px; height:26px; }
   #reveal-continue.show-text{ animation:fade-up .5s ease forwards; animation-delay:1s; pointer-events:auto; }
 
   /* ── SITE ── */
@@ -1072,7 +1080,7 @@
 <div id="reveal-screen">
   <img id="reveal-photo" src="" alt="">
   <div id="reveal-caption">יאללה, בואי נתחיל</div>
-  <button id="reveal-continue" class="btn" type="button">בואי נמשיך ←</button>
+  <button id="reveal-continue" class="btn" type="button" aria-label="בואי נמשיך"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
 </div>
 
 <div id="site">
