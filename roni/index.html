@@ -824,6 +824,71 @@
   #nickname-feedback.ok{ color:var(--mint-dark); }
   #nickname-feedback.err{ color:var(--coral-dark); }
 
+  /* ── PHOTO VIEWER ── */
+  #hero-photos .polaroid{ position:relative; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  #hero-photos .polaroid.picked{ visibility:hidden; }
+  .live-badge{
+    position:absolute;
+    display:flex;
+    align-items:center;
+    gap:4px;
+    color:#fff;
+    font-size:0.7rem;
+    font-weight:800;
+    letter-spacing:0.6px;
+    direction:ltr;
+    pointer-events:none;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+  }
+  .live-badge svg{ width:15px; height:15px; }
+  #hero-photos .live-badge{ top:12px; left:12px; }
+  #hero-photos .live-badge svg{ width:14px; height:14px; }
+
+  #photo-viewer{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:65;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(51,43,43,0.38);
+    -webkit-backdrop-filter:blur(8px);
+    backdrop-filter:blur(8px);
+  }
+  #photo-viewer.show{ display:flex; }
+  #pv-frame{
+    position:relative;
+    width:min(86vw, 380px);
+    background:#fff;
+    padding:12px 12px 46px;
+    border-radius:12px;
+    box-shadow:0 30px 70px rgba(0,0,0,0.35);
+    cursor:pointer;
+  }
+  #pv-img{
+    display:block;
+    width:100%;
+    max-height:68vh;
+    object-fit:cover;
+    border-radius:4px;
+  }
+  #pv-video{
+    position:absolute;
+    top:12px;
+    left:12px;
+    width:calc(100% - 24px);
+    height:calc(100% - 58px);
+    object-fit:cover;
+    border-radius:4px;
+    opacity:0;
+    transition:opacity .25s ease;
+    pointer-events:none;
+  }
+  #pv-video.playing{ opacity:1; }
+  #pv-live{ top:22px; left:22px; }
+  #photo-viewer:not(.is-live) #pv-live{ display:none; }
+
   /* ── MOTION ── */
   @keyframes fade-in{ from{ opacity:0; } to{ opacity:1; } }
   @keyframes fade-out{ from{ opacity:1; } to{ opacity:0; } }
@@ -1076,6 +1141,14 @@
   </div>
 </div>
 
+<div id="photo-viewer">
+  <div id="pv-frame">
+    <img id="pv-img" alt="">
+    <video id="pv-video" playsinline preload="none"></video>
+    <span class="live-badge" id="pv-live"></span>
+  </div>
+</div>
+
 <div id="bored-view">
   <div class="view-header">
     <button id="bored-back-btn" type="button">← חזרה</button>
@@ -1296,13 +1369,22 @@ function renderCapsule(c){
   return div;
 }
 
+const LIVE_PHOTOS = ['live-02', 'live-03', 'live-04', 'live-05', 'live-06', 'live-07', 'live-08', 'live-09'];
+const LIVE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="1.6 2.4"/></svg>';
+
 function renderHeroPhotos(photos){
   const wrap = document.getElementById('hero-photos');
   if(photos && photos.length){
-    const picked = shuffle([...photos]).slice(0, Math.min(5, photos.length));
+    const lives = shuffle([...LIVE_PHOTOS]).slice(0, 2).map(name => ({ live: name }));
+    const stills = shuffle([...photos]).slice(0, Math.min(5 - lives.length, photos.length)).map(p => ({ photo: p }));
+    const picked = shuffle([...lives, ...stills]);
     wrap.innerHTML = picked.map((p, i) => {
       const tilt = (Math.random() * 10 - 5).toFixed(1);
-      return `<div class="polaroid" style="--r:${tilt}deg;animation-delay:${300 + i * 130}ms,${1200 + i * 130}ms"><img src="media/${p}" alt=""></div>`;
+      const style = `--r:${tilt}deg;animation-delay:${300 + i * 130}ms,${1200 + i * 130}ms`;
+      if(p.live){
+        return `<div class="polaroid live" data-video="media/${p.live}.mp4" style="${style}"><img src="media/${p.live}.jpg" alt=""><span class="live-badge">${LIVE_ICON}</span></div>`;
+      }
+      return `<div class="polaroid" style="${style}"><img src="media/${p.photo}" alt=""></div>`;
     }).join('');
     wrap.querySelectorAll('.polaroid').forEach(p => {
       const img = p.querySelector('img');
@@ -1314,6 +1396,100 @@ function renderHeroPhotos(photos){
     wrap.innerHTML = '';
   }
 }
+
+let viewerSource = null;
+
+// Transform that makes an element whose layout box is `natural` appear at `target`.
+function flipTransform(target, natural){
+  const dx = (target.left + target.width / 2) - (natural.left + natural.width / 2);
+  const dy = (target.top + target.height / 2) - (natural.top + natural.height / 2);
+  return `translate(${dx}px, ${dy}px) scale(${target.width / natural.width})`;
+}
+
+function tiltOf(el){
+  const r = getComputedStyle(el).rotate;
+  return r && r !== 'none' ? r : '0deg';
+}
+
+function playLive(){
+  const video = document.getElementById('pv-video');
+  video.currentTime = 0;
+  const p = video.play();
+  if(p && p.catch) p.catch(() => { video.muted = true; video.play().catch(() => {}); });
+}
+
+function openPhotoViewer(polaroid){
+  const viewer = document.getElementById('photo-viewer');
+  const frame = document.getElementById('pv-frame');
+  const img = document.getElementById('pv-img');
+  const video = document.getElementById('pv-video');
+  const thumb = polaroid.querySelector('img');
+  const videoSrc = polaroid.dataset.video;
+  viewerSource = polaroid;
+  img.src = thumb.src;
+  img.style.aspectRatio = thumb.naturalWidth && thumb.naturalHeight ? `${thumb.naturalWidth} / ${thumb.naturalHeight}` : '';
+  viewer.classList.toggle('is-live', !!videoSrc);
+  video.classList.remove('playing');
+  if(videoSrc){
+    if(video.getAttribute('src') !== videoSrc) video.src = videoSrc;
+    playLive();
+  }
+  viewer.classList.add('show');
+  polaroid.classList.add('picked');
+  if(!viewer.animate) return;
+  viewer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: 'ease' });
+  if(reduceMotion) return;
+  frame.animate([
+    { transform: `${flipTransform(polaroid.getBoundingClientRect(), frame.getBoundingClientRect())} rotate(${tiltOf(polaroid)})` },
+    { transform: 'none' }
+  ], { duration: 560, easing: 'cubic-bezier(.22,1,.36,1)' });
+}
+
+function closePhotoViewer(){
+  const viewer = document.getElementById('photo-viewer');
+  const frame = document.getElementById('pv-frame');
+  const video = document.getElementById('pv-video');
+  if(!viewer.classList.contains('show') || viewer.dataset.closing) return;
+  video.pause();
+  const source = viewerSource;
+  const finish = () => {
+    viewer.classList.remove('show');
+    delete viewer.dataset.closing;
+    video.classList.remove('playing');
+    if(source) source.classList.remove('picked');
+    viewerSource = null;
+  };
+  if(!viewer.animate){ finish(); return; }
+  viewer.dataset.closing = '1';
+  const ms = reduceMotion ? 250 : 460;
+  const fade = viewer.animate([{ opacity: 1 }, { opacity: 1, offset: reduceMotion ? 0 : 0.55 }, { opacity: 0 }], { duration: ms, fill: 'forwards' });
+  const fly = reduceMotion || !source ? null : frame.animate([
+    { transform: 'none' },
+    { transform: `${flipTransform(source.getBoundingClientRect(), frame.getBoundingClientRect())} rotate(${tiltOf(source)})` }
+  ], { duration: ms, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' });
+  fade.onfinish = () => {
+    finish();
+    fade.cancel();
+    if(fly) fly.cancel();
+  };
+}
+
+document.getElementById('hero-photos').addEventListener('click', (e) => {
+  const polaroid = e.target.closest('.polaroid');
+  if(polaroid) openPhotoViewer(polaroid);
+});
+document.getElementById('photo-viewer').addEventListener('click', (e) => {
+  const viewer = document.getElementById('photo-viewer');
+  if(e.target.closest('#pv-frame') && viewer.classList.contains('is-live') && !viewer.dataset.closing){
+    playLive();
+    return;
+  }
+  closePhotoViewer();
+});
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closePhotoViewer(); });
+document.getElementById('pv-video').addEventListener('playing', (e) => e.target.classList.add('playing'));
+document.getElementById('pv-video').addEventListener('ended', (e) => e.target.classList.remove('playing'));
+document.getElementById('pv-live').innerHTML = LIVE_ICON + 'LIVE';
 
 const HOME_LOCATIONS = [
   { name: 'תל אביב', lat: 32.0853, lon: 34.7818 },
