@@ -214,7 +214,7 @@
     background:linear-gradient(120deg, var(--bg1), var(--bg2) 45%, var(--bg3) 100%);
   }
   #reveal-screen.show{ display:flex; }
-  #reveal-screen.show::before{ animation:fade-in .45s ease both; }
+  #reveal-screen.show::before{ animation:fade-in .55s ease both; }
   #reveal-screen.leaving{ animation:fade-out .4s ease forwards; }
   #reveal-photo.fly{ opacity:1; transform:none; }
 
@@ -834,19 +834,19 @@
 
   /* envelope */
   #gate-card{
-    transition:height .5s cubic-bezier(.65,0,.35,1), border-radius .5s ease, background-color .4s ease, box-shadow .5s ease;
+    transition:height .6s cubic-bezier(.65,0,.35,1), border-radius .6s ease, background-color .5s ease, box-shadow .6s ease;
   }
-  #gate-card.env-fade > :not(.env){ opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  #gate-card.env-fade > :not(.env){ opacity:0; pointer-events:none; transition:opacity .25s ease; }
   #gate-card.env-mode{ padding:0; border-radius:14px; background-color:#d94e30; box-shadow:0 24px 50px rgba(217,78,48,0.3); }
   #gate-card.env-mode > :not(.env){ display:none; }
-  .env{ position:absolute; opacity:0; transition:opacity .35s ease; }
+  .env{ position:absolute; opacity:0; transition:opacity .4s ease; }
   #gate-card.env-show .env{ opacity:1; }
   .env-letter{
     z-index:1;
     border-radius:8px;
     object-fit:cover;
     box-shadow:0 6px 16px rgba(0,0,0,0.2);
-    transition:opacity .35s ease, transform .65s cubic-bezier(.22,1,.36,1);
+    transition:opacity .35s ease, transform .8s cubic-bezier(.22,1,.36,1);
   }
   #gate-card.env-rise .env-letter{ transform:translateY(-62%) rotate(-2deg); }
   .env-front{ inset:0; z-index:2; border-radius:14px; overflow:hidden; }
@@ -870,7 +870,7 @@
     border-radius:14px 14px 0 0;
     -webkit-clip-path:polygon(0 0, 100% 0, 50% 100%);
     clip-path:polygon(0 0, 100% 0, 50% 100%);
-    transition:opacity .35s ease, transform .5s cubic-bezier(.45,0,.2,1);
+    transition:opacity .4s ease, transform .62s cubic-bezier(.45,0,.2,1);
   }
   #gate-card.env-open .env-flap{ transform:rotateX(180deg); }
   #gate-card.env-flipped .env-flap{ z-index:0; background:linear-gradient(0deg, #ffb28f, #ff8a62); }
@@ -906,7 +906,7 @@
   /* site entrance */
   #site.site-enter #hero-photos .polaroid{
     animation:
-      polaroid-drop .8s cubic-bezier(.34,1.3,.64,1) backwards,
+      polaroid-drop .9s cubic-bezier(.34,1.3,.64,1) backwards,
       bob 4.5s ease-in-out infinite;
   }
   #site.site-enter #hero-photos .polaroid:nth-child(2n){ animation-name:polaroid-drop-b, bob; }
@@ -920,12 +920,13 @@
     60%{ opacity:1; }
     100%{ opacity:1; transform:none; box-shadow:0 10px 24px rgba(0,0,0,0.12); }
   }
-  #site.site-enter header.hero h1{ animation:rise-in .7s cubic-bezier(.22,1,.36,1) .6s backwards; }
-  #site.site-enter header.hero p{ animation:rise-in .7s cubic-bezier(.22,1,.36,1) .7s backwards; }
-  #site.site-enter .love-counter .label{ animation:rise-in .6s cubic-bezier(.22,1,.36,1) .85s backwards; }
-  #site.site-enter .heart{ animation:heart-in .7s cubic-bezier(.34,1.56,.64,1) .95s backwards; }
-  #site.site-enter .home-card{ animation:rise-in .7s cubic-bezier(.22,1,.36,1) 1.1s backwards; }
-  #site.site-enter .home-card:nth-child(2){ animation-delay:1.18s; }
+  #site.site-enter header.hero h1{ animation:rise-in .8s cubic-bezier(.22,1,.36,1) .85s backwards; }
+  #site.site-enter header.hero p{ animation:rise-in .8s cubic-bezier(.22,1,.36,1) .95s backwards; }
+  #site.site-enter .love-counter .label{ animation:rise-in .7s cubic-bezier(.22,1,.36,1) 1.15s backwards; }
+  #site.site-enter .heart{ animation:heart-in .8s cubic-bezier(.34,1.56,.64,1) 1.3s backwards; }
+  #site.site-enter .home-card{ animation:rise-in .8s cubic-bezier(.22,1,.36,1) 1.5s backwards; }
+  #site.site-enter .home-card:nth-child(2){ animation-delay:1.6s; }
+  #site.site-enter #hero-photos .polaroid:not(.ready){ animation-play-state:paused; }
   @keyframes heart-in{
     from{ opacity:0; transform:rotate(45deg) scale(.2); }
     to{ opacity:1; transform:rotate(45deg) scale(1); }
@@ -1187,7 +1188,7 @@ function mediaTag(media){
   const src = 'media/' + media;
   if(AUDIO_EXT.includes(ext)) return `<audio controls src="${src}"></audio>`;
   if(VIDEO_EXT.includes(ext)) return `<video controls src="${src}"></video>`;
-  if(IMG_EXT.includes(ext))   return `<img src="${src}" alt="">`;
+  if(IMG_EXT.includes(ext))   return `<img data-src="${src}" alt="">`;
   return `<a href="${src}" target="_blank" rel="noopener noreferrer">פתחי קובץ</a>`;
 }
 
@@ -1230,7 +1231,7 @@ function capsuleBodyHTML(c){
     return `<div class="placeholder">התוכן בדרך אליך... (עוד לא הועלה)</div>`;
   }
   if(items.length > 1 && items.every(isPhotoOnly)){
-    const imgs = items.map(i => `<img src="media/${i.media}" alt="">`).join('');
+    const imgs = items.map(i => `<img data-src="media/${i.media}" alt="">`).join('');
     return `<div class="photo-grid">${imgs}</div>`;
   }
   return items.map(itemHTML).join('');
@@ -1239,6 +1240,13 @@ function capsuleBodyHTML(c){
 function updateCapsuleBtnLabel(div){
   const btn = div.querySelector('.capsule-open-btn');
   btn.textContent = div.classList.contains('expanded') ? 'סגרי' : 'זה קורה לי עכשיו';
+}
+
+function loadDeferredImages(root){
+  root.querySelectorAll('img[data-src]').forEach(img => {
+    img.src = img.dataset.src;
+    img.removeAttribute('data-src');
+  });
 }
 
 let consecutiveOpens = 0;
@@ -1267,6 +1275,7 @@ function renderCapsule(c){
 
   const toggle = (e) => {
     const wasExpanded = div.classList.contains('expanded');
+    loadDeferredImages(div);
     div.classList.add('unlocked');
     div.classList.toggle('expanded');
     markOpened(c.id);
@@ -1293,8 +1302,14 @@ function renderHeroPhotos(photos){
     const picked = shuffle([...photos]).slice(0, Math.min(5, photos.length));
     wrap.innerHTML = picked.map((p, i) => {
       const tilt = (Math.random() * 10 - 5).toFixed(1);
-      return `<div class="polaroid" style="--r:${tilt}deg;animation-delay:${250 + i * 90}ms,${1050 + i * 90}ms"><img src="media/${p}" alt=""></div>`;
+      return `<div class="polaroid" style="--r:${tilt}deg;animation-delay:${300 + i * 130}ms,${1200 + i * 130}ms"><img src="media/${p}" alt=""></div>`;
     }).join('');
+    wrap.querySelectorAll('.polaroid').forEach(p => {
+      const img = p.querySelector('img');
+      const ready = () => p.classList.add('ready');
+      if(img.complete) ready();
+      else { img.onload = ready; img.onerror = ready; }
+    });
   } else {
     wrap.innerHTML = '';
   }
@@ -1355,7 +1370,6 @@ let loveTotal = 0;
 function renderSite(data){
   document.getElementById('site-title').textContent = data.site.title || 'לרונני';
   document.getElementById('site-subtitle').textContent = data.site.subtitle || '';
-  renderHeroPhotos(data.site.heroPhotos);
   initHomeStrip();
   loveTotal = (data.capsules || []).reduce((sum, c) => sum + (c.items || []).filter(i => i.from).length, 0);
   document.getElementById('love-count').textContent = loveTotal;
@@ -1409,7 +1423,7 @@ function setupScrollReveal(){
   els.forEach(el => el.classList.add('sr'));
   let firstBatch = true;
   const io = new IntersectionObserver((entries) => {
-    const base = firstBatch ? 1250 : 0;
+    const base = firstBatch ? 1700 : 0;
     firstBatch = false;
     entries.filter(en => en.isIntersecting).forEach((en, idx) => {
       en.target.style.setProperty('--sd', (base + idx * 80) + 'ms');
@@ -1429,8 +1443,12 @@ function showSite(){
   site.classList.add('site-enter');
   screen.classList.add('leaving');
   setTimeout(() => screen.classList.remove('show', 'leaving'), 420);
-  animateCount(document.getElementById('love-count'), loveTotal, 1050);
+  animateCount(document.getElementById('love-count'), loveTotal, 1400);
   setupScrollReveal();
+  setTimeout(() => {
+    document.querySelectorAll('#hero-photos .polaroid').forEach(p => p.classList.add('ready'));
+  }, 5000);
+  setTimeout(() => loadDeferredImages(document.getElementById('main')), 3000);
 }
 
 const HEART_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.1 5.4 3.1 1.8-2 3.3-3.1 5.4-3.1 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
@@ -1467,15 +1485,30 @@ function openEnvelope(data, next){
   setTimeout(() => {
     card.classList.add('env-mode', 'env-show');
     card.style.height = H + 'px';
-  }, 200);
-  setTimeout(() => card.classList.add('env-break'), 760);
-  setTimeout(() => card.classList.add('env-open'), 960);
-  setTimeout(() => card.classList.add('env-flipped'), 1210);
-  if(photoSrc) setTimeout(() => card.classList.add('env-rise'), 1260);
+  }, 250);
+  setTimeout(() => card.classList.add('env-break'), 950);
+  setTimeout(() => card.classList.add('env-open'), 1200);
+  setTimeout(() => card.classList.add('env-flipped'), 1510);
+  if(!photoSrc){
+    setTimeout(() => next(null), 1750);
+    return;
+  }
   setTimeout(() => {
-    const rect = photoSrc ? letter.getBoundingClientRect() : null;
-    next(rect, letter);
-  }, photoSrc ? 1900 : 1400);
+    whenImageReady(letter, 4000, (loaded) => {
+      if(!loaded){ next(null); return; }
+      card.classList.add('env-rise');
+      setTimeout(() => next(letter.getBoundingClientRect(), letter), 850);
+    });
+  }, 1560);
+}
+
+function whenImageReady(img, maxWait, cb){
+  let called = false;
+  const done = (ok) => { if(!called){ called = true; cb(ok); } };
+  if(img.complete && img.naturalWidth > 0){ done(true); return; }
+  img.addEventListener('load', () => done(true));
+  img.addEventListener('error', () => done(false));
+  setTimeout(() => done(img.complete && img.naturalWidth > 0), maxWait);
 }
 
 function flyPhoto(photo, from){
@@ -1488,7 +1521,7 @@ function flyPhoto(photo, from){
     { transform:`translate(${dx}px, ${dy}px) scale(${s}) rotate(-2deg)` },
     { transform:'translate(0, 0) scale(1.05) rotate(1deg)', offset:.7 },
     { transform:'none' }
-  ], { duration:800, easing:'cubic-bezier(.22,1,.36,1)' });
+  ], { duration:950, easing:'cubic-bezier(.22,1,.36,1)' });
 }
 
 function playReveal(data, onDone, fromRect, letter){
@@ -1502,6 +1535,7 @@ function playReveal(data, onDone, fromRect, letter){
   photo.onload = () => { photo.style.display = 'block'; };
   const src = 'media/' + (data.site.revealPhoto || '');
   if(photo.getAttribute('src') !== src) photo.src = src;
+  else if(photo.complete && !photo.naturalWidth) photo.style.display = 'none';
   photo.classList.remove('pop', 'fly');
   caption.classList.remove('show-text');
   continueBtn.classList.remove('show-text');
@@ -1542,6 +1576,8 @@ fetch('content.json', { cache: 'no-store' })
   .then(r => r.json())
   .then(data => {
     document.getElementById('gate-subtitle').textContent = data.site.subtitle || '';
+    if(data.site.revealPhoto) document.getElementById('reveal-photo').src = 'media/' + data.site.revealPhoto;
+    renderHeroPhotos(data.site.heroPhotos);
 
     const gatePhoto = document.getElementById('gate-photo');
     if(data.site.gatePhoto){
