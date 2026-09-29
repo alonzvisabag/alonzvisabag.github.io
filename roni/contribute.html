@@ -76,14 +76,19 @@
     transition:transform .15s, box-shadow .15s;
   }
   .cap-item:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,0.06); }
-  .cap-item .badge{
+  .cap-item span:first-child{ flex:1; }
+  .cap-item .empty-tag{
     font-size:0.7rem;
     font-weight:700;
-    color:#fff;
+    color:var(--coral-dark);
+    background:#fff1ec;
+    border:1.5px solid #ffc9b8;
     padding:3px 9px;
     border-radius:20px;
+    white-space:nowrap;
     flex-shrink:0;
   }
+  .cap-item.is-empty{ border-color:#ffc9b8; }
 
   .new-cap-btn{
     display:block;
@@ -327,16 +332,17 @@ function renderList(data){
   const wrap = document.getElementById('list-view');
   wrap.innerHTML = '';
 
-  const allCapsules = data.capsules || [];
-  const visibleCapsules = shuffle(allCapsules.filter(c => c.openToFriends === true));
+  const open = (data.capsules || []).filter(c => c.openToFriends === true);
+  const isEmpty = (c) => !(c.items || []).length;
+  const visibleCapsules = [...shuffle(open.filter(isEmpty)), ...shuffle(open.filter(c => !isEmpty(c)))];
 
   const list = document.createElement('div');
   list.className = 'cap-list';
   visibleCapsules.forEach(c => {
     const btn = document.createElement('button');
-    btn.className = 'cap-item';
+    btn.className = 'cap-item' + (isEmpty(c) ? ' is-empty' : '');
     btn.type = 'button';
-    btn.innerHTML = `<span>${escapeHTML(c.trigger)}</span>`;
+    btn.innerHTML = `<span>${escapeHTML(c.trigger)}</span>` + (isEmpty(c) ? '<span class="empty-tag">עוד לא כתבו כאן</span>' : '');
     btn.addEventListener('click', () => openCompose({ capsuleId: c.id, trigger: c.trigger }));
     list.appendChild(btn);
   });

@@ -6,7 +6,13 @@
 <title>לרונני</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="alternate icon" href="favicon-32.png">
-<link rel="apple-touch-icon" href="favicon-180.png">
+<link rel="apple-touch-icon" href="app-icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#fff3da">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="לרונני">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://api.open-meteo.com; object-src 'none'; base-uri 'self';">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -835,6 +841,98 @@
   #nickname-feedback.ok{ color:var(--mint-dark); }
   #nickname-feedback.err{ color:var(--coral-dark); }
 
+  /* ── INSTALL TIP ── */
+  #install-tip{
+    max-width:600px;
+    margin:0 auto 26px;
+    width:calc(100% - 40px);
+    background:var(--card);
+    border-radius:16px;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.06);
+  }
+  #install-tip[hidden]{ display:none; }
+  #install-tip img{ width:44px; height:44px; border-radius:11px; flex-shrink:0; }
+  #install-tip .it-text{ flex:1; font-size:0.85rem; line-height:1.5; color:var(--muted); font-weight:500; }
+  #install-tip strong{ display:block; color:var(--ink); font-size:0.92rem; font-weight:800; }
+  #install-tip .share-icon{ width:15px; height:15px; vertical-align:-2px; color:var(--sky-dark); }
+  #install-action{ padding:9px 14px; font-size:0.85rem; box-shadow:0 4px 0 var(--coral-dark); }
+  #install-close{
+    flex-shrink:0;
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:1rem;
+    width:30px;
+    height:30px;
+    cursor:pointer;
+  }
+
+  /* ── FAVORITES ── */
+  .item-actions{ display:flex; justify-content:flex-end; margin-top:-4px; }
+  .fav-btn{
+    width:38px;
+    height:38px;
+    border:none;
+    background:none;
+    padding:0;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#c9b8c2;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .fav-btn svg{ width:23px; height:23px; fill:none; stroke:currentColor; stroke-width:2; transition:fill .2s ease; }
+  .fav-btn.on{ color:var(--coral); }
+  .fav-btn.on svg{ fill:currentColor; }
+  .view-tabs{
+    display:flex;
+    gap:4px;
+    padding:4px;
+    margin-bottom:18px;
+    background:rgba(255,255,255,0.55);
+    border-radius:16px;
+  }
+  .vt{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    padding:11px 8px;
+    border:none;
+    border-radius:12px;
+    background:none;
+    font-family:'Rubik', sans-serif;
+    font-size:0.92rem;
+    font-weight:700;
+    color:var(--muted);
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:background .2s ease, color .2s ease, box-shadow .2s ease;
+  }
+  .vt.on{ background:var(--card); color:var(--coral-dark); box-shadow:0 4px 12px rgba(232,81,47,0.12); }
+  .vt svg{ width:16px; height:16px; fill:currentColor; flex-shrink:0; }
+  .vt-count{ font-size:0.72rem; font-weight:800; color:#fff; background:var(--coral); border-radius:20px; padding:2px 8px; }
+  .vt-count:empty{ display:none; }
+  .capsule-list[hidden], #fav-view[hidden]{ display:none; }
+  #fav-view{ display:flex; flex-direction:column; gap:16px; }
+  .fav-card{
+    background:var(--card);
+    border-radius:20px;
+    padding:18px 20px 10px;
+    box-shadow:0 6px 0 #ffd8cc, 0 10px 24px rgba(0,0,0,0.06);
+  }
+  .fav-card .capsule-body{ display:block; padding:0; border-top:none; }
+  .fav-context{ font-size:0.78rem; font-weight:700; color:var(--coral-dark); margin-bottom:10px; }
+  .fav-empty{ text-align:center; color:var(--muted); padding:36px 20px; font-weight:500; line-height:1.7; }
+  .fav-empty svg{ width:36px; height:36px; fill:#ffc9b8; margin-bottom:6px; }
+
   /* ── PHOTO VIEWER ── */
   #hero-photos .polaroid{ position:relative; cursor:pointer; -webkit-tap-highlight-color:transparent; }
   #hero-photos .polaroid.picked{ visibility:hidden; }
@@ -1002,6 +1100,7 @@
   #site.site-enter .heart{ animation:heart-in .8s cubic-bezier(.34,1.56,.64,1) 1.3s backwards; }
   #site.site-enter .home-card{ animation:rise-in .8s cubic-bezier(.22,1,.36,1) 1.5s backwards; }
   #site.site-enter .home-card:nth-child(2){ animation-delay:1.6s; }
+  #site.site-enter #install-tip{ animation:rise-in .8s cubic-bezier(.22,1,.36,1) 1.75s backwards; }
   #site.site-enter #hero-photos .polaroid:not(.ready){ animation-play-state:paused; }
   @keyframes heart-in{
     from{ opacity:0; transform:rotate(45deg) scale(.2); }
@@ -1047,6 +1146,7 @@
     #site.site-enter .love-counter .label,
     #site.site-enter .heart,
     #site.site-enter .home-card,
+    #site.site-enter #install-tip,
     .capsule.expanded .capsule-body,
     .view-enter #memory-grid,
     .view-enter #nickname-card,
@@ -1109,6 +1209,16 @@
       <div class="home-time" id="graz-time">--:--</div>
       <div class="home-weather-single" id="graz-weather"></div>
     </div>
+  </div>
+
+  <div id="install-tip" hidden>
+    <img src="app-icon-180.png" alt="">
+    <div class="it-text">
+      <strong>רוצה את זה כאפליקציה?</strong>
+      <span id="install-how"></span>
+    </div>
+    <button id="install-action" class="btn" type="button" hidden>להוסיף</button>
+    <button id="install-close" type="button" aria-label="סגירה">✕</button>
   </div>
 
   <main id="main"></main>
@@ -1280,7 +1390,22 @@ function mediaTag(media){
   return `<a href="${src}" target="_blank" rel="noopener noreferrer">פתחי קובץ</a>`;
 }
 
-function itemHTML(item){
+const FAV_KEY = 'roni_favorites';
+
+function getFavorites(){
+  try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); }
+  catch(e){ return []; }
+}
+function saveFavorites(list){
+  try { localStorage.setItem(FAV_KEY, JSON.stringify(list)); }
+  catch(e){}
+}
+// Items have no ids, so a favorite is keyed by its situation plus its media file or its sender and opening words.
+function itemKey(c, item){
+  return c.id + '|' + (item.media || ((item.from || '') + ':' + (item.text || '').slice(0, 60)));
+}
+
+function itemHTML(item, key){
   const parts = [];
   if(item.from){
     parts.push(`<div class="item-from">מ${escapeHTML(item.from)}</div>`);
@@ -1290,6 +1415,10 @@ function itemHTML(item){
   }
   if(item.media){
     parts.push(mediaTag(item.media));
+  }
+  if(key){
+    const on = getFavorites().includes(key);
+    parts.push(`<div class="item-actions"><button class="fav-btn${on ? ' on' : ''}" type="button" data-key="${escapeHTML(key)}" aria-pressed="${on}" aria-label="שמירה במועדפים">${HEART_SVG}</button></div>`);
   }
   return `<div class="item">${parts.join('')}</div>`;
 }
@@ -1305,7 +1434,53 @@ function capsuleBodyHTML(c){
     const imgs = items.map(i => `<img data-src="${escapeHTML('media/' + encodeURIComponent(i.media))}" alt="">`).join('');
     return `<div class="photo-grid">${imgs}</div>`;
   }
-  return items.map(itemHTML).join('');
+  return items.map(it => itemHTML(it, itemKey(c, it))).join('');
+}
+
+let siteData = null;
+
+function renderFavorites(){
+  const view = document.getElementById('fav-view');
+  if(!view || !siteData) return;
+  const byKey = new Map();
+  (siteData.capsules || []).forEach(c => (c.items || []).forEach(it => byKey.set(itemKey(c, it), { c, it })));
+  const entries = getFavorites().map(k => byKey.get(k)).filter(Boolean).reverse();
+  document.getElementById('fav-count').textContent = entries.length || '';
+  view.innerHTML = entries.length
+    ? entries.map(({ c, it }) => `<div class="fav-card"><div class="fav-context">${escapeHTML(c.trigger)}</div><div class="capsule-body">${itemHTML(it, itemKey(c, it))}</div></div>`).join('')
+    : `<div class="fav-empty">${HEART_SVG}<p>עוד אין כאן הודעות.<br>לחצי על הלב ליד הודעה שאהבת, והיא תישמר כאן.</p></div>`;
+  if(!view.hidden) loadDeferredImages(view);
+}
+
+function setView(view){
+  const fav = view === 'fav';
+  document.querySelectorAll('.view-tabs .vt').forEach(b => {
+    const on = b.dataset.view === view;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on);
+  });
+  document.getElementById('fav-view').hidden = !fav;
+  document.querySelector('#main .capsule-list').hidden = fav;
+  if(fav) renderFavorites();
+}
+
+function toggleFavorite(btn){
+  const key = btn.dataset.key;
+  const favs = getFavorites();
+  const i = favs.indexOf(key);
+  const on = i === -1;
+  if(on) favs.push(key);
+  else favs.splice(i, 1);
+  saveFavorites(favs);
+  document.querySelectorAll('.fav-btn').forEach(b => {
+    if(b.dataset.key !== key) return;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on);
+  });
+  if(on && btn.animate && !reduceMotion){
+    btn.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.4)' }, { transform: 'scale(1)' }], { duration: 380, easing: 'cubic-bezier(.34,1.56,.64,1)' });
+  }
+  renderFavorites();
 }
 
 function updateCapsuleBtnLabel(div){
@@ -1551,8 +1726,27 @@ function renderSite(data){
   initHomeStrip();
   loveTotal = (data.capsules || []).reduce((sum, c) => sum + (c.items || []).filter(i => i.from).length, 0);
   document.getElementById('love-count').textContent = loveTotal;
+  siteData = data;
   const main = document.getElementById('main');
   main.innerHTML = '';
+
+  const tabs = document.createElement('div');
+  tabs.className = 'view-tabs';
+  tabs.innerHTML = `
+    <button type="button" class="vt on" data-view="all" aria-pressed="true">כל ההודעות</button>
+    <button type="button" class="vt" data-view="fav" aria-pressed="false">${HEART_SVG}המועדפים שלי<span class="vt-count" id="fav-count"></span></button>
+  `;
+  tabs.addEventListener('click', (e) => {
+    const b = e.target.closest('.vt');
+    if(b) setView(b.dataset.view);
+  });
+  main.appendChild(tabs);
+
+  const favView = document.createElement('div');
+  favView.id = 'fav-view';
+  favView.hidden = true;
+  main.appendChild(favView);
+
   const list = document.createElement('div');
   list.className = 'capsule-list';
   const filledCapsules = (data.capsules || []).filter(c => (c.items || []).length > 0);
@@ -1563,7 +1757,52 @@ function renderSite(data){
     list.appendChild(capsule);
   });
   main.appendChild(list);
+  renderFavorites();
+  setupInstallTip();
 }
+
+document.getElementById('main').addEventListener('click', (e) => {
+  const btn = e.target.closest('.fav-btn');
+  if(btn) toggleFavorite(btn);
+});
+
+const INSTALL_TIP_KEY = 'roni_install_tip_closed';
+const SHARE_ICON = '<svg class="share-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>';
+let installPrompt = null;
+
+function setupInstallTip(){
+  const tip = document.getElementById('install-tip');
+  let closed = false;
+  try { closed = localStorage.getItem(INSTALL_TIP_KEY) === '1'; } catch(e){}
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  if(closed || standalone){ tip.hidden = true; return; }
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if(installPrompt){
+    document.getElementById('install-how').textContent = 'אפשר להוסיף את האתר למסך הבית ולפתוח אותו בלחיצה';
+    document.getElementById('install-action').hidden = false;
+    tip.hidden = false;
+  } else if(ios){
+    document.getElementById('install-how').innerHTML = `לחצי על ${SHARE_ICON} ואז על <span style="white-space:nowrap">"הוספה למסך הבית"</span>`;
+    tip.hidden = false;
+  }
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  installPrompt = e;
+  if(siteData) setupInstallTip();
+});
+document.getElementById('install-close').addEventListener('click', () => {
+  try { localStorage.setItem(INSTALL_TIP_KEY, '1'); } catch(e){}
+  document.getElementById('install-tip').hidden = true;
+});
+document.getElementById('install-action').addEventListener('click', async () => {
+  if(!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice.catch(() => {});
+  installPrompt = null;
+  document.getElementById('install-tip').hidden = true;
+});
 
 function animateCount(el, target, delay){
   if(target <= 0){ el.textContent = target; return; }
@@ -1822,7 +2061,10 @@ function startMemoryGame(){
     const card = document.createElement('div');
     card.className = 'memory-card';
     card.dataset.photo = photo;
-    card.innerHTML = `<img src="media/${photo}" alt="">`;
+    const img = document.createElement('img');
+    img.src = 'media/' + photo;
+    img.alt = '';
+    card.appendChild(img);
     card.addEventListener('click', () => flipMemoryCard(card));
     grid.appendChild(card);
   });
