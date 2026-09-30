@@ -14,7 +14,7 @@ function mergeGreetings(list){
       if(from && at && c.from === from && c.group === g.group){ card = c; break; }
     }
     if(!card){
-      card = { from, group: g.group, texts: [], media: [], lastAt: at };
+      card = { from, group: g.group, texts: [], media: [], firstAt: g.sentAt || '', lastAt: at };
       cards.push(card);
     }
     if(g.text) card.texts.push(g.text);

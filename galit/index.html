@@ -153,6 +153,36 @@
   }
   .tab.on{ background:var(--card); color:var(--leaf-dark); box-shadow:0 4px 12px rgba(36,85,40,0.16); }
   .tab small{ font-weight:600; opacity:0.75; }
+  .tab .heart svg{ width:15px; height:15px; vertical-align:-2px; }
+  .tab.fav.on{ color:var(--bloom-dark); }
+  .tab.fav{ flex:0 0 auto; padding:10px 12px; }
+  .tab{ white-space:nowrap; }
+  @media (max-width:360px){
+    main{ padding-left:12px; padding-right:12px; }
+    .tabs{ padding:2px; gap:2px; }
+    .tab{ font-size:0.74rem; padding:10px 2px; }
+    .tab.fav{ padding:10px 6px; }
+  }
+
+  .fav-btn{
+    width:44px;
+    height:44px;
+    margin:-10px 0 -10px -10px;
+    flex-shrink:0;
+    border:none;
+    border-radius:50%;
+    background:none;
+    color:#c3bfae;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .fav-btn svg{ width:25px; height:25px; }
+  .fav-btn.on{ color:var(--bloom); }
+  .fav-btn.on svg{ fill:currentColor; animation:fav-pop .35s ease; }
+  @keyframes fav-pop{ 50%{ transform:scale(1.3); } }
 
   .wall{ display:flex; flex-direction:column; gap:16px; }
   .greeting{
@@ -172,7 +202,7 @@
   .g-body > * + *{ margin-top:14px; }
   .g-media img, .g-media video{ width:100%; border-radius:14px; display:block; }
   .g-media audio{ width:100%; }
-  .empty{ text-align:center; color:var(--muted); padding:40px 20px; font-weight:500; }
+  .empty{ text-align:center; color:var(--muted); padding:34px 22px; font-weight:500; line-height:1.7; background:rgba(255,253,244,0.94); border-radius:22px; box-shadow:0 12px 32px rgba(20,50,25,0.16); }
   body{ position:relative; z-index:0; }
   body::before{
     content:"";
@@ -378,13 +408,29 @@ function mediaHTML(file){
   return '';
 }
 
+// Galit can mark greetings she loves; kept on her device, like Roni's favorites.
+const FAV_KEY = 'galit_favorites';
+const HEART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.6-4.6-9.5-9.4C1.2 7.8 3.4 4.3 6.9 4.3c2.2 0 3.6 1.2 5.1 3 1.5-1.8 2.9-3 5.1-3 3.5 0 5.7 3.5 4.4 6.8-1.9 4.8-9.5 9.4-9.5 9.4z"/></svg>';
+let favorites = new Set();
+try{ favorites = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || '[]')); } catch(e){}
+
+function favKey(g){
+  return g.from + '|' + g.firstAt;
+}
+
+function saveFavorites(){
+  try{ localStorage.setItem(FAV_KEY, JSON.stringify([...favorites])); } catch(e){}
+}
+
 function greetingHTML(g){
   const group = GROUPS.find(x => x.key === g.group);
+  const fav = favorites.has(favKey(g));
   return `
     <article class="greeting">
       <div class="g-head">
         <span class="g-name">${escapeHTML(g.from || '')}</span>
         ${group ? `<span class="g-tag ${g.group}">${group.label}</span>` : ''}
+        <button type="button" class="fav-btn${fav ? ' on' : ''}" data-key="${escapeHTML(favKey(g))}" aria-pressed="${fav}" aria-label="ברכה אהובה">${HEART}</button>
       </div>
       <div class="g-body">
         ${g.texts.map(t => `<div class="g-text">${escapeHTML(t)}</div>`).join('')}
@@ -393,19 +439,39 @@ function greetingHTML(g){
     </article>`;
 }
 
+function favoriteGreetings(){
+  return greetings.filter(g => favorites.has(favKey(g)));
+}
+
 function renderTabs(){
   document.getElementById('tabs').innerHTML = GROUPS.map(t => {
     const n = t.key === 'all' ? greetings.length : greetings.filter(g => g.group === t.key).length;
     return `<button type="button" class="tab${t.key === activeTab ? ' on' : ''}" data-tab="${t.key}">${t.label} <small>${n}</small></button>`;
-  }).join('');
+  }).join('') + `<button type="button" class="tab fav${activeTab === 'fav' ? ' on' : ''}" data-tab="fav" aria-label="ברכות אהובות"><span class="heart">${HEART}</span> <small>${favoriteGreetings().length}</small></button>`;
 }
 
 function renderWall(){
-  const shown = activeTab === 'all' ? greetings : greetings.filter(g => g.group === activeTab);
-  document.getElementById('wall').innerHTML = shown.length
-    ? shown.map(greetingHTML).join('')
+  const shown = activeTab === 'all' ? greetings
+    : activeTab === 'fav' ? favoriteGreetings()
+    : greetings.filter(g => g.group === activeTab);
+  const empty = activeTab === 'fav'
+    ? '<div class="empty">עוד לא סימנת ברכות. אפשר ללחוץ על הלב בברכה שאת אוהבת, והיא תחכה לך כאן.</div>'
     : '<div class="empty">עוד אין כאן ברכות</div>';
+  document.getElementById('wall').innerHTML = shown.length ? shown.map(greetingHTML).join('') : empty;
 }
+
+document.getElementById('wall').addEventListener('click', (e) => {
+  const b = e.target.closest('.fav-btn');
+  if(!b) return;
+  const key = b.dataset.key;
+  const on = !favorites.has(key);
+  if(on) favorites.add(key); else favorites.delete(key);
+  saveFavorites();
+  b.classList.toggle('on', on);
+  b.setAttribute('aria-pressed', on);
+  renderTabs();
+  if(activeTab === 'fav' && !on) renderWall();
+});
 
 document.getElementById('tabs').addEventListener('click', (e) => {
   const b = e.target.closest('.tab');
@@ -470,7 +536,7 @@ function showSite(view){
   document.getElementById('site').hidden = false;
   document.getElementById('total').textContent = greetings.length;
   document.getElementById('show-btn').hidden = !greetings.length;
-  if(view && GROUPS.some(t => t.key === view.tab)) activeTab = view.tab;
+  if(view && (view.tab === 'fav' || GROUPS.some(t => t.key === view.tab))) activeTab = view.tab;
   renderTabs();
   renderWall();
   const card = view && view.idx >= 0 ? document.querySelectorAll('.greeting')[view.idx] : null;
