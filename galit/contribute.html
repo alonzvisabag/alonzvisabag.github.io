@@ -13,41 +13,37 @@
   [hidden]{ display:none !important; }
 
   :root{
-    --bg1:#f6f3ec;
-    --bg2:#eef1e5;
-    --bg3:#f5e9e2;
     --ink:#2f3a2c;
-    --muted:#7b8474;
+    --muted:#66705f;
     --card:#fffdf8;
-    --leaf:#8aa37b;
-    --leaf-light:#a9bf97;
-    --leaf-dark:#5f7a52;
-    --bloom:#cf8a76;
-    --bloom-dark:#ad6653;
-    --border:#e7e4d7;
+    --leaf:#5f9a4c;
+    --leaf-light:#8cc063;
+    --leaf-dark:#2f6b35;
+    --bloom:#e0708a;
+    --bloom-dark:#c04a68;
+    --border:#e4e3d3;
   }
 
-  html{ background:var(--bg1); }
+  html{ background:#e3ebcc; }
   body{
     font-family:'Rubik', sans-serif;
     color:var(--ink);
     min-height:100vh;
     -webkit-font-smoothing:antialiased;
-    background:linear-gradient(160deg, var(--bg1), var(--bg2) 55%, var(--bg3));
-    background-attachment:fixed;
   }
 
   header{
     text-align:center;
-    padding:48px 22px 26px;
+    padding:28px 16px 26px;
   }
+  header .panel{ max-width:520px; margin:0 auto; padding:26px 20px 24px; }
   .overline{
     display:inline-block;
     font-size:0.78rem;
     font-weight:700;
     letter-spacing:1.5px;
     color:var(--leaf-dark);
-    border:1.5px solid rgba(111,138,98,0.45);
+    border:1.5px solid rgba(47,107,53,0.4);
     border-radius:30px;
     padding:5px 14px;
     margin-bottom:16px;
@@ -88,7 +84,7 @@
     gap:14px;
     align-items:center;
     text-align:right;
-    box-shadow:0 12px 28px rgba(173,102,83,0.32);
+    box-shadow:0 12px 28px rgba(192,74,104,0.35);
   }
   .secret-banner{ animation:secret-pulse 1.6s ease-in-out infinite; }
   @keyframes secret-pulse{
@@ -111,7 +107,7 @@
     background:var(--card);
     border-radius:22px;
     padding:24px 20px;
-    box-shadow:0 12px 36px rgba(63,84,54,0.08);
+    box-shadow:0 12px 36px rgba(20,50,25,0.16);
     margin-bottom:18px;
   }
 
@@ -169,9 +165,9 @@
     color:var(--ink);
     transition:border-color .15s, box-shadow .15s;
   }
-  input[type="text"]:focus, textarea:focus{ border-color:var(--leaf); box-shadow:0 0 0 3px rgba(138,163,123,0.22); }
+  input[type="text"]:focus, textarea:focus{ border-color:var(--leaf); box-shadow:0 0 0 3px rgba(95,154,76,0.22); }
   textarea{ min-height:140px; resize:vertical; line-height:1.6; }
-  .invalid, .invalid:focus{ border-color:var(--bloom) !important; box-shadow:0 0 0 3px rgba(207,138,118,0.22) !important; }
+  .invalid, .invalid:focus{ border-color:var(--bloom) !important; box-shadow:0 0 0 3px rgba(224,112,138,0.22) !important; }
   .groups.invalid{ border-radius:14px; }
   .field-error{ color:var(--bloom-dark); font-size:0.82rem; font-weight:700; margin-top:6px; min-height:0; }
 
@@ -208,7 +204,7 @@
   .attach .info{ flex:1; min-width:0; }
   .attach .info b{ display:block; font-size:0.92rem; }
   .attach .info span{ display:block; font-size:0.78rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .attach .remove{ width:44px; height:44px; flex-shrink:0; border:none; border-radius:50%; background:#f7ece7; color:var(--bloom-dark); cursor:pointer; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+  .attach .remove{ width:44px; height:44px; flex-shrink:0; border:none; border-radius:50%; background:#fbeaee; color:var(--bloom-dark); cursor:pointer; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
   .attach .remove svg{ width:18px; height:18px; }
 
   #submit-btn{
@@ -223,10 +219,10 @@
     font-weight:800;
     font-size:1.05rem;
     cursor:pointer;
-    box-shadow:0 6px 0 #4f6844;
+    box-shadow:0 6px 0 #245528;
     transition:transform .15s;
   }
-  #submit-btn:active{ transform:translateY(2px); box-shadow:0 3px 0 #4f6844; }
+  #submit-btn:active{ transform:translateY(2px); box-shadow:0 3px 0 #245528; }
   #submit-btn:disabled{ opacity:0.6; cursor:default; }
 
   #status-msg{ margin-top:14px; font-size:0.92rem; font-weight:700; text-align:center; min-height:1.3em; }
@@ -247,26 +243,36 @@
     cursor:pointer;
   }
   body{ position:relative; z-index:0; }
-  body::before, body::after{
+  body::before{
     content:"";
     position:fixed;
-    border-radius:50%;
+    left:0;
+    top:0;
+    width:100%;
+    height:100vh;
+    height:100lvh;
+    background:url(jungle.svg) center / 100% 100% no-repeat;
     z-index:-1;
     pointer-events:none;
   }
-  body::before{ width:520px; height:520px; top:-210px; left:-220px; background:radial-gradient(circle, rgba(201,216,184,0.6), rgba(201,216,184,0) 68%); }
-  body::after{ width:480px; height:480px; bottom:-200px; right:-210px; background:radial-gradient(circle, rgba(241,210,197,0.6), rgba(241,210,197,0) 68%); }
+  .glass{
+    background:rgba(255,253,244,0.94);
+    border-radius:30px;
+    box-shadow:0 20px 60px rgba(20,50,25,0.25);
+  }
   .sprig{ display:block; width:132px; height:auto; margin:0 auto 12px; }
 </style>
 </head>
 <body>
 
 <header>
-  <svg class="sprig" viewBox="0 0 146 40" aria-hidden="true"><path d="M6 32 Q62 6 134 20" fill="none" stroke="#6f8a62" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="20.8" cy="20.5" rx="8.2" ry="3.3" transform="rotate(-62.7 20.8 20.5)" fill="#a9bf97"/><ellipse cx="33.3" cy="27.0" rx="7.9" ry="3.2" transform="rotate(24.5 33.3 27.0)" fill="#8aa37b"/><ellipse cx="40.1" cy="15.3" rx="7.6" ry="3.1" transform="rotate(-56.3 40.1 15.3)" fill="#8aa37b"/><ellipse cx="51.7" cy="22.4" rx="7.4" ry="3.1" transform="rotate(30.8 51.7 22.4)" fill="#a9bf97"/><ellipse cx="60.0" cy="12.2" rx="7.1" ry="3.0" transform="rotate(-50.2 60.0 12.2)" fill="#8aa37b"/><ellipse cx="71.0" cy="19.7" rx="6.8" ry="2.9" transform="rotate(36.8 71.0 19.7)" fill="#8aa37b"/><ellipse cx="80.6" cy="11.1" rx="6.5" ry="2.8" transform="rotate(-44.3 80.6 11.1)" fill="#a9bf97"/><ellipse cx="91.1" cy="19.0" rx="6.2" ry="2.7" transform="rotate(42.5 91.1 19.0)" fill="#8aa37b"/><ellipse cx="101.9" cy="12.0" rx="6.0" ry="2.7" transform="rotate(-38.8 101.9 12.0)" fill="#8aa37b"/><ellipse cx="112.1" cy="20.1" rx="5.7" ry="2.6" transform="rotate(47.8 112.1 20.1)" fill="#a9bf97"/><ellipse cx="123.9" cy="14.8" rx="5.4" ry="2.5" transform="rotate(-33.8 123.9 14.8)" fill="#8aa37b"/><ellipse cx="139.0" cy="21.0" rx="6.5" ry="2.7" transform="rotate(12 139.0 21.0)" fill="#a9bf97"/></svg>
-  <div class="overline">5.10 · הפתעה</div>
-  <h1>גלית בת <span class="num">60</span></h1>
-  <p>ב-5 לאוקטובר לאמא שלנו יש יום הולדת 60, ואנחנו מכינים לה הפתעה: אתר אחד שבו מחכות לה ברכות, זיכרונות, תמונות והקלטות מכל האנשים שאוהבים אותה. <strong>המטרה: 60 ברכות ל-60 שנה.</strong></p>
-  <p class="extras">חוץ מברכה כתובה, אפשר <b>(ואפילו מומלץ!)</b> לצרף תמונה משותפת, סרטון או הקלטה קולית שלכם.</p>
+  <div class="glass panel">
+    <svg class="sprig" viewBox="0 0 146 40" aria-hidden="true"><path d="M6 32 Q62 6 134 20" fill="none" stroke="#3d7a3a" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="20.8" cy="20.5" rx="8.2" ry="3.3" transform="rotate(-62.7 20.8 20.5)" fill="#8cc063"/><ellipse cx="33.3" cy="27.0" rx="7.9" ry="3.2" transform="rotate(24.5 33.3 27.0)" fill="#5f9a4c"/><ellipse cx="40.1" cy="15.3" rx="7.6" ry="3.1" transform="rotate(-56.3 40.1 15.3)" fill="#5f9a4c"/><ellipse cx="51.7" cy="22.4" rx="7.4" ry="3.1" transform="rotate(30.8 51.7 22.4)" fill="#8cc063"/><ellipse cx="60.0" cy="12.2" rx="7.1" ry="3.0" transform="rotate(-50.2 60.0 12.2)" fill="#5f9a4c"/><ellipse cx="71.0" cy="19.7" rx="6.8" ry="2.9" transform="rotate(36.8 71.0 19.7)" fill="#5f9a4c"/><ellipse cx="80.6" cy="11.1" rx="6.5" ry="2.8" transform="rotate(-44.3 80.6 11.1)" fill="#8cc063"/><ellipse cx="91.1" cy="19.0" rx="6.2" ry="2.7" transform="rotate(42.5 91.1 19.0)" fill="#5f9a4c"/><ellipse cx="101.9" cy="12.0" rx="6.0" ry="2.7" transform="rotate(-38.8 101.9 12.0)" fill="#5f9a4c"/><ellipse cx="112.1" cy="20.1" rx="5.7" ry="2.6" transform="rotate(47.8 112.1 20.1)" fill="#8cc063"/><ellipse cx="123.9" cy="14.8" rx="5.4" ry="2.5" transform="rotate(-33.8 123.9 14.8)" fill="#5f9a4c"/><ellipse cx="139.0" cy="21.0" rx="6.5" ry="2.7" transform="rotate(12 139.0 21.0)" fill="#8cc063"/></svg>
+    <div class="overline">5.10 · הפתעה</div>
+    <h1>גלית בת <span class="num">60</span></h1>
+    <p>ב-5 לאוקטובר לאמא שלנו יש יום הולדת 60, ואנחנו מכינים לה הפתעה: אתר אחד שבו מחכות לה ברכות, זיכרונות, תמונות והקלטות מכל האנשים שאוהבים אותה. <strong>המטרה: 60 ברכות ל-60 שנה.</strong></p>
+    <p class="extras">חוץ מברכה כתובה, אפשר <b>(ואפילו מומלץ!)</b> לצרף תמונה משותפת, סרטון או הקלטה קולית שלכם.</p>
+  </div>
   <div class="secret-banner" role="note">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="11" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><circle cx="12" cy="16" r="1.4" fill="currentColor"/></svg>
     <div>
