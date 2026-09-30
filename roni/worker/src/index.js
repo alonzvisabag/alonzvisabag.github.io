@@ -12,7 +12,6 @@ const VALID_TYPES = ['letter', 'audio', 'video', 'photo'];
 const MAX_TEXT = 20000;
 const FLOOD_WINDOW_MS = 10 * 60 * 1000;
 const FLOOD_MAX = 30;
-const MERGE_WINDOW_MS = 15 * 60 * 1000;
 
 async function notify(env, text) {
   const token = (env.TELEGRAM_BOT_TOKEN || '').trim();
@@ -97,26 +96,18 @@ async function readContent(env, path) {
   return { sha: file.sha, data: JSON.parse(base64ToUtf8(file.contentBase64)) };
 }
 
-// How many greetings Galit's page shows: entries from the same person a few minutes apart are one
-// greeting sent in parts (a recording and some photos). Must match mergeGreetings in galit/greetings.js.
+// How many greetings Galit's page shows: the parts of one send (a recording and some photos) share
+// a batch id and count once; every separate send is its own greeting. Must match mergeGreetings in galit/greetings.js.
 function greetingCount(list) {
-  const cards = [];
+  const seen = new Set();
+  let count = 0;
   for (const g of list) {
-    const from = (g.from || '').trim();
-    const at = Date.parse(g.sentAt || '') || 0;
-    let card = null;
-    for (let i = cards.length - 1; i >= 0; i--) {
-      const c = cards[i];
-      if (at - c.lastAt > MERGE_WINDOW_MS) break;
-      if (from && at && c.from === from && c.group === g.group) { card = c; break; }
-    }
-    if (!card) {
-      card = { from, group: g.group, lastAt: at };
-      cards.push(card);
-    }
-    card.lastAt = Math.max(card.lastAt, at);
+    const key = g.batch ? `${g.batch}|${(g.from || '').trim()}|${g.group}` : null;
+    if (key && seen.has(key)) continue;
+    if (key) seen.add(key);
+    count++;
   }
-  return cards.length;
+  return count;
 }
 
 function recentCount(data) {
@@ -184,7 +175,7 @@ async function handleContribute(request, env) {
     return json({ ok: false, error: 'invalid json' }, 400);
   }
 
-  const { capsuleId, newCapsule, from, text, mediaBase64, mediaExt, website, group } = body;
+  const { capsuleId, newCapsule, from, text, mediaBase64, mediaExt, website, group, batch } = body;
   const siteKey = body.site === undefined ? 'roni' : body.site;
   const site = SITES[siteKey];
   const isGalit = siteKey === 'galit';
@@ -267,6 +258,8 @@ async function handleContribute(request, env) {
     return json({ ok: false, error: 'too many requests' }, 429);
   }
 
+  const cleanBatch = isGalit && typeof batch === 'string' && /^[A-Za-z0-9-]{6,40}$/.test(batch) ? batch : null;
+
   // Telegram: "ר" for Roni's site, "5 מתוך 60" for Galit's (only when a new greeting starts,
   // not for the extra photos of one already counted).
   const failNote = isGalit ? 'ברכה לגלית לא נשמרה' : 'ר - לא נשמר';
@@ -301,7 +294,7 @@ async function handleContribute(request, env) {
       await saveContent(env, site.content, (data) => {
         if (!data.greetings) data.greetings = [];
         const before = greetingCount(data.greetings);
-        data.greetings.push({ ...item, group });
+        data.greetings.push(cleanBatch ? { ...item, group, batch: cleanBatch } : { ...item, group });
         const after = greetingCount(data.greetings);
         const goal = (data.site && data.site.goal) || 60;
         note = after > before ? `${after} מתוך ${goal}` : null;

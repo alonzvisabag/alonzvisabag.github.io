@@ -375,6 +375,14 @@ let activeStream = null;
 let recTimer = null;
 let attachments = [];
 let sending = false;
+// All the parts of one send share this id, so Galit sees them as one greeting.
+// It stays while a send is only partly saved, and a fresh one starts with the next greeting.
+let batchId = null;
+
+function newBatchId(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
+}
 
 // Never shows the goal as reached, so people keep sending; Galit's own page shows the real number.
 function showProgress(count){
@@ -659,6 +667,7 @@ async function submitGreeting(){
   // One save per file; the first one carries the text. Whatever was saved is cleared from the form,
   // so pressing send again after a failure only sends what is left.
   let pendingText = text;
+  if(!batchId) batchId = newBatchId();
   for(let i = 0; i < parts.length; i++){
     const part = parts[i];
     statusEl.textContent = parts.length > 1 ? `שולח... (${i + 1} מתוך ${parts.length})` : 'שולח...';
@@ -666,6 +675,7 @@ async function submitGreeting(){
       site: 'galit',
       group,
       from,
+      batch: batchId,
       text: pendingText || undefined,
       mediaBase64: part ? await blobToBase64(part.blob) : undefined,
       mediaExt: part ? part.ext : undefined,
@@ -680,6 +690,7 @@ async function submitGreeting(){
   }
 
   sending = false;
+  batchId = null;
   submitBtn.disabled = false;
   statusEl.textContent = '';
   document.getElementById('form-card').style.display = 'none';
