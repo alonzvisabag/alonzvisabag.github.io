@@ -7,7 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="alternate icon" href="favicon-32.png">
 <link rel="apple-touch-icon" href="favicon-180.png">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self' blob:; connect-src 'self' https://roni-contribute.alonzvisabag.workers.dev; frame-src https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self' https://roni-contribute.alonzvisabag.workers.dev;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' https://roni-contribute.alonzvisabag.workers.dev; frame-src https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self' https://roni-contribute.alonzvisabag.workers.dev;">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -143,7 +143,7 @@
   input[type="text"], select, textarea{
     width:100%;
     font-family:'Rubik', sans-serif;
-    font-size:0.95rem;
+    font-size:1rem;
     padding:12px 14px;
     border-radius:10px;
     border:1.5px solid var(--border);
@@ -156,7 +156,12 @@
 
   .rec-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 
-  button.pill{
+  [hidden]{ display:none !important; }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
     font-family:'Rubik', sans-serif;
     font-size:0.9rem;
     font-weight:700;
@@ -168,19 +173,30 @@
     background:var(--sky);
     transition:transform .12s;
   }
-  button.pill:hover{ transform:scale(1.03); }
-  button.pill:active{ transform:scale(0.97); }
-  button.pill.recording{ background:var(--coral); }
-  button.pill:disabled{ opacity:0.5; cursor:default; transform:none; }
+  .pill:hover{ transform:scale(1.03); }
+  .pill:active{ transform:scale(0.97); }
+  .pill.quiet{ background:#fff; color:var(--muted); border:1.5px solid var(--border); }
+  .pill.recording{ background:var(--coral); }
+  .pill:disabled{ opacity:0.5; cursor:default; transform:none; }
 
-  #rec-status{ font-size:0.85rem; color:var(--muted); font-weight:600; }
+  #rec-status{ font-size:0.85rem; color:var(--muted); font-weight:600; font-variant-numeric:tabular-nums; }
 
   audio{ width:100%; margin-top:10px; }
 
-  input[type="file"]{
-    font-family:'Rubik', sans-serif;
-    font-size:0.88rem;
-  }
+  .visually-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; opacity:0; }
+  .attach-list:empty{ display:none; }
+  .attach-list{ margin-bottom:10px; }
+  .attach{ display:flex; align-items:center; gap:12px; padding:8px; border:1.5px solid var(--border); border-radius:12px; background:#fff; }
+  .attach .thumb{ position:relative; width:52px; height:52px; border-radius:10px; overflow:hidden; flex-shrink:0; background:#eaf6fc; color:var(--sky); display:flex; align-items:center; justify-content:center; }
+  .attach .thumb img, .attach .thumb video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .attach .thumb svg{ position:relative; width:22px; height:22px; }
+  .attach .thumb video + svg{ color:#fff; filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
+  .attach .info{ flex:1; min-width:0; }
+  .attach .info b{ display:block; font-size:0.92rem; }
+  .attach .info span{ display:block; font-size:0.78rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .attach .remove{ width:44px; height:44px; flex-shrink:0; border:none; border-radius:50%; background:#fff0ec; color:var(--coral-dark); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .attach .remove svg{ width:18px; height:18px; }
+  .field-error{ color:var(--coral-dark); font-size:0.82rem; font-weight:700; margin-top:6px; }
 
   .submit-row{ margin-top:22px; }
 
@@ -286,12 +302,16 @@
       <label class="field-label">הקלטה קולית (רשות)</label>
       <div class="rec-row">
         <button class="pill" type="button" id="rec-btn">הקליטו</button>
+        <button class="pill quiet" type="button" id="rec-del" hidden>מחיקת ההקלטה</button>
         <span id="rec-status"></span>
       </div>
       <audio id="rec-preview" controls style="display:none"></audio>
 
-      <label class="field-label">או צרפו קובץ — תמונה, סרטון או הקלטה (רשות)</label>
-      <input type="file" id="file-input" accept="image/*,video/*,audio/*">
+      <label class="field-label">צרפו קובץ — תמונה, סרטון או הקלטה (רשות)</label>
+      <div class="attach-list" id="attach-list"></div>
+      <label class="pill" for="file-input" id="add-file">+ בחירת קובץ</label>
+      <input type="file" id="file-input" class="visually-hidden" accept="image/*,video/*,audio/*">
+      <div class="field-error" id="file-error"></div>
 
       <div class="submit-row">
         <button type="button" id="submit-btn">שלחו לרוני</button>
@@ -366,7 +386,7 @@ function openCompose({ capsuleId, trigger, isNew }){
   document.getElementById('from-name').value = '';
   document.getElementById('letter-text').value = '';
   document.getElementById('new-trigger').value = '';
-  document.getElementById('file-input').value = '';
+  clearAttachment();
   document.getElementById('hp-extra').value = '';
   document.getElementById('status-msg').textContent = '';
   document.getElementById('status-msg').className = '';
@@ -395,15 +415,18 @@ function resetRecording(){
   preview.load();
   document.getElementById('rec-btn').textContent = 'הקליטו';
   document.getElementById('rec-btn').classList.remove('recording');
+  document.getElementById('rec-del').hidden = true;
   document.getElementById('rec-status').textContent = '';
 }
 
 let activeStream = null;
+let recTimer = null;
 function stopRecordingStream(){
   if(activeStream){
     activeStream.getTracks().forEach(t => t.stop());
     activeStream = null;
   }
+  clearInterval(recTimer);
 }
 
 async function toggleRecording(){
@@ -415,16 +438,26 @@ async function toggleRecording(){
     return;
   }
 
+  if(!window.MediaRecorder || !navigator.mediaDevices){
+    status.textContent = 'אי אפשר להקליט מכאן. נסו לפתוח את הקישור בספארי או בכרום';
+    return;
+  }
   try{
     activeStream = await navigator.mediaDevices.getUserMedia({ audio: true });
   } catch(e){
-    status.textContent = 'אין גישה למיקרופון';
+    status.textContent = 'אין גישה למיקרופון. צריך לאשר גישה, או לפתוח את הקישור בספארי או בכרום';
     return;
   }
 
   const picked = pickMimeType();
   recChunks = [];
-  mediaRecorder = picked.mime ? new MediaRecorder(activeStream, { mimeType: picked.mime }) : new MediaRecorder(activeStream);
+  try{
+    mediaRecorder = picked.mime ? new MediaRecorder(activeStream, { mimeType: picked.mime }) : new MediaRecorder(activeStream);
+  } catch(e){
+    stopRecordingStream();
+    status.textContent = 'אי אפשר להקליט מכאן. נסו לפתוח את הקישור בספארי או בכרום';
+    return;
+  }
   mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recChunks.push(e.data); };
   mediaRecorder.onstop = () => {
     recordedBlob = new Blob(recChunks, { type: picked.mime || 'audio/webm' });
@@ -434,18 +467,29 @@ async function toggleRecording(){
     preview.style.display = 'block';
     btn.textContent = 'הקליטו שוב';
     btn.classList.remove('recording');
+    document.getElementById('rec-del').hidden = false;
     status.textContent = '';
     stopRecordingStream();
   };
   mediaRecorder.start();
   btn.textContent = 'עצרו הקלטה';
   btn.classList.add('recording');
-  status.textContent = 'מקליט...';
+  document.getElementById('rec-del').hidden = true;
+  const startedAt = Date.now();
+  const showTime = () => {
+    const s = Math.floor((Date.now() - startedAt) / 1000);
+    status.textContent = `מקליט... ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  };
+  showTime();
+  recTimer = setInterval(showTime, 500);
 }
 
 // The worker caps base64 at 15M characters, which is about 11.25MB of file.
 const MAX_MEDIA_BYTES = 11_000_000;
 const MEDIA_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3', 'wav', 'm4a', 'ogg', 'aac', 'mp4', 'mov', 'webm', 'm4v'];
+const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif'];
+const VIDEO_EXTS = ['mp4', 'mov', 'webm', 'm4v'];
+const AUDIO_EXTS = ['mp3', 'wav', 'm4a', 'ogg', 'aac'];
 const ERROR_TEXT = {
   'file too large': 'הקובץ גדול מדי (עד 11MB)',
   'unsupported file type': 'אפשר לצרף רק תמונה, סרטון או הקלטה',
@@ -453,8 +497,112 @@ const ERROR_TEXT = {
   'text too long': 'ההודעה ארוכה מדי',
   'nothing to save': 'צריך לכתוב, להקליט או לצרף משהו',
   'situation not available': 'אי אפשר להוסיף לסיטואציה הזאת',
-  'too many requests': 'יש עומס כרגע, נסו שוב בעוד כמה דקות'
+  'too many requests': 'יש עומס כרגע, נסו שוב בעוד כמה דקות',
+  'network': 'לא הצלחנו לשלוח, בדקו את החיבור לאינטרנט ונסו שוב'
 };
+const VIDEO_TOO_BIG = 'הסרטון הזה גדול מדי לשליחה. אפשר לקצר אותו בגלריה (עריכה ← חיתוך) ולבחור אותו שוב, או לבחור סרטון קצר יותר';
+const ICONS = {
+  video: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
+  audio: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>',
+  remove: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+};
+const KIND_LABEL = { image: 'תמונה', video: 'סרטון', audio: 'הקלטה' };
+
+let attachment = null;
+
+function kindOf(file, ext){
+  const type = file.type || '';
+  if(IMAGE_EXTS.includes(ext) || type.startsWith('image/')) return 'image';
+  if(VIDEO_EXTS.includes(ext) || type.startsWith('video/')) return 'video';
+  if(AUDIO_EXTS.includes(ext) || type.startsWith('audio/')) return 'audio';
+  return null;
+}
+
+function renderAttachment(){
+  const list = document.getElementById('attach-list');
+  list.textContent = '';
+  document.getElementById('add-file').textContent = attachment ? 'החלפת הקובץ' : '+ בחירת קובץ';
+  if(!attachment) return;
+  const a = attachment;
+  const row = document.createElement('div');
+  row.className = 'attach';
+  const thumb = document.createElement('div');
+  thumb.className = 'thumb';
+  if(a.kind === 'image'){
+    const img = document.createElement('img');
+    img.alt = '';
+    img.src = a.url;
+    img.onerror = () => { img.remove(); thumb.innerHTML = ICONS.image; };
+    thumb.appendChild(img);
+  } else if(a.kind === 'video'){
+    const v = document.createElement('video');
+    v.muted = true;
+    v.playsInline = true;
+    v.preload = 'metadata';
+    v.src = a.url + '#t=0.1';
+    thumb.appendChild(v);
+    thumb.insertAdjacentHTML('beforeend', ICONS.video);
+  } else {
+    thumb.innerHTML = ICONS.audio;
+  }
+  const info = document.createElement('div');
+  info.className = 'info';
+  const title = document.createElement('b');
+  title.textContent = KIND_LABEL[a.kind];
+  const name = document.createElement('span');
+  name.textContent = a.file.name || '';
+  info.append(title, name);
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.className = 'remove';
+  remove.setAttribute('aria-label', 'הסרה');
+  remove.innerHTML = ICONS.remove;
+  remove.addEventListener('click', clearAttachment);
+  row.append(thumb, info, remove);
+  list.appendChild(row);
+}
+
+function clearAttachment(){
+  if(attachment && attachment.url) URL.revokeObjectURL(attachment.url);
+  attachment = null;
+  document.getElementById('file-input').value = '';
+  document.getElementById('file-error').textContent = '';
+  renderAttachment();
+}
+
+function pickFile(e){
+  const file = e.target.files[0];
+  e.target.value = '';
+  if(!file) return;
+  const ext = extFromFile(file);
+  const kind = kindOf(file, ext);
+  let error = '';
+  if(!kind || (kind !== 'image' && !MEDIA_EXTS.includes(ext))) error = ERROR_TEXT['unsupported file type'];
+  // Photos get shrunk before sending; videos and recordings have to fit as they are.
+  else if(kind !== 'image' && file.size > MAX_MEDIA_BYTES) error = kind === 'video' ? VIDEO_TOO_BIG : 'ההקלטה הזאת ארוכה מדי לשליחה';
+  if(error){
+    document.getElementById('file-error').textContent = error;
+    return;
+  }
+  clearAttachment();
+  attachment = { file, ext, kind, url: kind === 'audio' ? null : URL.createObjectURL(file) };
+  renderAttachment();
+}
+
+async function prepareAttachment(a){
+  if(a.kind === 'image' && a.ext !== 'gif'){
+    const mustConvert = !MEDIA_EXTS.includes(a.ext);
+    const small = await shrinkImage(a.file, mustConvert);
+    if(small) return { blob: small, ext: 'jpg' };
+    if(mustConvert) return { error: 'את התמונה הזאת אי אפשר לשלוח. נסו לבחור אותה מהגלריה' };
+  }
+  if(!MEDIA_EXTS.includes(a.ext)) return { error: ERROR_TEXT['unsupported file type'] };
+  if(a.file.size > MAX_MEDIA_BYTES) return { error: a.kind === 'video' ? VIDEO_TOO_BIG : ERROR_TEXT['file too large'] };
+  if(a.ext === 'm4a') return { blob: await standardizeAudio(a.file), ext: a.ext };
+  if(a.ext === 'jpg' || a.ext === 'jpeg') return { blob: await removeLocation(a.file), ext: a.ext };
+  return { blob: a.file, ext: a.ext };
+}
 
 function finishRecording(){
   return new Promise((resolve) => {
@@ -464,35 +612,48 @@ function finishRecording(){
   });
 }
 
+async function sendPart(payload){
+  try{
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return await res.json().catch(() => ({ ok: false, error: res.status === 413 ? 'file too large' : '' }));
+  } catch(e){
+    return { ok: false, error: 'network' };
+  }
+}
+
 let sending = false;
 
 async function submitContribution(){
   if(sending) return;
   const statusEl = document.getElementById('status-msg');
   const submitBtn = document.getElementById('submit-btn');
+  const textInput = document.getElementById('letter-text');
   const fail = (msg) => {
     statusEl.textContent = msg;
     statusEl.className = 'err';
     sending = false;
     submitBtn.disabled = false;
   };
-  sending = true;
-  submitBtn.disabled = true;
-  await finishRecording();
-
-  const from = document.getElementById('from-name').value.trim();
-  const text = document.getElementById('letter-text').value.trim();
-  const fileInput = document.getElementById('file-input');
-  const file = fileInput.files[0] || null;
-  const honeypot = document.getElementById('hp-extra').value;
-
-  if(honeypot){
+  const done = () => {
     statusEl.textContent = 'תודה, זה נשמר לרוני!';
     statusEl.className = 'ok';
     setTimeout(() => { sending = false; submitBtn.disabled = false; backToList(); loadCapsules(); }, 1400);
-    return;
-  }
+  };
+  sending = true;
+  submitBtn.disabled = true;
+  statusEl.textContent = '';
+  statusEl.className = '';
+  await finishRecording();
 
+  const from = document.getElementById('from-name').value.trim();
+  const text = textInput.value.trim();
+  const honeypot = document.getElementById('hp-extra').value;
+
+  if(honeypot) return done();
   if(!from) return fail('צריך לכתוב מי אתם');
 
   const isNew = !selectedCapsuleId;
@@ -506,53 +667,49 @@ async function submitContribution(){
     };
   }
 
-  if(!text && !recordedBlob && !file) return fail('צריך לכתוב, להקליט או לצרף משהו');
-
-  let media = null;
-  let mediaExt = null;
-  if(recordedBlob){
-    mediaExt = recordedExt;
-    media = recordedExt === 'm4a' ? await standardizeAudio(recordedBlob) : recordedBlob;
-    if(media.size > MAX_MEDIA_BYTES) return fail('ההקלטה ארוכה מדי, נסו הקלטה קצרה יותר');
-  } else if(file){
-    mediaExt = extFromFilename(file.name);
-    if(!MEDIA_EXTS.includes(mediaExt)) return fail(ERROR_TEXT['unsupported file type']);
-    if(file.size > MAX_MEDIA_BYTES) return fail(ERROR_TEXT['file too large']);
-    if(mediaExt === 'm4a') media = await standardizeAudio(file);
-    else if(mediaExt === 'jpg' || mediaExt === 'jpeg') media = await removeLocation(file);
-    else media = file;
+  if(!text && !recordedBlob && !attachment) return fail('צריך לכתוב, להקליט או לצרף משהו');
+  // A new situation gets its id only when it is saved, so it can take one recording or file.
+  if(isNew && recordedBlob && attachment){
+    return fail('בסיטואציה חדשה אפשר לצרף רק אחד: הקלטה או קובץ. מחקו אחד מהם, ואת השני תוכלו להוסיף אחר כך כשהסיטואציה תופיע ברשימה');
   }
 
-  statusEl.textContent = 'שולח...';
-  statusEl.className = '';
+  // Everything is checked before the first send, so a problem never leaves half of it behind.
+  const parts = [];
+  if(recordedBlob || attachment) statusEl.textContent = 'מכינים את הקבצים...';
+  if(recordedBlob){
+    const blob = recordedExt === 'm4a' ? await standardizeAudio(recordedBlob) : recordedBlob;
+    if(blob.size > MAX_MEDIA_BYTES) return fail('ההקלטה ארוכה מדי, נסו הקלטה קצרה יותר');
+    parts.push({ blob, ext: recordedExt, done: resetRecording });
+  }
+  if(attachment){
+    const ready = await prepareAttachment(attachment);
+    if(ready.error) return fail(ready.error);
+    parts.push({ blob: ready.blob, ext: ready.ext, done: clearAttachment });
+  }
+  if(!parts.length) parts.push(null);
 
-  try{
-    const payload = {
+  // A recording and a file are saved one after the other; the first save carries the text.
+  // Whatever was saved leaves the form, so sending again after a failure only sends what is left.
+  let pendingText = text;
+  for(let i = 0; i < parts.length; i++){
+    const part = parts[i];
+    statusEl.textContent = parts.length > 1 ? `שולח... (${i + 1} מתוך ${parts.length})` : 'שולח...';
+    const data = await sendPart({
       capsuleId: selectedCapsuleId || undefined,
       newCapsule: newCapsule || undefined,
-      from: from || undefined,
-      text: text || undefined,
-      mediaBase64: media ? await blobToBase64(media) : undefined,
-      mediaExt: mediaExt || undefined,
-      website: honeypot || undefined
-    };
-
-    const res = await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      from,
+      text: pendingText || undefined,
+      mediaBase64: part ? await blobToBase64(part.blob) : undefined,
+      mediaExt: part ? part.ext : undefined
     });
-    const data = await res.json().catch(() => ({ ok: false, error: res.status === 413 ? 'file too large' : '' }));
-    if(data.ok){
-      statusEl.textContent = 'תודה, זה נשמר לרוני!';
-      statusEl.className = 'ok';
-      setTimeout(() => { sending = false; submitBtn.disabled = false; backToList(); loadCapsules(); }, 1400);
-      return;
+    if(!data.ok){
+      const reason = ERROR_TEXT[data.error] || 'משהו השתבש בשמירה, נסו שוב בעוד רגע';
+      return fail(i > 0 ? `${reason}. חלק כבר נשמר, ומה שנשאר בטופס עוד לא נשלח` : reason);
     }
-    fail(ERROR_TEXT[data.error] || 'משהו השתבש בשמירה, נסו שוב בעוד רגע');
-  } catch(e){
-    fail('לא הצלחנו לשלוח, בדקו את החיבור לאינטרנט ונסו שוב');
+    if(pendingText){ pendingText = ''; textInput.value = ''; }
+    if(part) part.done();
   }
+  done();
 }
 
 function loadCapsules(){
@@ -563,6 +720,8 @@ function loadCapsules(){
 
 loadCapsules();
 document.getElementById('rec-btn').addEventListener('click', toggleRecording);
+document.getElementById('rec-del').addEventListener('click', resetRecording);
+document.getElementById('file-input').addEventListener('change', pickFile);
 document.getElementById('back-btn').addEventListener('click', backToList);
 document.getElementById('submit-btn').addEventListener('click', submitContribution);
 </script>
