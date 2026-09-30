@@ -73,7 +73,30 @@
     font-weight:500;
   }
   header p strong{ color:var(--ink); }
-  header p.secret{ margin-top:10px; font-size:0.9rem; color:var(--rose-dark); font-weight:700; }
+
+  .secret-banner{
+    max-width:480px;
+    margin:22px auto 0;
+    background:linear-gradient(100deg, var(--rose), var(--rose-dark));
+    color:#fff;
+    border-radius:18px;
+    padding:15px 18px;
+    display:flex;
+    gap:14px;
+    align-items:center;
+    text-align:right;
+    box-shadow:0 12px 28px rgba(158,63,96,0.32);
+  }
+  .secret-banner{ animation:secret-pulse 1.6s ease-in-out infinite; }
+  @keyframes secret-pulse{
+    0%, 100%{ transform:scale(1); box-shadow:0 12px 28px rgba(158,63,96,0.32); }
+    50%{ transform:scale(1.05); box-shadow:0 16px 38px rgba(158,63,96,0.45); }
+  }
+  @media (prefers-reduced-motion: reduce){ .secret-banner{ animation:none; } }
+  .secret-banner svg{ width:34px; height:34px; flex-shrink:0; }
+  .secret-banner b{ display:block; font-size:1.2rem; font-weight:900; margin-bottom:2px; }
+  .secret-banner span{ display:block; font-size:0.92rem; font-weight:600; line-height:1.5; }
+  .secret-reminder{ margin-top:12px; text-align:center; font-size:0.88rem; font-weight:800; color:var(--rose-dark); }
 
   main{
     max-width:560px;
@@ -148,20 +171,6 @@
   .groups.invalid{ border-radius:14px; }
   .field-error{ color:var(--rose-dark); font-size:0.82rem; font-weight:700; margin-top:6px; min-height:0; }
 
-  .ideas{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
-  .idea{
-    font-family:'Rubik', sans-serif;
-    font-size:0.8rem;
-    font-weight:600;
-    color:var(--rose-dark);
-    background:#fbeef2;
-    border:none;
-    border-radius:20px;
-    padding:7px 12px;
-    cursor:pointer;
-    -webkit-tap-highlight-color:transparent;
-  }
-
   .rec-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   button.pill{
     font-family:'Rubik', sans-serif;
@@ -222,7 +231,13 @@
   <div class="overline">5.10 · הפתעה</div>
   <h1>גלית בת <span class="num">60</span></h1>
   <p>ב-5 באוקטובר גלית חוגגת 60, ואנחנו מכינים לה הפתעה: אתר אחד שבו מחכות לה ברכות, זיכרונות, תמונות והקלטות מכל האנשים שאוהבים אותה. <strong>המטרה: 60 ברכות ל-60 שנה.</strong></p>
-  <p class="secret">זה סוד, אז לא לספר לה</p>
+  <div class="secret-banner" role="note">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="11" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><circle cx="12" cy="16" r="1.4" fill="currentColor"/></svg>
+    <div>
+      <b>סוד! זו הפתעה לגלית</b>
+      <span>לא לספר לה, לא לרמוז, ולא לשלוח לה את הקישור. אם אתם מעבירים הלאה, תבדקו שהיא לא בקבוצה.</span>
+    </div>
+  </div>
 </header>
 
 <main>
@@ -251,12 +266,6 @@
 
     <label class="field-label" for="letter-text">הברכה שלכם</label>
     <textarea id="letter-text" placeholder="כתבו לה כאן..."></textarea>
-    <div class="ideas" id="ideas">
-      <button type="button" class="idea" data-start="זיכרון משותף שלא אשכח: ">זיכרון משותף</button>
-      <button type="button" class="idea" data-start="משהו שלמדתי ממך: ">מה למדתי ממנה</button>
-      <button type="button" class="idea" data-start="מה שהכי מיוחד בך: ">מה מיוחד בה</button>
-      <button type="button" class="idea" data-start="מה שאני מאחל/ת לך לעשור הבא: ">איחול לעשור הבא</button>
-    </div>
 
     <label class="field-label">הקלטה קולית <span class="opt">(רשות)</span></label>
     <div class="rec-row">
@@ -270,11 +279,12 @@
 
     <button type="button" id="submit-btn">שליחת הברכה לגלית</button>
     <div id="status-msg"></div>
+    <div class="secret-reminder">ותזכורת: זה סוד עד 5.10, לא לספר לגלית!</div>
   </div>
 
   <div class="card" id="thanks">
     <div class="big">תודה!</div>
-    <p>הברכה שלכם נשמרה ותחכה לגלית ביום ההולדת.</p>
+    <p>הברכה שלכם נשמרה ותחכה לגלית ביום ההולדת.<br><strong style="color:var(--rose-dark)">ושומרים על הסוד עד 5.10!</strong></p>
     <button type="button" id="again-btn">לשלוח עוד ברכה</button>
   </div>
 </main>
@@ -335,16 +345,6 @@ document.getElementById('groups').addEventListener('click', (e) => {
 
 document.getElementById('from-name').addEventListener('input', (e) => {
   if(e.target.value.trim()) setError('name-error', '', e.target);
-});
-
-document.getElementById('ideas').addEventListener('click', (e) => {
-  const b = e.target.closest('.idea');
-  if(!b) return;
-  const ta = document.getElementById('letter-text');
-  const start = b.dataset.start;
-  ta.value = ta.value.trim() ? ta.value.replace(/\s*$/, '') + '\n\n' + start : start;
-  ta.focus();
-  ta.setSelectionRange(ta.value.length, ta.value.length);
 });
 
 function stopRecordingStream(){
