@@ -599,7 +599,13 @@ async function prepareAttachment(a){
   }
   if(!MEDIA_EXTS.includes(a.ext)) return { error: ERROR_TEXT['unsupported file type'] };
   if(a.file.size > MAX_MEDIA_BYTES) return { error: a.kind === 'video' ? VIDEO_TOO_BIG : ERROR_TEXT['file too large'] };
-  if(a.ext === 'm4a') return { blob: await standardizeAudio(a.file), ext: a.ext };
+  if(a.kind === 'audio' && ['m4a', 'ogg', 'webm'].includes(a.ext)){
+    const audio = a.ext === 'm4a' ? await standardizeAudio(a.file) : a.file;
+    const wav = await toPlayableAudio(audio, MAX_MEDIA_BYTES);
+    if(wav) return { blob: wav, ext: 'wav' };
+    if(audio.size > MAX_MEDIA_BYTES) return { error: ERROR_TEXT['file too large'] };
+    return { blob: audio, ext: a.ext };
+  }
   if(a.ext === 'jpg' || a.ext === 'jpeg') return { blob: await removeLocation(a.file), ext: a.ext };
   return { blob: a.file, ext: a.ext };
 }
@@ -677,9 +683,12 @@ async function submitContribution(){
   const parts = [];
   if(recordedBlob || attachment) statusEl.textContent = 'מכינים את הקבצים...';
   if(recordedBlob){
-    const blob = recordedExt === 'm4a' ? await standardizeAudio(recordedBlob) : recordedBlob;
+    let blob = recordedExt === 'm4a' ? await standardizeAudio(recordedBlob) : recordedBlob;
+    let ext = recordedExt;
+    const wav = await toPlayableAudio(blob, MAX_MEDIA_BYTES);
+    if(wav){ blob = wav; ext = 'wav'; }
     if(blob.size > MAX_MEDIA_BYTES) return fail('ההקלטה ארוכה מדי, נסו הקלטה קצרה יותר');
-    parts.push({ blob, ext: recordedExt, done: resetRecording });
+    parts.push({ blob, ext, done: resetRecording });
   }
   if(attachment){
     const ready = await prepareAttachment(attachment);

@@ -4,22 +4,5 @@
     "birthday": "2026-10-05",
     "goal": 60
   },
-  "greetings": [
-    {
-      "from": "בדיקה",
-      "text": "למלמל",
-      "media": "family-1790762006490.m4a",
-      "sentAt": "2026-09-30T09:53:27.598Z",
-      "group": "family",
-      "batch": "01ae8a7a-a1a9-4966-bb98-b583625084fb"
-    },
-    {
-      "from": "בדיקה",
-      "text": null,
-      "media": "family-1790762009534.jpeg",
-      "sentAt": "2026-09-30T09:53:31.110Z",
-      "group": "family",
-      "batch": "01ae8a7a-a1a9-4966-bb98-b583625084fb"
-    }
-  ]
+  "greetings": []
 }
