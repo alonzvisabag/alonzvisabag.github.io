@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>לגלית</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none';">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  :root{
+    --bg1:#fbf5ec;
+    --bg2:#f6e4e1;
+    --bg3:#ece3f3;
+    --ink:#3b2a33;
+    --muted:#8f7d86;
+    --card:#fffdf9;
+    --gold:#c79a3b;
+    --gold-light:#e3bd6a;
+    --gold-dark:#a57c25;
+    --rose:#c0587a;
+    --rose-dark:#9e3f60;
+    --plum:#6d4467;
+    --border:#efe2d8;
+  }
+
+  html{ background:var(--bg1); }
+  body{
+    font-family:'Rubik', sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    background:linear-gradient(160deg, var(--bg1), var(--bg2) 55%, var(--bg3));
+    background-attachment:fixed;
+  }
+  [hidden]{ display:none !important; }
+
+  .serif{ font-family:'Frank Ruhl Libre', serif; }
+  .gold-text{
+    background:linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .overline{
+    display:inline-block;
+    font-size:0.78rem;
+    font-weight:700;
+    letter-spacing:1.5px;
+    color:var(--gold-dark);
+    border:1.5px solid rgba(199,154,59,0.45);
+    border-radius:30px;
+    padding:5px 14px;
+    margin-bottom:18px;
+  }
+
+  /* full-screen states */
+  .screen{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:32px 22px;
+  }
+  .screen h1{ font-size:3.2rem; font-weight:900; line-height:1.05; margin-bottom:14px; }
+  .screen p{ color:var(--muted); font-size:1.02rem; line-height:1.7; max-width:420px; font-weight:500; }
+
+  .clock{ display:flex; gap:10px; margin-top:30px; direction:rtl; }
+  .clock div{
+    background:var(--card);
+    border-radius:18px;
+    width:74px;
+    padding:14px 0 10px;
+    box-shadow:0 10px 30px rgba(94,53,83,0.08);
+  }
+  .clock b{ display:block; font-family:'Frank Ruhl Libre', serif; font-size:1.9rem; font-weight:900; color:var(--gold-dark); line-height:1.1; }
+  .clock span{ font-size:0.75rem; color:var(--muted); font-weight:600; }
+
+  .open-btn{
+    margin-top:34px;
+    font-family:'Rubik', sans-serif;
+    font-size:1.05rem;
+    font-weight:800;
+    padding:16px 34px;
+    border-radius:40px;
+    border:none;
+    color:#fff;
+    background:linear-gradient(100deg, var(--gold-light), var(--gold-dark));
+    box-shadow:0 6px 0 #8e6a1e, 0 18px 40px rgba(165,124,37,0.3);
+    cursor:pointer;
+  }
+  .open-btn:active{ transform:translateY(2px); box-shadow:0 3px 0 #8e6a1e; }
+
+  /* site */
+  #site header{ text-align:center; padding:54px 22px 10px; }
+  #site header h1{ font-size:3rem; font-weight:900; line-height:1.05; margin-bottom:12px; }
+  #site header p{ color:var(--muted); font-size:1rem; line-height:1.7; max-width:440px; margin:0 auto; font-weight:500; }
+
+  .medal{
+    width:128px;
+    height:128px;
+    margin:28px auto 8px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+    box-shadow:0 14px 34px rgba(165,124,37,0.35), inset 0 0 0 5px rgba(255,246,227,0.55);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:#fffaf0;
+  }
+  .medal b{ font-family:'Frank Ruhl Libre', serif; font-size:2.8rem; font-weight:900; line-height:1; }
+  .medal span{ font-size:0.8rem; font-weight:700; margin-top:4px; }
+
+  main{ max-width:600px; margin:0 auto; padding:18px 18px 80px; }
+
+  .tabs{
+    display:flex;
+    gap:4px;
+    padding:4px;
+    margin-bottom:18px;
+    background:rgba(255,255,255,0.6);
+    border-radius:16px;
+    position:sticky;
+    top:10px;
+    z-index:5;
+    -webkit-backdrop-filter:blur(8px);
+    backdrop-filter:blur(8px);
+  }
+  .tab{
+    flex:1;
+    padding:10px 4px;
+    border:none;
+    border-radius:12px;
+    background:none;
+    font-family:'Rubik', sans-serif;
+    font-size:0.88rem;
+    font-weight:700;
+    color:var(--muted);
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tab.on{ background:var(--card); color:var(--gold-dark); box-shadow:0 4px 12px rgba(165,124,37,0.14); }
+  .tab small{ font-weight:600; opacity:0.75; }
+
+  .wall{ display:flex; flex-direction:column; gap:16px; }
+  .greeting{
+    background:var(--card);
+    border-radius:22px;
+    padding:20px 20px 22px;
+    box-shadow:0 12px 32px rgba(94,53,83,0.07);
+  }
+  .g-head{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .g-name{ font-family:'Frank Ruhl Libre', serif; font-size:1.25rem; font-weight:900; flex:1; }
+  .g-tag{ font-size:0.72rem; font-weight:700; color:#fff; padding:4px 11px; border-radius:20px; flex-shrink:0; }
+  .g-tag.family{ background:var(--rose); }
+  .g-tag.friends{ background:var(--gold); }
+  .g-tag.work{ background:var(--plum); }
+  .g-text{ font-size:1.05rem; line-height:1.85; white-space:pre-line; }
+  .g-text + .g-media{ margin-top:14px; }
+  .g-media img, .g-media video{ width:100%; border-radius:14px; display:block; }
+  .g-media audio{ width:100%; }
+  .empty{ text-align:center; color:var(--muted); padding:40px 20px; font-weight:500; }
+</style>
+</head>
+<body>
+
+<section class="screen" id="countdown" hidden>
+  <div class="overline">5.10</div>
+  <h1 class="serif">הפתעה <span class="gold-text">בדרך</span></h1>
+  <p>משהו מיוחד מחכה כאן. נתראה ביום ההולדת.</p>
+  <div class="clock">
+    <div><b id="cd-d">0</b><span>ימים</span></div>
+    <div><b id="cd-h">0</b><span>שעות</span></div>
+    <div><b id="cd-m">0</b><span>דקות</span></div>
+    <div><b id="cd-s">0</b><span>שניות</span></div>
+  </div>
+</section>
+
+<section class="screen" id="intro" hidden>
+  <div class="overline">5.10</div>
+  <h1 class="serif">לגלית, <span class="gold-text">באהבה</span></h1>
+  <p>60 שנה של אהבה, צחוק וזיכרונות. אספנו לך כמה מהם, מכל האנשים שאוהבים אותך.</p>
+  <button type="button" class="open-btn" id="open-btn">לפתוח</button>
+</section>
+
+<div id="site" hidden>
+  <header>
+    <div class="overline">5.10</div>
+    <h1 class="serif">גלית בת <span class="gold-text">60</span></h1>
+    <p>מזל טוב! כאן מחכות לך ברכות מכל האנשים שאוהבים אותך.</p>
+    <div class="medal"><b id="total">0</b><span>ברכות</span></div>
+  </header>
+  <main>
+    <div class="tabs" id="tabs"></div>
+    <div class="wall" id="wall"></div>
+  </main>
+</div>
+
+<script>
+const GROUPS = [
+  { key: 'all', label: 'הכל' },
+  { key: 'family', label: 'משפחה' },
+  { key: 'friends', label: 'חברות' },
+  { key: 'work', label: 'עבודה' }
+];
+const IMG_EXT = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+const AUDIO_EXT = ['mp3', 'wav', 'm4a', 'ogg', 'aac'];
+const VIDEO_EXT = ['mp4', 'mov', 'webm', 'm4v'];
+
+let greetings = [];
+let activeTab = 'all';
+
+function escapeHTML(str){
+  return String(str).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}
+
+function mediaHTML(file){
+  const ext = file.split('.').pop().toLowerCase();
+  const src = escapeHTML('media/' + encodeURIComponent(file));
+  if(IMG_EXT.includes(ext)) return `<img src="${src}" alt="" loading="lazy">`;
+  if(VIDEO_EXT.includes(ext)) return `<video controls playsinline preload="metadata" src="${src}"></video>`;
+  if(AUDIO_EXT.includes(ext)) return `<audio controls preload="metadata" src="${src}"></audio>`;
+  return '';
+}
+
+function greetingHTML(g){
+  const group = GROUPS.find(x => x.key === g.group);
+  return `
+    <article class="greeting">
+      <div class="g-head">
+        <span class="g-name">${escapeHTML(g.from || '')}</span>
+        ${group ? `<span class="g-tag ${g.group}">${group.label}</span>` : ''}
+      </div>
+      ${g.text ? `<div class="g-text">${escapeHTML(g.text)}</div>` : ''}
+      ${g.media ? `<div class="g-media">${mediaHTML(g.media)}</div>` : ''}
+    </article>`;
+}
+
+function renderTabs(){
+  document.getElementById('tabs').innerHTML = GROUPS.map(t => {
+    const n = t.key === 'all' ? greetings.length : greetings.filter(g => g.group === t.key).length;
+    return `<button type="button" class="tab${t.key === activeTab ? ' on' : ''}" data-tab="${t.key}">${t.label} <small>${n}</small></button>`;
+  }).join('');
+}
+
+function renderWall(){
+  const shown = activeTab === 'all' ? greetings : greetings.filter(g => g.group === activeTab);
+  document.getElementById('wall').innerHTML = shown.length
+    ? shown.map(greetingHTML).join('')
+    : '<div class="empty">עוד אין כאן ברכות</div>';
+}
+
+document.getElementById('tabs').addEventListener('click', (e) => {
+  const b = e.target.closest('.tab');
+  if(!b) return;
+  activeTab = b.dataset.tab;
+  renderTabs();
+  renderWall();
+});
+
+function startCountdown(target){
+  const tick = () => {
+    const left = target - Date.now();
+    if(left <= 0){ location.reload(); return; }
+    const s = Math.floor(left / 1000);
+    document.getElementById('cd-d').textContent = Math.floor(s / 86400);
+    document.getElementById('cd-h').textContent = Math.floor(s % 86400 / 3600);
+    document.getElementById('cd-m').textContent = Math.floor(s % 3600 / 60);
+    document.getElementById('cd-s').textContent = s % 60;
+  };
+  tick();
+  setInterval(tick, 1000);
+  document.getElementById('countdown').hidden = false;
+}
+
+function showSite(){
+  document.getElementById('intro').hidden = true;
+  document.getElementById('site').hidden = false;
+  document.getElementById('total').textContent = greetings.length;
+  renderTabs();
+  renderWall();
+  window.scrollTo(0, 0);
+}
+
+fetch('content.json', { cache: 'no-store' })
+  .then(r => r.json())
+  .then(data => {
+    // Opens at midnight Israel time on the birthday; ?preview lets the family check it beforehand.
+    const unlock = new Date((data.site.birthday || '2026-10-05') + 'T00:00:00+03:00').getTime();
+    const preview = new URLSearchParams(location.search).has('preview');
+    if(Date.now() < unlock && !preview){
+      startCountdown(unlock);
+      return;
+    }
+    greetings = data.greetings || [];
+    document.getElementById('intro').hidden = false;
+  });
+
+document.getElementById('open-btn').addEventListener('click', showSite);
+</script>
+</body>
+</html>

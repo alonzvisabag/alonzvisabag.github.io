@@ -1,7 +1,10 @@
 const REPO = 'alonzvisabag/alonzvisabag.github.io';
 const BRANCH = 'main';
-const CONTENT_PATH = 'roni/content.json';
-const MEDIA_DIR = 'roni/media';
+const SITES = {
+  roni: { content: 'roni/content.json', media: 'roni/media' },
+  galit: { content: 'galit/content.json', media: 'galit/media' },
+};
+const GALIT_GROUPS = ['family', 'friends', 'work'];
 const ALLOWED_ORIGIN = 'https://alonzvisabag.github.io';
 
 const MEDIA_EXT_WHITELIST = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3', 'wav', 'm4a', 'ogg', 'aac', 'mp4', 'mov', 'webm', 'm4v'];
@@ -87,21 +90,30 @@ async function getFile(env, path) {
   return { sha: data.sha, contentBase64: (await blob.json()).content };
 }
 
-async function readContent(env) {
-  const file = await getFile(env, CONTENT_PATH);
-  if (!file) throw new Error('content.json not found');
+async function readContent(env, path) {
+  const file = await getFile(env, path);
+  if (!file) throw new Error(`${path} not found`);
   return { sha: file.sha, data: JSON.parse(base64ToUtf8(file.contentBase64)) };
 }
 
 function recentCount(data) {
   const since = Date.now() - FLOOD_WINDOW_MS;
-  let n = 0;
-  for (const c of data.capsules || []) {
-    for (const it of c.items || []) {
-      if (Date.parse(it.sentAt || '') > since) n++;
-    }
+  const items = [...(data.capsules || []).flatMap((c) => c.items || []), ...(data.greetings || [])];
+  return items.filter((it) => Date.parse(it.sentAt || '') > since).length;
+}
+
+// Read, change and write back a content file, retrying when another save landed in between.
+async function saveContent(env, path, mutate, message) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const file = await readContent(env, path);
+    mutate(file.data);
+    const newBase64 = utf8ToBase64(JSON.stringify(file.data, null, 2) + '\n');
+    const res = await putFile(env, path, newBase64, message, file.sha);
+    if (res.ok) return;
+    if (res.status === 409 && attempt < 2) continue;
+    throw new Error(`failed to update ${path}: ${res.status} ${await res.text()}`);
   }
-  return n;
+  throw new Error(`failed to update ${path} after retries`);
 }
 
 async function putFile(env, path, contentBase64, message, sha) {
@@ -118,37 +130,23 @@ function findCapsule(json, capsuleId) {
   return (json.capsules || []).find((c) => c.id === capsuleId) || null;
 }
 
-async function addItemToContent(env, { capsuleId, newCapsule }, item) {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const file = await readContent(env);
-    const data = file.data;
-
-    let capsule = capsuleId ? findCapsule(data, capsuleId) : null;
-
-    if (!capsule && newCapsule) {
-      if (!data.capsules) data.capsules = [];
-      capsule = {
-        id: `friend-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        trigger: newCapsule.trigger,
-        type: newCapsule.type,
-        desc: null,
-        items: [],
-        openToFriends: true,
-      };
-      data.capsules.unshift(capsule);
-    }
-
-    if (!capsule) throw new Error(`capsule not found: ${capsuleId}`);
-    if (!capsule.items) capsule.items = [];
-    capsule.items.push(item);
-    const newBase64 = utf8ToBase64(JSON.stringify(data, null, 2) + '\n');
-    const res = await putFile(env, CONTENT_PATH, newBase64, `contribute: add item to ${capsule.id}`, file.sha);
-    if (res.ok) return capsule;
-    if (res.status === 409 && attempt < 2) continue;
-    const errText = await res.text();
-    throw new Error(`failed to update content.json: ${res.status} ${errText}`);
+function addToCapsule(data, { capsuleId, newCapsule }, item) {
+  let capsule = capsuleId ? findCapsule(data, capsuleId) : null;
+  if (!capsule && newCapsule) {
+    if (!data.capsules) data.capsules = [];
+    capsule = {
+      id: `friend-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      trigger: newCapsule.trigger,
+      type: newCapsule.type,
+      desc: null,
+      items: [],
+      openToFriends: true,
+    };
+    data.capsules.unshift(capsule);
   }
-  throw new Error('failed to update content.json after retries');
+  if (!capsule) throw new Error(`capsule not found: ${capsuleId}`);
+  if (!capsule.items) capsule.items = [];
+  capsule.items.push(item);
 }
 
 async function handleContribute(request, env) {
@@ -163,10 +161,17 @@ async function handleContribute(request, env) {
     return json({ ok: false, error: 'invalid json' }, 400);
   }
 
-  const { capsuleId, newCapsule, from, text, mediaBase64, mediaExt, website } = body;
+  const { capsuleId, newCapsule, from, text, mediaBase64, mediaExt, website, group } = body;
+  const siteKey = body.site === undefined ? 'roni' : body.site;
+  const site = SITES[siteKey];
+  const isGalit = siteKey === 'galit';
 
   if (typeof website === 'string' && website.trim()) {
     return json({ ok: true });
+  }
+
+  if (!site) {
+    return json({ ok: false, error: 'unknown site' }, 400);
   }
 
   if (typeof from === 'string' && from.length > 60) {
@@ -177,9 +182,18 @@ async function handleContribute(request, env) {
     return json({ ok: false, error: 'text too long' }, 400);
   }
 
-  const hasExisting = typeof capsuleId === 'string' && capsuleId.length > 0;
+  if (isGalit) {
+    if (!GALIT_GROUPS.includes(group)) {
+      return json({ ok: false, error: 'group required' }, 400);
+    }
+    if (typeof from !== 'string' || !from.trim()) {
+      return json({ ok: false, error: 'name required' }, 400);
+    }
+  }
+
+  const hasExisting = !isGalit && typeof capsuleId === 'string' && capsuleId.length > 0;
   let cleanNewCapsule = null;
-  if (!hasExisting) {
+  if (!isGalit && !hasExisting) {
     if (
       !newCapsule ||
       !VALID_TYPES.includes(newCapsule.type) ||
@@ -215,7 +229,7 @@ async function handleContribute(request, env) {
   // Validate against the live content before writing anything, so rejected requests leave no files behind.
   let current;
   try {
-    current = await readContent(env);
+    current = await readContent(env, site.content);
   } catch (e) {
     console.error('read content failed', e.message);
     return json({ ok: false, error: 'server error' }, 500);
@@ -232,13 +246,13 @@ async function handleContribute(request, env) {
 
   let mediaFilename = null;
   if (hasMedia) {
-    const prefix = (hasExisting ? capsuleId : 'custom').replace(/[^a-zA-Z0-9-]/g, '');
+    const prefix = (isGalit ? group : hasExisting ? capsuleId : 'custom').replace(/[^a-zA-Z0-9-]/g, '');
     mediaFilename = `${prefix}-${Date.now()}.${ext}`;
     const res = await putFile(
       env,
-      `${MEDIA_DIR}/${mediaFilename}`,
+      `${site.media}/${mediaFilename}`,
       mediaBase64,
-      `contribute: add media for ${hasExisting ? capsuleId : 'new capsule'}`
+      `contribute: add media for ${isGalit ? 'greeting' : hasExisting ? capsuleId : 'new capsule'}`
     );
     if (!res.ok) {
       console.error('media upload failed', res.status, await res.text());
@@ -255,7 +269,19 @@ async function handleContribute(request, env) {
   };
 
   try {
-    await addItemToContent(env, { capsuleId: hasExisting ? capsuleId : null, newCapsule: cleanNewCapsule }, item);
+    if (isGalit) {
+      await saveContent(env, site.content, (data) => {
+        if (!data.greetings) data.greetings = [];
+        data.greetings.push({ ...item, group });
+      }, 'contribute: add greeting');
+    } else {
+      await saveContent(
+        env,
+        site.content,
+        (data) => addToCapsule(data, { capsuleId: hasExisting ? capsuleId : null, newCapsule: cleanNewCapsule }, item),
+        hasExisting ? `contribute: add item to ${capsuleId}` : 'contribute: add new situation'
+      );
+    }
   } catch (e) {
     console.error('save failed', e.message);
     await notify(env, 'עדכון');
