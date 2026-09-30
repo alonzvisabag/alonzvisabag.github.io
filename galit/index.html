@@ -74,7 +74,7 @@
   .clock div{
     background:var(--card);
     border-radius:18px;
-    width:74px;
+    width:min(74px, calc((100vw - 74px) / 4));
     padding:14px 0 10px;
     box-shadow:0 10px 30px rgba(63,84,54,0.08);
   }
@@ -83,17 +83,21 @@
 
   .open-btn{
     margin-top:34px;
-    font-family:'Rubik', sans-serif;
-    font-size:1.05rem;
-    font-weight:800;
-    padding:16px 34px;
-    border-radius:40px;
+    width:72px;
+    height:72px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
     border:none;
     color:#fff;
     background:linear-gradient(100deg, var(--leaf-light), var(--leaf-dark));
     box-shadow:0 6px 0 #4f6844, 0 18px 40px rgba(95,122,82,0.28);
     cursor:pointer;
   }
+  .open-btn svg{ width:30px; height:30px; animation:nudge 1.8s ease-in-out infinite; }
+  @keyframes nudge{ 0%, 100%{ transform:translateX(0); } 50%{ transform:translateX(-5px); } }
+  @media (prefers-reduced-motion: reduce){ .open-btn svg{ animation:none; } }
   .open-btn:active{ transform:translateY(2px); box-shadow:0 3px 0 #4f6844; }
 
   /* site */
@@ -155,19 +159,20 @@
 
   .wall{ display:flex; flex-direction:column; gap:16px; }
   .greeting{
+    scroll-margin-top:72px;
     background:var(--card);
     border-radius:22px;
     padding:20px 20px 22px;
     box-shadow:0 12px 32px rgba(63,84,54,0.07);
   }
   .g-head{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-  .g-name{ font-family:'Frank Ruhl Libre', serif; font-size:1.25rem; font-weight:900; flex:1; }
+  .g-name{ font-family:'Frank Ruhl Libre', serif; font-size:1.25rem; font-weight:900; flex:1; min-width:0; overflow-wrap:anywhere; }
   .g-tag{ font-size:0.72rem; font-weight:700; color:#fff; padding:4px 11px; border-radius:20px; flex-shrink:0; }
   .g-tag.family{ background:var(--bloom); }
   .g-tag.friends{ background:var(--leaf); }
   .g-tag.work{ background:var(--lilac); }
-  .g-text{ font-size:1.05rem; line-height:1.85; white-space:pre-line; }
-  .g-text + .g-media{ margin-top:14px; }
+  .g-text{ font-size:1.05rem; line-height:1.85; white-space:pre-line; overflow-wrap:anywhere; }
+  .g-body > * + *{ margin-top:14px; }
   .g-media img, .g-media video{ width:100%; border-radius:14px; display:block; }
   .g-media audio{ width:100%; }
   .empty{ text-align:center; color:var(--muted); padding:40px 20px; font-weight:500; }
@@ -176,13 +181,11 @@
     content:"";
     position:fixed;
     border-radius:50%;
-    filter:blur(60px);
-    opacity:0.5;
     z-index:-1;
     pointer-events:none;
   }
-  body::before{ width:340px; height:340px; background:#c9d8b8; top:-120px; left:-130px; }
-  body::after{ width:300px; height:300px; background:#f1d2c5; bottom:-110px; right:-120px; }
+  body::before{ width:520px; height:520px; top:-210px; left:-220px; background:radial-gradient(circle, rgba(201,216,184,0.6), rgba(201,216,184,0) 68%); }
+  body::after{ width:480px; height:480px; bottom:-200px; right:-210px; background:radial-gradient(circle, rgba(241,210,197,0.6), rgba(241,210,197,0) 68%); }
   .sprig{ display:block; width:132px; height:auto; margin:0 auto 12px; }
 </style>
 </head>
@@ -206,7 +209,7 @@
   <div class="overline">5.10</div>
   <h1 class="serif">לגלית, <span class="leaf-text">באהבה</span></h1>
   <p>60 שנה של אהבה, צחוק וזיכרונות. אספנו לך כמה מהם, מכל האנשים שאוהבים אותך.</p>
-  <button type="button" class="open-btn" id="open-btn">לפתוח</button>
+  <button type="button" class="open-btn" id="open-btn" aria-label="לפתוח"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
 </section>
 
 <div id="site" hidden>
@@ -223,7 +226,9 @@
   </main>
 </div>
 
+<script src="greetings.js"></script>
 <script>
+history.scrollRestoration = 'manual';
 const GROUPS = [
   { key: 'all', label: 'הכל' },
   { key: 'family', label: 'משפחה' },
@@ -244,8 +249,9 @@ function escapeHTML(str){
 function mediaHTML(file){
   const ext = file.split('.').pop().toLowerCase();
   const src = escapeHTML('media/' + encodeURIComponent(file));
-  if(IMG_EXT.includes(ext)) return `<img src="${src}" alt="" loading="lazy">`;
-  if(VIDEO_EXT.includes(ext)) return `<video controls playsinline preload="metadata" src="${src}"></video>`;
+  if(IMG_EXT.includes(ext)) return `<img src="${src}" alt="" loading="lazy" decoding="async">`;
+  // The #t makes iPhones show the first frame instead of a black box.
+  if(VIDEO_EXT.includes(ext)) return `<video controls playsinline preload="metadata" src="${src}#t=0.1"></video>`;
   if(AUDIO_EXT.includes(ext)) return `<audio controls preload="metadata" src="${src}"></audio>`;
   return '';
 }
@@ -258,8 +264,10 @@ function greetingHTML(g){
         <span class="g-name">${escapeHTML(g.from || '')}</span>
         ${group ? `<span class="g-tag ${g.group}">${group.label}</span>` : ''}
       </div>
-      ${g.text ? `<div class="g-text">${escapeHTML(g.text)}</div>` : ''}
-      ${g.media ? `<div class="g-media">${mediaHTML(g.media)}</div>` : ''}
+      <div class="g-body">
+        ${g.texts.map(t => `<div class="g-text">${escapeHTML(t)}</div>`).join('')}
+        ${g.media.map(m => `<div class="g-media">${mediaHTML(m)}</div>`).join('')}
+      </div>
     </article>`;
 }
 
@@ -283,7 +291,42 @@ document.getElementById('tabs').addEventListener('click', (e) => {
   activeTab = b.dataset.tab;
   renderTabs();
   renderWall();
+  saveView();
 });
+
+// Remember the tab and the greeting on screen, so a refresh brings her back to the same place
+// instead of the opening screen. Kept per tab: opening the link fresh still starts from the opening screen.
+const VIEW_KEY = 'galit-view';
+
+function saveView(){
+  if(document.getElementById('site').hidden) return;
+  const cards = [...document.querySelectorAll('.greeting')];
+  const idx = scrollY < 60 ? -1 : cards.findIndex(c => c.getBoundingClientRect().bottom > 90);
+  try{ sessionStorage.setItem(VIEW_KEY, JSON.stringify({ tab: activeTab, idx })); } catch(e){}
+}
+
+function readView(){
+  try{ return JSON.parse(sessionStorage.getItem(VIEW_KEY)); } catch(e){ return null; }
+}
+
+// Photos above the greeting load after the jump and push it down; follow it until she scrolls herself.
+function keepInView(card){
+  let moved = false;
+  ['touchstart', 'wheel', 'keydown'].forEach(ev => addEventListener(ev, () => { moved = true; }, { once: true, passive: true }));
+  const jump = () => { if(!moved) card.scrollIntoView({ block: 'start' }); };
+  const wall = document.getElementById('wall');
+  jump();
+  wall.addEventListener('load', jump, true);
+  wall.addEventListener('loadedmetadata', jump, true);
+  setTimeout(() => {
+    wall.removeEventListener('load', jump, true);
+    wall.removeEventListener('loadedmetadata', jump, true);
+  }, 4000);
+}
+
+let saveTimer = null;
+addEventListener('scroll', () => { clearTimeout(saveTimer); saveTimer = setTimeout(saveView, 250); }, { passive: true });
+addEventListener('pagehide', saveView);
 
 function startCountdown(target){
   const tick = () => {
@@ -300,13 +343,17 @@ function startCountdown(target){
   document.getElementById('countdown').hidden = false;
 }
 
-function showSite(){
+function showSite(view){
   document.getElementById('intro').hidden = true;
   document.getElementById('site').hidden = false;
   document.getElementById('total').textContent = greetings.length;
+  if(view && GROUPS.some(t => t.key === view.tab)) activeTab = view.tab;
   renderTabs();
   renderWall();
-  window.scrollTo(0, 0);
+  const card = view && view.idx >= 0 ? document.querySelectorAll('.greeting')[view.idx] : null;
+  if(card) keepInView(card);
+  else window.scrollTo(0, 0);
+  saveView();
 }
 
 fetch('content.json', { cache: 'no-store' })
@@ -319,11 +366,13 @@ fetch('content.json', { cache: 'no-store' })
       startCountdown(unlock);
       return;
     }
-    greetings = data.greetings || [];
-    document.getElementById('intro').hidden = false;
+    greetings = mergeGreetings(data.greetings || []);
+    const view = readView();
+    if(view) showSite(view);
+    else document.getElementById('intro').hidden = false;
   });
 
-document.getElementById('open-btn').addEventListener('click', showSite);
+document.getElementById('open-btn').addEventListener('click', () => showSite(null));
 </script>
 </body>
 </html>

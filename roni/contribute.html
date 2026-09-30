@@ -276,8 +276,8 @@
       <input type="text" id="from-name" placeholder="מי אתם?" required maxlength="60">
 
       <div style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;opacity:0;" aria-hidden="true">
-        <label for="website">Website</label>
-        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        <label for="hp-extra">Leave empty</label>
+        <input type="text" id="hp-extra" name="hp-extra" tabindex="-1" autocomplete="off">
       </div>
 
       <label class="field-label">מכתב (רשות)</label>
@@ -367,7 +367,7 @@ function openCompose({ capsuleId, trigger, isNew }){
   document.getElementById('letter-text').value = '';
   document.getElementById('new-trigger').value = '';
   document.getElementById('file-input').value = '';
-  document.getElementById('website').value = '';
+  document.getElementById('hp-extra').value = '';
   document.getElementById('status-msg').textContent = '';
   document.getElementById('status-msg').className = '';
   resetRecording();
@@ -484,7 +484,7 @@ async function submitContribution(){
   const text = document.getElementById('letter-text').value.trim();
   const fileInput = document.getElementById('file-input');
   const file = fileInput.files[0] || null;
-  const honeypot = document.getElementById('website').value;
+  const honeypot = document.getElementById('hp-extra').value;
 
   if(honeypot){
     statusEl.textContent = 'תודה, זה נשמר לרוני!';
