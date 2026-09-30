@@ -4,5 +4,14 @@
     "birthday": "2026-10-05",
     "goal": 60
   },
-  "greetings": []
+  "greetings": [
+    {
+      "from": "ניר",
+      "text": "בדיקה",
+      "media": null,
+      "sentAt": "2026-09-30T17:41:05.763Z",
+      "group": "family",
+      "batch": "33854a9f-7848-4236-83a0-d470446a1474"
+    }
+  ]
 }
