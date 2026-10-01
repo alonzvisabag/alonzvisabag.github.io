@@ -223,6 +223,52 @@
   }
   .sprig{ display:block; width:132px; height:auto; margin:0 auto 12px; }
 
+  /* photos */
+  .gallery{ position:relative; margin-bottom:18px; padding:22px 0 14px; text-align:center; }
+  .gallery h2{ font-size:1.7rem; font-weight:900; color:var(--leaf-dark); }
+  .gallery .hint{ font-size:0.85rem; color:var(--muted); font-weight:500; margin-top:2px; }
+  .strip{
+    display:flex;
+    gap:18px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    padding:16px 24px 22px;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .strip::-webkit-scrollbar{ display:none; }
+  .polaroid{
+    flex:0 0 auto;
+    scroll-snap-align:center;
+    background:#fff;
+    padding:8px 8px 30px;
+    border:none;
+    border-radius:3px;
+    box-shadow:0 8px 22px rgba(20,50,25,0.24);
+    cursor:zoom-in;
+    transform:rotate(-2deg);
+    -webkit-tap-highlight-color:transparent;
+  }
+  .polaroid:nth-child(2n){ transform:rotate(1.8deg); }
+  .polaroid:nth-child(3n){ transform:rotate(-0.8deg); }
+  .polaroid img{ display:block; height:180px; width:auto; max-width:250px; object-fit:cover; background:#ece9dc; }
+  .strip-arrow{ display:none; }
+  @media (hover: hover) and (min-width: 700px){
+    .strip-arrow{ display:flex; position:absolute; top:50%; z-index:2; width:40px; height:40px; border-radius:50%; border:none; background:var(--card); color:var(--leaf-dark); box-shadow:0 4px 14px rgba(20,50,25,0.2); align-items:center; justify-content:center; cursor:pointer; }
+    .strip-arrow svg{ width:20px; height:20px; }
+    #strip-prev{ right:-12px; }
+    #strip-next{ left:-12px; }
+  }
+
+  #lightbox{ position:fixed; inset:0; z-index:110; background:rgba(10,24,13,0.93); display:flex; align-items:center; justify-content:center; }
+  #lb-img{ max-width:94vw; max-height:82vh; object-fit:contain; border-radius:6px; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+  .lb-btn{ position:absolute; width:48px; height:48px; border-radius:50%; border:none; background:rgba(255,255,255,0.16); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .lb-btn svg{ width:22px; height:22px; }
+  #lb-close{ top:14px; left:14px; }
+  #lb-prev{ right:10px; top:50%; transform:translateY(-50%); }
+  #lb-next{ left:10px; top:50%; transform:translateY(-50%); }
+  #lb-count{ position:absolute; bottom:20px; left:0; right:0; text-align:center; color:#fff; font-weight:700; direction:ltr; pointer-events:none; }
+
   /* slideshow */
   .show-btn{
     margin-top:20px;
@@ -351,9 +397,24 @@
   </div>
 </header>
   <main>
+    <section class="gallery glass" id="gallery" hidden>
+      <h2 class="serif">תמונות</h2>
+      <p class="hint">אפשר לגלול, ולגעת בתמונה כדי להגדיל אותה</p>
+      <button type="button" class="strip-arrow" id="strip-prev" aria-label="הקודמות"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <div class="strip" id="strip"></div>
+      <button type="button" class="strip-arrow" id="strip-next" aria-label="הבאות"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+    </section>
     <div class="tabs" id="tabs"></div>
     <div class="wall" id="wall"></div>
   </main>
+</div>
+
+<div id="lightbox" hidden>
+  <img id="lb-img" alt="">
+  <button type="button" class="lb-btn" id="lb-close" aria-label="סגירה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button type="button" class="lb-btn" id="lb-prev" aria-label="הקודמת"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  <button type="button" class="lb-btn" id="lb-next" aria-label="הבאה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+  <div id="lb-count"></div>
 </div>
 
 <div id="show" hidden>
@@ -379,6 +440,7 @@
 
 <script src="greetings.js"></script>
 <script src="show.js"></script>
+<script src="gallery.js"></script>
 <script>
 history.scrollRestoration = 'manual';
 const GROUPS = [
@@ -392,6 +454,7 @@ const AUDIO_EXT = ['mp3', 'wav', 'm4a', 'ogg', 'aac'];
 const VIDEO_EXT = ['mp4', 'mov', 'webm', 'm4v'];
 
 let greetings = [];
+let photos = [];
 let activeTab = 'all';
 
 function escapeHTML(str){
@@ -536,6 +599,7 @@ function showSite(view){
   document.getElementById('site').hidden = false;
   document.getElementById('total').textContent = greetings.length;
   document.getElementById('show-btn').hidden = !greetings.length;
+  Gallery.render(photos);
   if(view && (view.tab === 'fav' || GROUPS.some(t => t.key === view.tab))) activeTab = view.tab;
   renderTabs();
   renderWall();
@@ -556,6 +620,7 @@ fetch('content.json', { cache: 'no-store' })
       return;
     }
     greetings = mergeGreetings(data.greetings || []);
+    photos = data.photos || [];
     // ?show opens straight into the slideshow, for the screen at the party.
     const wantShow = new URLSearchParams(location.search).has('show');
     const view = readView();
