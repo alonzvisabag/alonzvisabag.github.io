@@ -1,10 +1,11 @@
-// Photos of Galit above the greetings: a row of polaroids to swipe through, and a tap opens one
-// full screen. The list comes from "photos" in content.json; thumbnails live in photos/thumb/.
+// Photos of Galit above the greetings: a grid of polaroids (the first few, then all of them on
+// request), and a tap opens one full screen. The list comes from "photos" in content.json; thumbnails live in photos/thumb/.
 const Gallery = (() => {
   const $ = (id) => document.getElementById(id);
   let photos = [];
   let cur = 0;
   let touchX = null;
+  const FIRST = 9;
 
   const full = (name) => 'photos/' + encodeURIComponent(name);
   const thumb = (name) => 'photos/thumb/' + encodeURIComponent(name);
@@ -12,12 +13,13 @@ const Gallery = (() => {
   function render(list){
     photos = list || [];
     $('gallery').hidden = !photos.length;
-    const strip = $('strip');
-    strip.textContent = '';
+    const grid = $('photo-grid');
+    grid.textContent = '';
+    grid.classList.remove('open');
     photos.forEach((name, i) => {
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'polaroid';
+      b.className = 'polaroid' + (i >= FIRST ? ' extra' : '');
       b.setAttribute('aria-label', `תמונה ${i + 1} מתוך ${photos.length}`);
       const img = document.createElement('img');
       img.alt = '';
@@ -26,9 +28,19 @@ const Gallery = (() => {
       img.src = thumb(name);
       b.appendChild(img);
       b.addEventListener('click', () => open(i));
-      strip.appendChild(b);
+      grid.appendChild(b);
     });
+    $('more-photos').hidden = photos.length <= FIRST;
+    $('more-photos').textContent = `הצגת כל ${photos.length} התמונות`;
   }
+
+  $('more-photos').addEventListener('click', () => {
+    const grid = $('photo-grid');
+    const opening = !grid.classList.contains('open');
+    grid.classList.toggle('open', opening);
+    $('more-photos').textContent = opening ? 'פחות תמונות' : `הצגת כל ${photos.length} התמונות`;
+    if(!opening) $('gallery').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
 
   function show(i){
     cur = (i + photos.length) % photos.length;
@@ -79,9 +91,6 @@ const Gallery = (() => {
       show(dx > 0 ? cur + 1 : cur - 1);
     }
   });
-  // On a computer the row scrolls with the arrow buttons at its sides.
-  $('strip-prev').addEventListener('click', () => $('strip').scrollBy({ left: 260, behavior: 'smooth' }));
-  $('strip-next').addEventListener('click', () => $('strip').scrollBy({ left: -260, behavior: 'smooth' }));
 
   return { render };
 })();

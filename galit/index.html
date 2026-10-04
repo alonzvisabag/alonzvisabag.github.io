@@ -227,37 +227,42 @@
   .gallery{ position:relative; margin-bottom:18px; padding:22px 0 14px; text-align:center; }
   .gallery h2{ font-size:1.7rem; font-weight:900; color:var(--leaf-dark); }
   .gallery .hint{ font-size:0.85rem; color:var(--muted); font-weight:500; margin-top:2px; }
-  .strip{
-    display:flex;
-    gap:18px;
-    overflow-x:auto;
-    scroll-snap-type:x mandatory;
-    padding:16px 24px 22px;
-    scrollbar-width:none;
-    -webkit-overflow-scrolling:touch;
+  .photo-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:12px 10px;
+    padding:16px 14px 8px;
   }
-  .strip::-webkit-scrollbar{ display:none; }
+  @media (min-width: 600px){ .photo-grid{ grid-template-columns:repeat(4, 1fr); } }
   .polaroid{
-    flex:0 0 auto;
-    scroll-snap-align:center;
+    display:block;
+    width:100%;
     background:#fff;
-    padding:8px 8px 30px;
+    padding:5px 5px 14px;
     border:none;
     border-radius:3px;
-    box-shadow:0 8px 22px rgba(20,50,25,0.24);
+    box-shadow:0 6px 16px rgba(20,50,25,0.22);
     cursor:zoom-in;
-    transform:rotate(-2deg);
+    transform:rotate(-1.6deg);
     -webkit-tap-highlight-color:transparent;
   }
-  .polaroid:nth-child(2n){ transform:rotate(1.8deg); }
-  .polaroid:nth-child(3n){ transform:rotate(-0.8deg); }
-  .polaroid img{ display:block; height:180px; width:auto; max-width:320px; object-fit:cover; background:#ece9dc; }
-  .strip-arrow{ display:none; }
-  @media (hover: hover) and (min-width: 700px){
-    .strip-arrow{ display:flex; position:absolute; top:50%; z-index:2; width:40px; height:40px; border-radius:50%; border:none; background:var(--card); color:var(--leaf-dark); box-shadow:0 4px 14px rgba(20,50,25,0.2); align-items:center; justify-content:center; cursor:pointer; }
-    .strip-arrow svg{ width:20px; height:20px; }
-    #strip-prev{ right:-12px; }
-    #strip-next{ left:-12px; }
+  .polaroid:nth-child(2n){ transform:rotate(1.4deg); }
+  .polaroid:nth-child(3n){ transform:rotate(-0.6deg); }
+  .polaroid.extra{ display:none; }
+  .photo-grid.open .polaroid.extra{ display:block; }
+  .polaroid img{ display:block; width:100%; aspect-ratio:1; object-fit:cover; object-position:50% 30%; background:#ece9dc; }
+  .more-photos{
+    margin-top:12px;
+    min-height:44px;
+    padding:0 22px;
+    border-radius:30px;
+    border:1.5px solid var(--leaf);
+    background:#fff;
+    color:var(--leaf-dark);
+    font-family:'Rubik', sans-serif;
+    font-weight:700;
+    font-size:0.95rem;
+    cursor:pointer;
   }
 
   #lightbox{ position:fixed; inset:0; z-index:110; background:rgba(10,24,13,0.93); display:flex; align-items:center; justify-content:center; }
@@ -399,10 +404,9 @@
   <main>
     <section class="gallery glass" id="gallery" hidden>
       <h2 class="serif">תמונות</h2>
-      <p class="hint">אפשר לגלול, ולגעת בתמונה כדי להגדיל אותה</p>
-      <button type="button" class="strip-arrow" id="strip-prev" aria-label="הקודמות"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-      <div class="strip" id="strip"></div>
-      <button type="button" class="strip-arrow" id="strip-next" aria-label="הבאות"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <p class="hint">נגיעה בתמונה מגדילה אותה</p>
+      <div class="photo-grid" id="photo-grid"></div>
+      <button type="button" class="more-photos" id="more-photos" hidden></button>
     </section>
     <div class="tabs" id="tabs"></div>
     <div class="wall" id="wall"></div>
