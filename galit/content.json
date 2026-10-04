@@ -204,6 +204,22 @@
       "sentAt": "2026-10-04T08:01:06.021Z",
       "group": "work",
       "batch": "c00769f7-0c24-4e64-9ee3-efb73e3cdcab"
+    },
+    {
+      "from": "לילך",
+      "text": null,
+      "media": "friends-1791100918597.jpg",
+      "sentAt": "2026-10-04T08:02:17.842Z",
+      "group": "friends",
+      "batch": "1d6a9192-a8ae-4dcb-8a42-b81626f90296"
+    },
+    {
+      "from": "לילך",
+      "text": null,
+      "media": "friends-1791100918598.mp4",
+      "sentAt": "2026-10-04T08:02:18.842Z",
+      "group": "friends",
+      "batch": "1d6a9192-a8ae-4dcb-8a42-b81626f90296"
     }
   ],
   "photos": [
