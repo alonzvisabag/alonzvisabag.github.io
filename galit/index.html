@@ -223,6 +223,80 @@
   }
   .sprig{ display:block; width:132px; height:auto; margin:0 auto 12px; }
 
+  /* her photo at the top of the site */
+  .cover{
+    width:180px;
+    margin:0 auto 18px;
+    background:#fff;
+    padding:7px 7px 24px;
+    border-radius:3px;
+    box-shadow:0 12px 30px rgba(20,50,25,0.28);
+    transform:rotate(-3deg);
+  }
+  .cover img{ display:block; width:100%; aspect-ratio:1; object-fit:cover; background:#ece9dc; }
+
+  /* opening: photos dropping on a table */
+  #montage{
+    position:fixed;
+    inset:0;
+    z-index:95;
+    overflow:hidden;
+    background:linear-gradient(rgba(12,32,16,0.3), rgba(12,32,16,0.3)), url(jungle.svg) center / 100% 100% no-repeat, #1d3a22;
+    transition:opacity .6s ease;
+  }
+  #montage.out{ opacity:0; pointer-events:none; }
+  .m-photo{
+    position:absolute;
+    background:#fff;
+    padding:6px 6px 22px;
+    border-radius:3px;
+    box-shadow:0 16px 36px rgba(0,0,0,0.38);
+    opacity:0;
+    transform:translate(-50%, -50%) rotate(var(--r0)) scale(1.8);
+    transition:transform .8s cubic-bezier(.2, 1.25, .4, 1), opacity .35s ease;
+  }
+  .m-photo.in{ opacity:1; transform:translate(-50%, -50%) rotate(var(--r)) scale(1); }
+  .m-photo img{ display:block; width:100%; aspect-ratio:1; object-fit:cover; object-position:50% 30%; }
+  .m-end{
+    position:absolute;
+    left:50%;
+    top:50%;
+    z-index:100;
+    width:min(86vw, 380px);
+    padding:26px 22px 28px;
+    border-radius:30px;
+    background:rgba(255,253,244,0.96);
+    box-shadow:0 24px 60px rgba(0,0,0,0.4);
+    text-align:center;
+    opacity:0;
+    pointer-events:none;
+    transform:translate(-50%, -50%) scale(.9);
+    transition:opacity .5s ease, transform .6s cubic-bezier(.2, 1.25, .4, 1);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .m-end.in{ opacity:1; pointer-events:auto; transform:translate(-50%, -50%) scale(1); }
+  .m-end h2{ font-size:2.3rem; font-weight:900; line-height:1.1; color:var(--leaf-dark); }
+  .m-end p{ margin-top:8px; color:var(--muted); font-weight:600; }
+  .m-end .open-btn{ margin-top:20px; }
+  #m-skip{
+    position:absolute;
+    top:14px;
+    left:14px;
+    z-index:101;
+    min-height:40px;
+    padding:0 16px;
+    border:none;
+    border-radius:30px;
+    background:rgba(16,38,20,0.7);
+    color:#fff;
+    font-family:'Rubik', sans-serif;
+    font-weight:700;
+    font-size:0.9rem;
+    cursor:pointer;
+  }
+
   /* photos */
   .gallery{ position:relative; margin-bottom:18px; padding:22px 0 14px; text-align:center; }
   .gallery h2{ font-size:1.7rem; font-weight:900; color:var(--leaf-dark); }
@@ -393,7 +467,7 @@
 <div id="site" hidden>
   <header>
   <div class="glass panel">
-    <svg class="sprig" viewBox="0 0 146 40" aria-hidden="true"><path d="M6 32 Q62 6 134 20" fill="none" stroke="#3d7a3a" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="20.8" cy="20.5" rx="8.2" ry="3.3" transform="rotate(-62.7 20.8 20.5)" fill="#8cc063"/><ellipse cx="33.3" cy="27.0" rx="7.9" ry="3.2" transform="rotate(24.5 33.3 27.0)" fill="#5f9a4c"/><ellipse cx="40.1" cy="15.3" rx="7.6" ry="3.1" transform="rotate(-56.3 40.1 15.3)" fill="#5f9a4c"/><ellipse cx="51.7" cy="22.4" rx="7.4" ry="3.1" transform="rotate(30.8 51.7 22.4)" fill="#8cc063"/><ellipse cx="60.0" cy="12.2" rx="7.1" ry="3.0" transform="rotate(-50.2 60.0 12.2)" fill="#5f9a4c"/><ellipse cx="71.0" cy="19.7" rx="6.8" ry="2.9" transform="rotate(36.8 71.0 19.7)" fill="#5f9a4c"/><ellipse cx="80.6" cy="11.1" rx="6.5" ry="2.8" transform="rotate(-44.3 80.6 11.1)" fill="#8cc063"/><ellipse cx="91.1" cy="19.0" rx="6.2" ry="2.7" transform="rotate(42.5 91.1 19.0)" fill="#5f9a4c"/><ellipse cx="101.9" cy="12.0" rx="6.0" ry="2.7" transform="rotate(-38.8 101.9 12.0)" fill="#5f9a4c"/><ellipse cx="112.1" cy="20.1" rx="5.7" ry="2.6" transform="rotate(47.8 112.1 20.1)" fill="#8cc063"/><ellipse cx="123.9" cy="14.8" rx="5.4" ry="2.5" transform="rotate(-33.8 123.9 14.8)" fill="#5f9a4c"/><ellipse cx="139.0" cy="21.0" rx="6.5" ry="2.7" transform="rotate(12 139.0 21.0)" fill="#8cc063"/></svg>
+    <div class="cover"><img src="photos/cover.jpg" alt="גלית"></div>
   <div class="overline">5.10</div>
     <h1 class="serif">גלית בת <span class="leaf-text">60</span></h1>
     <p>מזל טוב! כאן מחכות לך ברכות מכל האנשים שאוהבים אותך.</p>
@@ -411,6 +485,16 @@
     <div class="tabs" id="tabs"></div>
     <div class="wall" id="wall"></div>
   </main>
+</div>
+
+<div id="montage" hidden>
+  <div id="m-table"></div>
+  <div class="m-end" id="m-end">
+    <h2 class="serif">מזל טוב, גלית!</h2>
+    <p id="m-count"></p>
+    <button type="button" class="open-btn" id="m-go" aria-label="לברכות"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+  </div>
+  <button type="button" id="m-skip">דילוג</button>
 </div>
 
 <div id="lightbox" hidden>
@@ -445,6 +529,7 @@
 <script src="greetings.js"></script>
 <script src="show.js"></script>
 <script src="gallery.js"></script>
+<script src="montage.js"></script>
 <script>
 history.scrollRestoration = 'manual';
 const GROUPS = [
@@ -629,11 +714,19 @@ fetch('content.json', { cache: 'no-store' })
     const wantShow = new URLSearchParams(location.search).has('show');
     const view = readView();
     if(view || wantShow) showSite(view);
-    else document.getElementById('intro').hidden = false;
+    else {
+      document.getElementById('intro').hidden = false;
+      Montage.preload(photos.slice(0, OPENING_PHOTOS));
+    }
     if(wantShow) Show.open(greetings);
   });
 
-document.getElementById('open-btn').addEventListener('click', () => showSite(null));
+// The arrow opens the site underneath and plays the photo opening on top of it.
+const OPENING_PHOTOS = 12;
+document.getElementById('open-btn').addEventListener('click', () => {
+  showSite(null);
+  Montage.play(photos.slice(0, OPENING_PHOTOS), greetings.length);
+});
 document.getElementById('show-btn').addEventListener('click', () => Show.open(greetings));
 </script>
 </body>
