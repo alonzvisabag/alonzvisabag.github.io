@@ -36,7 +36,7 @@
                 <span class="icq-ctl" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span>
             </div>
             <div class="icq-who">
-                <span class="icq-dot"></span><b>אלון צבי סבג</b><span class="icq-status">מחובר · מחפש משרד פרסום</span>
+                <span class="icq-dot"></span><b>אלון צבי סבג</b><span class="icq-status">מחובר</span>
             </div>
             <div class="icq-log" role="log" aria-live="polite"></div>
             <button type="button" class="icq-btn icq-all">להציג את כל השיחה ⏩</button>
