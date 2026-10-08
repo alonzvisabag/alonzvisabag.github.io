@@ -1,0 +1,14 @@
+# Keep search engines away from the private files of the gift sites and from old helper files.
+# The gift pages themselves stay crawlable so search engines can read their "noindex" tag.
+User-agent: *
+Disallow: /roni/content.json
+Disallow: /roni/media/
+Disallow: /roni/worker/
+Disallow: /galit/content.json
+Disallow: /galit/media/
+Disallow: /galit/photos/
+Disallow: /CV%20HE%20(1).pdf
+Disallow: /canva-preview.html
+Disallow: /font-picker.html
+Disallow: /package.json
+Disallow: /package-lock.json
