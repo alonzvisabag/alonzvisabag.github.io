@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ברכה לדפנה בת 60</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none';">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  [hidden]{ display:none !important; }
+
+  :root{
+    --ink:#2f3a2c;
+    --muted:#66705f;
+    --card:#fffdf8;
+    --leaf:#5f9a4c;
+    --leaf-light:#8cc063;
+    --leaf-dark:#2f6b35;
+    --bloom:#e0708a;
+    --bloom-dark:#c04a68;
+    --border:#e4e3d3;
+  }
+
+  html{ background:#e3ebcc; }
+  body{
+    font-family:'Rubik', sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  header{
+    text-align:center;
+    padding:28px 16px 26px;
+  }
+  header .panel{ max-width:520px; margin:0 auto; padding:26px 20px 24px; }
+  .overline{
+    display:inline-block;
+    font-size:0.78rem;
+    font-weight:700;
+    letter-spacing:1.5px;
+    color:var(--leaf-dark);
+    border:1.5px solid rgba(47,107,53,0.4);
+    border-radius:30px;
+    padding:5px 14px;
+    margin-bottom:16px;
+  }
+  header h1{
+    font-family:'Frank Ruhl Libre', serif;
+    font-size:3rem;
+    font-weight:900;
+    line-height:1.05;
+    margin-bottom:14px;
+  }
+  header h1 .num{
+    background:linear-gradient(135deg, var(--leaf-light), var(--leaf-dark));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{
+    color:var(--muted);
+    font-size:1rem;
+    line-height:1.7;
+    max-width:460px;
+    margin:0 auto;
+    font-weight:500;
+  }
+  header p strong{ color:var(--ink); }
+  header p.extras{ margin-top:10px; color:var(--ink); }
+  header p.extras b{ color:var(--bloom-dark); }
+
+  .secret-banner{
+    max-width:480px;
+    margin:22px auto 0;
+    background:linear-gradient(100deg, var(--bloom), var(--bloom-dark));
+    color:#fff;
+    border-radius:18px;
+    padding:15px 18px;
+    display:flex;
+    gap:14px;
+    align-items:center;
+    text-align:right;
+    box-shadow:0 12px 28px rgba(192,74,104,0.35);
+  }
+  .secret-banner{ animation:secret-pulse 1.6s ease-in-out infinite; }
+  @keyframes secret-pulse{
+    0%, 100%{ transform:scale(1); }
+    50%{ transform:scale(1.05); }
+  }
+  @media (prefers-reduced-motion: reduce){ .secret-banner{ animation:none; } }
+  .secret-banner svg{ width:34px; height:34px; flex-shrink:0; }
+  .secret-banner b{ display:block; font-size:1.2rem; font-weight:900; margin-bottom:2px; }
+  .secret-banner span{ display:block; font-size:0.92rem; font-weight:600; line-height:1.5; }
+  .secret-reminder{ margin-top:12px; text-align:center; font-size:0.88rem; font-weight:800; color:var(--bloom-dark); }
+
+  main{
+    max-width:560px;
+    margin:0 auto;
+    padding:0 18px 80px;
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:22px;
+    padding:24px 20px;
+    box-shadow:0 12px 36px rgba(20,50,25,0.16);
+    margin-bottom:18px;
+  }
+
+  .progress-card{ text-align:center; padding:20px; }
+  .progress-card .count-line{ font-size:0.95rem; color:var(--muted); font-weight:600; margin-bottom:12px; }
+  .progress-card .count-line b{ font-family:'Frank Ruhl Libre', serif; font-size:1.7rem; color:var(--leaf-dark); margin:0 4px; }
+  .bar{ height:10px; border-radius:10px; background:#e8ecdf; overflow:hidden; }
+  .bar span{
+    display:block;
+    height:100%;
+    width:0;
+    border-radius:10px;
+    background:linear-gradient(90deg, var(--leaf-light), var(--leaf-dark));
+    transition:width 1.2s cubic-bezier(.22,1,.36,1);
+  }
+
+  label.field-label{
+    display:block;
+    font-size:0.88rem;
+    font-weight:700;
+    color:var(--ink);
+    margin:20px 0 8px;
+  }
+  label.field-label:first-child{ margin-top:0; }
+  label.field-label .req{ color:var(--bloom); margin-right:2px; }
+  label.field-label .opt{ color:var(--muted); font-weight:500; }
+  label.field-label .rec{ color:var(--bloom-dark); font-weight:700; }
+
+  .groups{ display:flex; gap:8px; }
+  .group-btn{
+    flex:1;
+    padding:13px 6px;
+    border-radius:14px;
+    border:1.5px solid var(--border);
+    background:#fff;
+    font-family:'Rubik', sans-serif;
+    font-size:0.95rem;
+    font-weight:700;
+    color:var(--ink);
+    cursor:pointer;
+    transition:border-color .15s, background .15s, color .15s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .group-btn.on{ border-color:var(--leaf); background:#eef3e8; color:var(--leaf-dark); }
+
+  input[type="text"], textarea{
+    width:100%;
+    font-family:'Rubik', sans-serif;
+    font-size:1rem;
+    padding:13px 14px;
+    border-radius:14px;
+    border:1.5px solid var(--border);
+    background:#fff;
+    outline:none;
+    color:var(--ink);
+    transition:border-color .15s, box-shadow .15s;
+  }
+  input[type="text"]:focus, textarea:focus{ border-color:var(--leaf); box-shadow:0 0 0 3px rgba(95,154,76,0.22); }
+  textarea{ min-height:140px; resize:vertical; line-height:1.6; }
+  .invalid, .invalid:focus{ border-color:var(--bloom) !important; box-shadow:0 0 0 3px rgba(224,112,138,0.22) !important; }
+  .groups.invalid{ border-radius:14px; }
+  .field-error{ color:var(--bloom-dark); font-size:0.82rem; font-weight:700; margin-top:6px; min-height:0; }
+
+  .rec-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    min-height:44px;
+    font-family:'Rubik', sans-serif;
+    font-size:0.9rem;
+    font-weight:700;
+    padding:11px 20px;
+    border-radius:30px;
+    border:1.5px solid var(--leaf);
+    cursor:pointer;
+    color:var(--leaf-dark);
+    background:#fff;
+  }
+  .pill.recording{ background:var(--bloom); border-color:var(--bloom); color:#fff; }
+  .pill.quiet{ border-color:var(--border); color:var(--muted); }
+  #rec-status{ font-size:0.85rem; color:var(--muted); font-weight:600; font-variant-numeric:tabular-nums; }
+  audio{ width:100%; margin-top:10px; }
+  .visually-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; opacity:0; }
+
+  .attach-list{ display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
+  .attach-list:empty{ display:none; }
+  .attach{ display:flex; align-items:center; gap:12px; padding:8px; border:1.5px solid var(--border); border-radius:14px; background:#fff; }
+  .attach .thumb{ position:relative; width:52px; height:52px; border-radius:10px; overflow:hidden; flex-shrink:0; background:#eef3e8; color:var(--leaf-dark); display:flex; align-items:center; justify-content:center; }
+  .attach .thumb img, .attach .thumb video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .attach .thumb svg{ position:relative; width:22px; height:22px; }
+  .attach .thumb video + svg{ color:#fff; filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
+  .attach .info{ flex:1; min-width:0; }
+  .attach .info b{ display:block; font-size:0.92rem; }
+  .attach .info span{ display:block; font-size:0.78rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .attach .remove{ width:44px; height:44px; flex-shrink:0; border:none; border-radius:50%; background:#fbeaee; color:var(--bloom-dark); cursor:pointer; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+  .attach .remove svg{ width:18px; height:18px; }
+
+  #submit-btn{
+    width:100%;
+    margin-top:26px;
+    padding:16px;
+    border-radius:16px;
+    border:none;
+    background:linear-gradient(100deg, var(--leaf-light), var(--leaf-dark));
+    color:#fff;
+    font-family:'Rubik', sans-serif;
+    font-weight:800;
+    font-size:1.05rem;
+    cursor:pointer;
+    box-shadow:0 6px 0 #245528;
+    transition:transform .15s;
+  }
+  #submit-btn:active{ transform:translateY(2px); box-shadow:0 3px 0 #245528; }
+  #submit-btn:disabled{ opacity:0.6; cursor:default; }
+
+  #status-msg{ margin-top:14px; font-size:0.92rem; font-weight:700; text-align:center; min-height:1.3em; }
+  #status-msg.err{ color:var(--bloom-dark); }
+
+  #thanks{ display:none; text-align:center; padding:36px 22px; }
+  #thanks .big{ font-family:'Frank Ruhl Libre', serif; font-size:1.9rem; font-weight:900; margin-bottom:10px; }
+  #thanks p{ color:var(--muted); line-height:1.7; font-weight:500; margin-bottom:22px; }
+  #again-btn{
+    font-family:'Rubik', sans-serif;
+    font-size:0.95rem;
+    font-weight:700;
+    padding:12px 22px;
+    border-radius:30px;
+    border:1.5px solid var(--leaf);
+    background:#fff;
+    color:var(--leaf-dark);
+    cursor:pointer;
+  }
+  body{ position:relative; z-index:0; }
+  body::before{
+    content:"";
+    position:fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100vh;
+    height:100lvh;
+    background:url(jungle.svg) center / 100% 100% no-repeat;
+    z-index:-1;
+    pointer-events:none;
+  }
+  .glass{
+    background:rgba(255,253,244,0.94);
+    border-radius:30px;
+    box-shadow:0 20px 60px rgba(20,50,25,0.25);
+  }
+  .sprig{ display:block; width:132px; height:auto; margin:0 auto 12px; }
+
+  .demo-ribbon{ position:relative; z-index:2; display:table; margin:10px auto 0; padding:6px 14px; border-radius:30px; background:rgba(16,38,20,0.82); color:#fff; font:600 0.78rem 'Rubik', sans-serif; white-space:nowrap; pointer-events:none; }
+  .demo-note{ margin-top:10px; font-size:0.85rem; color:var(--muted); text-align:center; line-height:1.6; }
+  #thanks a{ display:inline-block; margin-top:4px; margin-bottom:18px; color:var(--leaf-dark); font-weight:800; }
+</style>
+</head>
+<body>
+<div class="demo-ribbon">הדגמה · השמות בדויים והתמונות מטושטשות</div>
+
+<header>
+  <div class="glass panel">
+    <svg class="sprig" viewBox="0 0 146 40" aria-hidden="true"><path d="M6 32 Q62 6 134 20" fill="none" stroke="#3d7a3a" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="20.8" cy="20.5" rx="8.2" ry="3.3" transform="rotate(-62.7 20.8 20.5)" fill="#8cc063"/><ellipse cx="33.3" cy="27.0" rx="7.9" ry="3.2" transform="rotate(24.5 33.3 27.0)" fill="#5f9a4c"/><ellipse cx="40.1" cy="15.3" rx="7.6" ry="3.1" transform="rotate(-56.3 40.1 15.3)" fill="#5f9a4c"/><ellipse cx="51.7" cy="22.4" rx="7.4" ry="3.1" transform="rotate(30.8 51.7 22.4)" fill="#8cc063"/><ellipse cx="60.0" cy="12.2" rx="7.1" ry="3.0" transform="rotate(-50.2 60.0 12.2)" fill="#5f9a4c"/><ellipse cx="71.0" cy="19.7" rx="6.8" ry="2.9" transform="rotate(36.8 71.0 19.7)" fill="#5f9a4c"/><ellipse cx="80.6" cy="11.1" rx="6.5" ry="2.8" transform="rotate(-44.3 80.6 11.1)" fill="#8cc063"/><ellipse cx="91.1" cy="19.0" rx="6.2" ry="2.7" transform="rotate(42.5 91.1 19.0)" fill="#5f9a4c"/><ellipse cx="101.9" cy="12.0" rx="6.0" ry="2.7" transform="rotate(-38.8 101.9 12.0)" fill="#5f9a4c"/><ellipse cx="112.1" cy="20.1" rx="5.7" ry="2.6" transform="rotate(47.8 112.1 20.1)" fill="#8cc063"/><ellipse cx="123.9" cy="14.8" rx="5.4" ry="2.5" transform="rotate(-33.8 123.9 14.8)" fill="#5f9a4c"/><ellipse cx="139.0" cy="21.0" rx="6.5" ry="2.7" transform="rotate(12 139.0 21.0)" fill="#8cc063"/></svg>
+    <div class="overline">14.3 · הפתעה</div>
+    <h1>דפנה בת <span class="num">60</span></h1>
+    <p>ב-14 במרץ לאמא שלנו יש יום הולדת 60, ואנחנו מכינים לה הפתעה: אתר אחד שבו מחכות לה ברכות, זיכרונות, תמונות והקלטות מכל האנשים שאוהבים אותה. <strong>המטרה: 60 ברכות ל-60 שנה.</strong></p>
+    <p class="extras">חוץ מברכה כתובה, אפשר <b>(ואפילו מומלץ!)</b> לצרף תמונה משותפת, סרטון או הקלטה קולית שלכם.</p>
+  </div>
+  <div class="secret-banner" role="note">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="11" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><circle cx="12" cy="16" r="1.4" fill="currentColor"/></svg>
+    <div>
+      <b>סוד! זו הפתעה לדפנה</b>
+      <span>לא לספר לה, לא לרמוז, ולא לשלוח לה את הקישור. אם אתם מעבירים הלאה, תבדקו שהיא לא בקבוצה.</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="card progress-card">
+    <div class="count-line">כבר נאספו <b id="count">0</b> ברכות מתוך <span id="goal">60</span></div>
+    <div class="bar"><span id="bar"></span></div>
+  </div>
+
+  <div class="card" id="form-card">
+    <label class="field-label">איך אתם מכירים את דפנה? <span class="req">*</span></label>
+    <div class="groups" id="groups">
+      <button type="button" class="group-btn" data-group="family">משפחה</button>
+      <button type="button" class="group-btn" data-group="friends">חברות</button>
+      <button type="button" class="group-btn" data-group="work">עבודה</button>
+    </div>
+    <div class="field-error" id="group-error"></div>
+
+    <label class="field-label" for="from-name">השם שלכם <span class="req">*</span></label>
+    <input type="text" id="from-name" placeholder="איך דפנה תדע שזה מכם?" maxlength="60" autocomplete="name">
+    <div class="field-error" id="name-error"></div>
+
+    <div style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;opacity:0;" aria-hidden="true">
+      <label for="hp-extra">Leave empty</label>
+      <input type="text" id="hp-extra" name="hp-extra" tabindex="-1" autocomplete="off">
+    </div>
+
+    <label class="field-label" for="letter-text">הברכה שלכם</label>
+    <textarea id="letter-text" placeholder="כתבו לה כאן..."></textarea>
+
+    <label class="field-label">הקלטה קולית <span class="rec">(מומלץ!)</span></label>
+    <div class="rec-row">
+      <button class="pill" type="button" id="rec-btn">הקליטו</button>
+      <button class="pill quiet" type="button" id="rec-del" hidden>מחיקת ההקלטה</button>
+      <span id="rec-status"></span>
+    </div>
+    <audio id="rec-preview" controls style="display:none"></audio>
+
+    <label class="field-label">תמונות או סרטונים <span class="rec">(מומלץ!)</span></label>
+    <div class="attach-list" id="attach-list"></div>
+    <label class="pill" for="file-input" id="add-file">+ הוספת תמונה או סרטון</label>
+    <input type="file" id="file-input" class="visually-hidden" accept="image/*,video/*,audio/*" multiple>
+    <div class="field-error" id="file-error"></div>
+
+    <button type="button" id="submit-btn">שליחת הברכה לדפנה</button>
+    <div id="status-msg"></div>
+    <p class="demo-note">בהדגמה, ברכות נשמרות רק בדפדפן שלכם. תמונות נשמרות בקטן, והקלטות וסרטונים לא נשמרים.</p>
+    <div class="secret-reminder">ותזכורת: זה סוד עד 14.3, לא לספר לדפנה!</div>
+  </div>
+
+  <div class="card" id="thanks">
+    <div class="big">תודה!</div>
+    <p>זו גרסת הדגמה: הברכה נשמרה רק בדפדפן שלכם ולא נשלחה לשום מקום.</p>
+    <a href="./">לראות אותה על הקיר של דפנה ←</a>
+    <button type="button" id="again-btn">לשלוח עוד ברכה</button>
+  </div>
+</main>
+
+<script src="../../lib/media-prep.js"></script>
+<script src="greetings.js"></script>
+<script>
+// Demo only: greetings sent on this demo stay in this browser and are never sent anywhere.
+const DEMO_KEY = 'demo-birthday-greetings';
+function localGreetings(){
+  try{ return JSON.parse(localStorage.getItem(DEMO_KEY) || '[]'); } catch(e){ return []; }
+}
+function mediaUrl(file){
+  return file.startsWith('data:image/') ? file : 'media/' + encodeURIComponent(file);
+}
+</script>
+<script>
+const MAX_MEDIA_BYTES = 11_000_000;
+const MAX_FILES = 5;
+const MEDIA_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3', 'wav', 'm4a', 'ogg', 'aac', 'mp4', 'mov', 'webm', 'm4v'];
+const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif'];
+const VIDEO_EXTS = ['mp4', 'mov', 'webm', 'm4v'];
+const AUDIO_EXTS = ['mp3', 'wav', 'm4a', 'ogg', 'aac'];
+const ERROR_TEXT = {
+  'file too large': 'הקובץ גדול מדי (עד 11MB)',
+  'unsupported file type': 'אפשר לצרף רק תמונה, סרטון או הקלטה',
+  'name too long': 'השם ארוך מדי',
+  'name required': 'חייבים למלא שם',
+  'group required': 'צריך לבחור איך אתם מכירים את דפנה',
+  'text too long': 'הברכה ארוכה מדי',
+  'nothing to save': 'צריך לכתוב ברכה, להקליט או לצרף משהו',
+  'too many requests': 'יש עומס כרגע, נסו שוב בעוד כמה דקות',
+  'network': 'לא הצלחנו לשלוח, בדקו את החיבור לאינטרנט ונסו שוב',
+  'demo storage': 'בהדגמה אין מקום לשמור עוד תמונות בדפדפן הזה. נסו בלי תמונה'
+};
+const VIDEO_TOO_BIG = 'הסרטון הזה גדול מדי לשליחה. אפשר לקצר אותו בגלריה (עריכה ← חיתוך) ולבחור אותו שוב, או לבחור סרטון קצר יותר';
+const ICONS = {
+  video: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
+  audio: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>',
+  remove: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+};
+const KIND_LABEL = { image: 'תמונה', video: 'סרטון', audio: 'הקלטה' };
+
+let group = null;
+let goal = 60;
+let recordedBlob = null;
+let recordedExt = null;
+let mediaRecorder = null;
+let recChunks = [];
+let activeStream = null;
+let recTimer = null;
+let attachments = [];
+let sending = false;
+// All the parts of one send share this id, so Galit sees them as one greeting.
+// It stays while a send is only partly saved, and a fresh one starts with the next greeting.
+let batchId = null;
+
+function newBatchId(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
+}
+
+// Never shows the goal as reached, so people keep sending; Galit's own page shows the real number.
+function showProgress(count){
+  const shown = Math.min(count, goal - 1);
+  document.getElementById('count').textContent = shown;
+  document.getElementById('goal').textContent = goal;
+  document.getElementById('bar').style.width = shown / goal * 100 + '%';
+}
+
+function loadProgress(){
+  return fetch('content.json', { cache: 'no-store' })
+    .then(r => r.json())
+    .then(data => {
+      goal = (data.site && data.site.goal) || 60;
+      showProgress(mergeGreetings((data.greetings || []).concat(localGreetings())).length);
+    })
+    .catch(() => {});
+}
+
+function setError(id, msg, field){
+  document.getElementById(id).textContent = msg;
+  if(field) field.classList.toggle('invalid', !!msg);
+}
+
+document.getElementById('groups').addEventListener('click', (e) => {
+  const b = e.target.closest('.group-btn');
+  if(!b) return;
+  group = b.dataset.group;
+  document.querySelectorAll('.group-btn').forEach(x => x.classList.toggle('on', x === b));
+  setError('group-error', '', document.getElementById('groups'));
+});
+
+document.getElementById('from-name').addEventListener('input', (e) => {
+  if(e.target.value.trim()) setError('name-error', '', e.target);
+});
+
+// ---- recording ----
+
+function stopRecordingStream(){
+  if(activeStream){
+    activeStream.getTracks().forEach(t => t.stop());
+    activeStream = null;
+  }
+  clearInterval(recTimer);
+}
+
+function resetRecording(){
+  recordedBlob = null;
+  recordedExt = null;
+  recChunks = [];
+  const preview = document.getElementById('rec-preview');
+  preview.style.display = 'none';
+  if(preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
+  preview.removeAttribute('src');
+  preview.load();
+  document.getElementById('rec-btn').textContent = 'הקליטו';
+  document.getElementById('rec-btn').classList.remove('recording');
+  document.getElementById('rec-del').hidden = true;
+  document.getElementById('rec-status').textContent = '';
+}
+
+async function toggleRecording(){
+  const btn = document.getElementById('rec-btn');
+  const status = document.getElementById('rec-status');
+  if(mediaRecorder && mediaRecorder.state === 'recording'){
+    mediaRecorder.stop();
+    return;
+  }
+  if(!window.MediaRecorder || !navigator.mediaDevices){
+    status.textContent = 'אי אפשר להקליט מכאן. נסו לפתוח את הקישור בספארי או בכרום';
+    return;
+  }
+  try{
+    activeStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch(e){
+    status.textContent = 'אין גישה למיקרופון. צריך לאשר גישה, או לפתוח את הקישור בספארי או בכרום';
+    return;
+  }
+  const picked = pickMimeType();
+  recChunks = [];
+  try{
+    mediaRecorder = picked.mime ? new MediaRecorder(activeStream, { mimeType: picked.mime }) : new MediaRecorder(activeStream);
+  } catch(e){
+    stopRecordingStream();
+    status.textContent = 'אי אפשר להקליט מכאן. נסו לפתוח את הקישור בספארי או בכרום';
+    return;
+  }
+  mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recChunks.push(e.data); };
+  mediaRecorder.onstop = () => {
+    recordedBlob = new Blob(recChunks, { type: picked.mime || 'audio/webm' });
+    recordedExt = picked.ext;
+    const preview = document.getElementById('rec-preview');
+    preview.src = URL.createObjectURL(recordedBlob);
+    preview.style.display = 'block';
+    btn.textContent = 'הקליטו שוב';
+    btn.classList.remove('recording');
+    document.getElementById('rec-del').hidden = false;
+    status.textContent = '';
+    stopRecordingStream();
+  };
+  mediaRecorder.start();
+  btn.textContent = 'עצרו הקלטה';
+  btn.classList.add('recording');
+  document.getElementById('rec-del').hidden = true;
+  const startedAt = Date.now();
+  const showTime = () => {
+    const s = Math.floor((Date.now() - startedAt) / 1000);
+    status.textContent = `מקליט... ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  };
+  showTime();
+  recTimer = setInterval(showTime, 500);
+}
+
+function finishRecording(){
+  return new Promise((resolve) => {
+    if(!mediaRecorder || mediaRecorder.state !== 'recording'){ resolve(); return; }
+    mediaRecorder.addEventListener('stop', () => setTimeout(resolve, 0), { once: true });
+    mediaRecorder.stop();
+  });
+}
+
+// ---- photos and videos ----
+
+function kindOf(file, ext){
+  const type = file.type || '';
+  if(IMAGE_EXTS.includes(ext) || type.startsWith('image/')) return 'image';
+  if(VIDEO_EXTS.includes(ext) || type.startsWith('video/')) return 'video';
+  if(AUDIO_EXTS.includes(ext) || type.startsWith('audio/')) return 'audio';
+  return null;
+}
+
+function renderAttachments(){
+  const list = document.getElementById('attach-list');
+  list.textContent = '';
+  attachments.forEach((a) => {
+    const row = document.createElement('div');
+    row.className = 'attach';
+    const thumb = document.createElement('div');
+    thumb.className = 'thumb';
+    if(a.kind === 'image'){
+      const img = document.createElement('img');
+      img.alt = '';
+      img.src = a.url;
+      img.onerror = () => { img.remove(); thumb.innerHTML = ICONS.image; };
+      thumb.appendChild(img);
+    } else if(a.kind === 'video'){
+      const v = document.createElement('video');
+      v.muted = true;
+      v.playsInline = true;
+      v.preload = 'metadata';
+      v.src = a.url + '#t=0.1';
+      thumb.appendChild(v);
+      thumb.insertAdjacentHTML('beforeend', ICONS.video);
+    } else {
+      thumb.innerHTML = ICONS.audio;
+    }
+    const info = document.createElement('div');
+    info.className = 'info';
+    const title = document.createElement('b');
+    title.textContent = KIND_LABEL[a.kind];
+    const name = document.createElement('span');
+    name.textContent = a.file.name || '';
+    info.append(title, name);
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'remove';
+    remove.setAttribute('aria-label', 'הסרה');
+    remove.innerHTML = ICONS.remove;
+    remove.addEventListener('click', () => removeAttachment(a));
+    row.append(thumb, info, remove);
+    list.appendChild(row);
+  });
+  document.getElementById('add-file').textContent = attachments.length ? '+ הוספת עוד' : '+ הוספת תמונה או סרטון';
+  document.getElementById('add-file').hidden = attachments.length >= MAX_FILES;
+}
+
+function removeAttachment(a){
+  attachments = attachments.filter(x => x !== a);
+  if(a.url) URL.revokeObjectURL(a.url);
+  setError('file-error', '');
+  renderAttachments();
+}
+
+document.getElementById('file-input').addEventListener('change', (e) => {
+  const errors = [];
+  for(const file of e.target.files){
+    if(attachments.length >= MAX_FILES){ errors.push(`אפשר לצרף עד ${MAX_FILES} קבצים לברכה אחת`); break; }
+    const ext = extFromFile(file);
+    const kind = kindOf(file, ext);
+    if(!kind || (kind !== 'image' && !MEDIA_EXTS.includes(ext))){ errors.push(ERROR_TEXT['unsupported file type']); continue; }
+    // Photos get shrunk before sending; videos and recordings have to fit as they are.
+    if(kind !== 'image' && file.size > MAX_MEDIA_BYTES){ errors.push(kind === 'video' ? VIDEO_TOO_BIG : 'ההקלטה הזאת ארוכה מדי לשליחה'); continue; }
+    attachments.push({ file, ext, kind, url: kind === 'audio' ? null : URL.createObjectURL(file) });
+  }
+  e.target.value = '';
+  setError('file-error', [...new Set(errors)].join('. '));
+  renderAttachments();
+});
+
+async function prepareAttachment(a){
+  if(a.kind === 'image' && a.ext !== 'gif'){
+    const mustConvert = !MEDIA_EXTS.includes(a.ext);
+    const small = await shrinkImage(a.file, mustConvert);
+    if(small) return { blob: small, ext: 'jpg' };
+    if(mustConvert) return { error: 'את התמונה הזאת אי אפשר לשלוח. נסו לבחור אותה מהגלריה' };
+  }
+  if(!MEDIA_EXTS.includes(a.ext)) return { error: ERROR_TEXT['unsupported file type'] };
+  if(a.file.size > MAX_MEDIA_BYTES) return { error: a.kind === 'video' ? VIDEO_TOO_BIG : ERROR_TEXT['file too large'] };
+  if(a.kind === 'audio' && ['m4a', 'ogg', 'webm'].includes(a.ext)){
+    const audio = a.ext === 'm4a' ? await standardizeAudio(a.file) : a.file;
+    const wav = await toPlayableAudio(audio, MAX_MEDIA_BYTES);
+    if(wav) return { blob: wav, ext: 'wav' };
+    if(audio.size > MAX_MEDIA_BYTES) return { error: ERROR_TEXT['file too large'] };
+    return { blob: audio, ext: a.ext };
+  }
+  if(a.ext === 'jpg' || a.ext === 'jpeg') return { blob: await removeLocation(a.file), ext: a.ext };
+  return { blob: a.file, ext: a.ext };
+}
+
+// ---- sending ----
+
+// Demo: keep the greeting in this browser only. Photos are kept small; recordings and videos are not kept.
+async function sendPart(payload){
+  const item = { from: payload.from, group: payload.group, batch: payload.batch, text: payload.text || null, media: null, sentAt: new Date().toISOString() };
+  if(payload.mediaBlob && payload.mediaBlob.type.startsWith('image/')){
+    const small = await shrinkImage(payload.mediaBlob, true, 700, 0.72);
+    if(small) item.media = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(small); });
+  }
+  if(!item.text && !item.media) return { ok: true };
+  try{
+    const list = localGreetings();
+    list.push(item);
+    localStorage.setItem(DEMO_KEY, JSON.stringify(list));
+  } catch(e){
+    return { ok: false, error: 'demo storage' };
+  }
+  return { ok: true };
+}
+
+async function submitGreeting(){
+  if(sending) return;
+  const statusEl = document.getElementById('status-msg');
+  const submitBtn = document.getElementById('submit-btn');
+  const nameInput = document.getElementById('from-name');
+  const textInput = document.getElementById('letter-text');
+  const fail = (msg) => {
+    statusEl.textContent = msg;
+    statusEl.className = 'err';
+    sending = false;
+    submitBtn.disabled = false;
+  };
+  sending = true;
+  submitBtn.disabled = true;
+  statusEl.textContent = '';
+  statusEl.className = '';
+  await finishRecording();
+
+  const from = nameInput.value.trim();
+  const text = textInput.value.trim();
+  const honeypot = document.getElementById('hp-extra').value;
+
+  let firstInvalid = null;
+  if(!group){
+    setError('group-error', 'צריך לבחור איך אתם מכירים את דפנה', document.getElementById('groups'));
+    firstInvalid = firstInvalid || document.getElementById('groups');
+  }
+  if(!from){
+    setError('name-error', 'חייבים למלא שם', nameInput);
+    firstInvalid = firstInvalid || nameInput;
+  }
+  if(firstInvalid){
+    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if(firstInvalid === nameInput) nameInput.focus({ preventScroll: true });
+    return fail('חסרים פרטים, מסומנים למעלה');
+  }
+  if(!text && !recordedBlob && !attachments.length) return fail(ERROR_TEXT['nothing to save']);
+
+  // Everything is checked before the first send, so a problem never leaves half a greeting behind.
+  const parts = [];
+  if(recordedBlob || attachments.length) statusEl.textContent = 'מכינים את הקבצים...';
+  if(recordedBlob){
+    let blob = recordedExt === 'm4a' ? await standardizeAudio(recordedBlob) : recordedBlob;
+    let ext = recordedExt;
+    const wav = await toPlayableAudio(blob, MAX_MEDIA_BYTES);
+    if(wav){ blob = wav; ext = 'wav'; }
+    if(blob.size > MAX_MEDIA_BYTES) return fail('ההקלטה ארוכה מדי, נסו הקלטה קצרה יותר');
+    parts.push({ blob, ext, done: resetRecording });
+  }
+  for(const a of attachments){
+    const ready = await prepareAttachment(a);
+    if(ready.error) return fail(ready.error);
+    parts.push({ blob: ready.blob, ext: ready.ext, done: () => removeAttachment(a) });
+  }
+  if(!parts.length) parts.push(null);
+
+  // One save per file; the first one carries the text. Whatever was saved is cleared from the form,
+  // so pressing send again after a failure only sends what is left.
+  let pendingText = text;
+  if(!batchId) batchId = newBatchId();
+  for(let i = 0; i < parts.length; i++){
+    const part = parts[i];
+    statusEl.textContent = parts.length > 1 ? `שולח... (${i + 1} מתוך ${parts.length})` : 'שולח...';
+    const data = await sendPart({
+      site: 'galit',
+      group,
+      from,
+      batch: batchId,
+      text: pendingText || undefined,
+      mediaBlob: part ? part.blob : undefined,
+      mediaExt: part ? part.ext : undefined,
+      website: honeypot || undefined
+    });
+    if(!data.ok){
+      const reason = ERROR_TEXT[data.error] || 'משהו השתבש בשמירה, נסו שוב בעוד רגע';
+      return fail(i > 0 ? `${reason}. חלק מהברכה כבר נשמר, ומה שנשאר בטופס עוד לא נשלח` : reason);
+    }
+    if(pendingText){ pendingText = ''; textInput.value = ''; }
+    if(part) part.done();
+  }
+
+  sending = false;
+  batchId = null;
+  submitBtn.disabled = false;
+  statusEl.textContent = '';
+  document.getElementById('form-card').style.display = 'none';
+  document.getElementById('thanks').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  loadProgress();
+}
+
+function resetForm(){
+  document.getElementById('letter-text').value = '';
+  attachments.forEach(a => a.url && URL.revokeObjectURL(a.url));
+  attachments = [];
+  renderAttachments();
+  setError('file-error', '');
+  resetRecording();
+  document.getElementById('thanks').style.display = 'none';
+  document.getElementById('form-card').style.display = 'block';
+}
+
+loadProgress();
+document.getElementById('rec-btn').addEventListener('click', toggleRecording);
+document.getElementById('rec-del').addEventListener('click', resetRecording);
+document.getElementById('submit-btn').addEventListener('click', submitGreeting);
+document.getElementById('again-btn').addEventListener('click', resetForm);
+</script>
+</body>
+</html>
