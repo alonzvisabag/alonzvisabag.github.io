@@ -1,0 +1,110 @@
+/* An old-school chat window (think ICQ on Windows 98) for the cover letter. */
+.icq {
+    --face: #d4d0c8;
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    background: var(--face);
+    border: 2px solid;
+    border-color: #fff #404040 #404040 #fff;
+    box-shadow: inset -1px -1px #808080, inset 1px 1px #dfdfdf, 0 18px 50px rgba(0,0,0,0.28);
+    font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+    font-size: 14px;
+    color: #000;
+    padding: 3px;
+    text-align: right;
+}
+.icq-title {
+    direction: ltr;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    padding: 0 3px 0 4px;
+    background: linear-gradient(90deg, #0a246a, #3a6ea5 60%, #a6caf0);
+    color: #fff;
+    font-weight: bold;
+    font-size: 12.5px;
+    user-select: none;
+}
+.icq-flower { width: 16px; height: 16px; flex: none; }
+.icq-title-text { flex: 1; direction: rtl; text-align: left; }
+.icq-ctl { display: flex; gap: 2px; }
+.icq-ctl i {
+    font-style: normal;
+    width: 17px;
+    height: 15px;
+    line-height: 12px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+    color: #000;
+    background: var(--face);
+    border: 1px solid;
+    border-color: #fff #404040 #404040 #fff;
+}
+.icq-who {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 6px 5px;
+    font-size: 13px;
+    direction: rtl;
+}
+.icq-dot { width: 9px; height: 9px; border-radius: 50%; background: #2fbf2f; box-shadow: 0 0 0 1px #137013; }
+.icq-status { color: #444; font-size: 12px; }
+.icq-log {
+    background: #fff;
+    border: 2px solid;
+    border-color: #808080 #fff #fff #808080;
+    box-shadow: inset 1px 1px #404040;
+    height: 420px;
+    overflow-y: auto;
+    padding: 8px 10px;
+    direction: rtl;
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+}
+.icq-msg { margin-bottom: 9px; line-height: 1.5; animation: icq-in 0.25s ease-out; }
+.icq-head { font-weight: bold; font-size: 12.5px; }
+.from-alon .icq-head { color: #c00000; }
+.from-you  .icq-head { color: #0000c0; }
+.icq-text a { color: #0000ee; }
+.icq-typing { color: #777; font-style: italic; font-size: 12.5px; }
+@keyframes icq-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.icq-btn {
+    font: 13px Tahoma, 'Segoe UI', Arial, sans-serif;
+    color: #000;
+    background: var(--face);
+    border: 2px solid;
+    border-color: #fff #404040 #404040 #fff;
+    box-shadow: inset -1px -1px #808080;
+    padding: 4px 14px;
+    cursor: pointer;
+}
+.icq-btn:active { border-color: #404040 #fff #fff #404040; box-shadow: inset 1px 1px #808080; }
+.icq-all { display: block; margin: 6px auto 4px; }
+.icq-all[hidden] { display: none; }
+.icq-send { display: flex; gap: 6px; align-items: stretch; margin-top: 6px; direction: rtl; }
+.icq-send textarea {
+    flex: 1;
+    resize: none;
+    font: 14px Tahoma, 'Segoe UI', Arial, sans-serif;
+    padding: 5px 7px;
+    border: 2px solid;
+    border-color: #808080 #fff #fff #808080;
+    box-shadow: inset 1px 1px #404040;
+    background: #fff;
+    direction: rtl;
+}
+.icq-send textarea:focus { outline: 1px dotted #000; outline-offset: -4px; }
+
+@media (max-width: 600px) {
+    .icq-log { height: 58vh; max-height: 440px; }
+    .icq { font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .icq-msg { animation: none; }
+    .icq-log { scroll-behavior: auto; }
+}

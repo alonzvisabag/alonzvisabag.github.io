@@ -1,0 +1,94 @@
+/* Shared by the design previews: the opening CV, the paper plane, the preview badge, scroll reveals. */
+
+#cv-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1200px;
+}
+#cv-paper {
+    background: #fff;
+    max-height: 88vh;
+    max-width: 92vw;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+}
+#cv-paper img { height: 88vh; width: auto; display: block; }
+#cv-paper:hover { cursor: none; }
+#cv-lens {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.7);
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.25), 0 8px 24px rgba(0,0,0,0.4);
+    pointer-events: none;
+    display: none;
+    z-index: 10;
+}
+#cv-skip {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font: 0.75rem 'Rubik', sans-serif;
+    color: #fff;
+    opacity: 0.6;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    border: none;
+    background: none;
+}
+#cv-skip:hover { opacity: 1; }
+
+#paper-plane {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 80px;
+    height: 50px;
+    margin: -25px 0 0 -40px;
+    z-index: 10000;
+    pointer-events: none;
+    display: none;
+    filter: drop-shadow(0 6px 8px rgba(0,0,0,0.25));
+}
+#paper-plane svg { width: 100%; height: 100%; display: block; }
+
+/* switch between the previews */
+.preview-badge {
+    position: fixed;
+    bottom: 14px;
+    left: 14px;
+    z-index: 300;
+    background: #000;
+    color: #fff;
+    font: 500 0.8rem 'Rubik', sans-serif;
+    padding: 7px 14px;
+    border-radius: 30px;
+    direction: rtl;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+.preview-badge a { color: #fff; opacity: 0.5; text-decoration: none; padding: 0 4px; }
+.preview-badge a.on { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
+
+/* scroll reveal */
+[data-reveal] {
+    opacity: 0;
+    translate: 0 28px;
+    transition: opacity 0.7s ease, translate 0.7s cubic-bezier(.2,.8,.2,1);
+}
+[data-reveal].in { opacity: 1; translate: 0 0; }
+
+@media (max-width: 600px) {
+    #cv-paper img { height: auto; width: 92vw; }
+}
+@media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1; translate: 0 0; transition: none; }
+}
