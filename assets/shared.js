@@ -1,4 +1,4 @@
-// Shared by the design previews: the opening CV that folds into a paper plane and flies to the
+// Shared by the main page: the opening CV that folds into a paper plane and flies to the
 // CV button (once per browser), the CV magnifier, and the vegetable burst on the name.
 // Load it right after <body> so a first-time visitor sees the CV before anything else.
 (function () {

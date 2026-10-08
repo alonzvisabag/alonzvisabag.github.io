@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,981 +14,824 @@
     <link rel="alternate icon" href="favicon-32.png">
     <link rel="apple-touch-icon" href="favicon-180.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Alef:wght@400;700&display=swap" rel="stylesheet">
-    <script>
-        // The opening (CV, paper plane, typing title) plays only on the first visit from this browser
-        try { if (localStorage.getItem('intro-seen')) document.documentElement.classList.add('intro-seen'); } catch (e) {}
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/shared.css">
+    <link rel="stylesheet" href="assets/icq.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ── Version 2: clean and modern ── */
+        @view-transition { navigation: auto; }
+        :root {
+            --bg: #f4f2ed;
+            --card: #ffffff;
+            --ink: #111;
+            --muted: #6d6a64;
+            --line: #e4e0d6;
+            --acc: #ff5a1f;
+            --radius: 28px;
         }
-
-        html { background: #fff; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { background: var(--bg); scroll-behavior: smooth; }
         body {
             font-family: 'Rubik', sans-serif;
-            color: #000;
-            background: transparent;
+            color: var(--ink);
+            background: var(--bg);
             -webkit-font-smoothing: antialiased;
-            padding-top: 86px;
-            position: relative;
+            overflow-x: hidden;
         }
+        a { color: inherit; text-decoration: none; }
 
-        /* ── COVER LETTER SECTION ── */
-        #cover-letter {
-            max-width: 580px;
-            margin: 100px auto 80px;
-            padding: 50px 40px;
-            direction: rtl;
-            font-family: 'Rubik', sans-serif;
-            font-size: 1.15rem;
-            line-height: 1.9;
-            color: #111;
-            background: rgba(255,255,255,0.88);
-            border-radius: 4px;
-            position: relative;
-            z-index: 2;
-        }
-
-        #cover-letter p { margin-bottom: 1.3em; }
-        #cover-letter p:last-child { margin-bottom: 0; }
-
-        #cover-letter .sig {
-            margin-top: 2em;
-            font-style: italic;
-            color: #555;
-            font-size: 1rem;
-        }
-
-        /* ── CV OVERLAY ── */
-        .intro-seen #cv-overlay { display: none; }
-
-        #cv-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            perspective: 1200px;
-        }
-
-        #cv-paper {
-            background: #fff;
-            max-height: 88vh;
-            max-width: 92vw;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
-            transform-origin: center center;
-            position: relative;
-            overflow: hidden;
-            padding: 0;
-            display: flex;
-        }
-
-        #cv-paper img {
-            height: 88vh;
-            width: auto;
-            display: block;
-        }
-
-        /* skip button */
-        #cv-skip {
-            position: absolute;
-            bottom: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.65rem;
-            color: #fff;
-            opacity: 0.5;
-            cursor: pointer;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            border: none;
-            background: none;
-        }
-
-        #cv-skip:hover { opacity: 1; }
-
-        /* paper plane — the CV folds into it and flies to the CV button */
-        #paper-plane {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 80px;
-            height: 50px;
-            margin: -25px 0 0 -40px;
-            z-index: 2000;
-            pointer-events: none;
-            display: none;
-            filter: drop-shadow(0 6px 8px rgba(0,0,0,0.25));
-        }
-
-        #paper-plane svg { width: 100%; height: 100%; display: block; }
-
-        /* ── NAV ── */
+        /* floating pill nav */
         nav {
+            direction: ltr;
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            translate: -50% 0;
+            z-index: 100;
+            width: min(1120px, calc(100% - 24px));
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 22px 30px;
-            font-size: 1rem;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(6px);
+            padding: 8px 8px 8px 22px;
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(14px) saturate(1.4);
+            -webkit-backdrop-filter: blur(14px) saturate(1.4);
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 60px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.06);
         }
-
-        nav .name {
-            font-weight: 500;
-            font-size: 1.1rem;
-            text-decoration: none;
-            color: #000;
-            letter-spacing: 0.12em;
-        }
-
-        nav .links { display: flex; gap: 32px; align-items: center; }
-
-        nav #cv-nav-btn {
-            font-size: 1rem;
-            font-weight: 500;
-            letter-spacing: 0.1em;
-        }
-
-        @keyframes ig-spin {
-            0%   { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes ig-pulse {
-            0%, 100% { box-shadow: 0 2px 10px rgba(225,48,108,0.4); }
-            50%       { box-shadow: 0 2px 22px rgba(225,48,108,0.85); }
-        }
-
-        @keyframes ig-rotate {
-            0%   { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        nav .ig-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
+        nav .name { font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.9rem; }
+        nav .links { display: flex; gap: 8px; align-items: center; }
+        nav [data-cv] {
+            background: var(--ink);
             color: #fff;
-            position: relative;
-            overflow: hidden;
-            animation: ig-rotate 6s linear infinite;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            padding: 10px 20px;
+            border-radius: 40px;
+            transition: background 0.2s;
         }
-
-        nav .ig-icon::before {
-            content: '';
-            position: absolute;
-            inset: -5px;
+        nav [data-cv]:hover { background: var(--acc); }
+        .ig {
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            background: conic-gradient(#f09433, #e6683c, #dc2743, #cc2366, #bc1888, #833ab4, #f09433);
-            animation: ig-spin 3s linear infinite;
-            z-index: 0;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(from 210deg, #f09433, #dc2743, #bc1888, #833ab4, #f09433);
+            color: #fff;
+            transition: transform 0.25s;
         }
+        .ig:hover { transform: rotate(-12deg) scale(1.08); }
+        .ig svg { width: 22px; height: 22px; }
 
-        nav .ig-icon::after {
-            content: '';
-            position: absolute;
-            inset: 3px;
-            border-radius: 50%;
-            background: #000;
-            z-index: 1;
-        }
-
-        nav .ig-icon svg {
-            width: 28px;
-            height: 28px;
-            stroke: #fff;
-            position: relative;
-            z-index: 2;
-        }
-
-        nav .ig-icon:hover { transform: scale(1.2); }
-
-        nav a {
-            text-decoration: none;
-            color: #000;
-            transition: opacity 0.2s;
-        }
-
-        nav a:hover { opacity: 0.4; }
-
-        /* ── HERO ── */
+        /* hero */
         .hero {
-            text-align: center;
-            padding: 48px 40px 64px;
-            max-width: 640px;
+            max-width: 1120px;
             margin: 0 auto;
-            font-family: 'Alef', sans-serif;
-            font-size: 2rem;
-            line-height: 1.8;
-            font-weight: 700;
-            direction: rtl;
-            background: transparent;
-            position: relative;
-            z-index: 2;
+            padding: 150px 24px 70px;
         }
-
-        #hero-line1, #hero-line2 {
-            background: rgba(255,255,255,0.88);
-            padding: 2px 10px;
-            border-radius: 3px;
-            display: inline;
-        }
-
-        .hero em { font-style: italic; font-size: 3rem; }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0; }
-        }
-
-        .hero-cursor {
-            animation: blink 0.8s step-end infinite;
-            font-weight: 300;
-        }
-
-        /* ── GRID ── */
-        .grid {
-            position: relative;
-            width: 100%;
-            z-index: 2;
-            pointer-events: none;
-            /* height set by JS */
-        }
-
-        .grid-item {
-            position: absolute;
-            overflow: visible;
-            background: #fff;
-            z-index: 2;
-            pointer-events: auto;
-            /* width + position set by JS */
-        }
-
-
-        @keyframes wiggle {
-            0%   { transform: rotate(0deg); }
-            20%  { transform: rotate(-4deg); }
-            40%  { transform: rotate(4deg); }
-            60%  { transform: rotate(-3deg); }
-            80%  { transform: rotate(3deg); }
-            100% { transform: rotate(0deg); }
-        }
-
-        .grid-item img { width: 100%; display: block; }
-        .grid-item:hover img { }
-
-
-        .item-logo { background: transparent; }
-        .item-logo img {
-            border-radius: 10px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.13);
-        }
-
-        .item-section-header { background: transparent; }
-        .item-section-header::after { display: none; }
-
-        .section-card {
-            color: #000;
-            font-family: 'Alef', sans-serif;
-            font-weight: 700;
-            display: flex;
+        .status {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            aspect-ratio: 1;
-            width: 100%;
-            direction: rtl;
+            gap: 9px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 7px 14px;
+            border-radius: 30px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            margin-bottom: 28px;
+        }
+        .status i { width: 9px; height: 9px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 0 rgba(34,197,94,0.6); animation: ping 1.8s infinite; }
+        @keyframes ping { 70% { box-shadow: 0 0 0 9px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
+        .hero h1 {
+            font-size: clamp(2.8rem, 8.4vw, 7.4rem);
+            line-height: 0.98;
+            font-weight: 800;
+            letter-spacing: -0.035em;
+        }
+        .hero h1 .line { display: block; overflow: hidden; padding-bottom: 0.06em; }
+        .hero h1 .line > span { display: inline-block; translate: 0 110%; transition: translate 0.9s cubic-bezier(.2,.9,.2,1); }
+        .hero h1 .acc { color: var(--acc); }
+        .hero.go h1 .line > span { translate: 0 0; }
+        .hero.go h1 .line:nth-child(2) > span { transition-delay: 0.1s; }
+        .hero.go h1 .line:nth-child(3) > span { transition-delay: 0.2s; }
+        .hero { position: relative; }
+        .seal {
+            position: absolute;
+            left: 24px;
+            top: 190px;
+            width: 190px;
+            height: 190px;
+            opacity: 0;
+            transition: opacity 0.8s 0.6s;
+        }
+        .hero.go .seal { opacity: 1; }
+        .seal .ring { position: absolute; inset: 0; animation: turn 18s linear infinite; }
+        .seal .ring span {
+            position: absolute;
+            left: 50%;
+            top: 4px;
+            width: 14px;
+            margin-left: -7px;
+            height: calc(50% - 4px);
+            transform-origin: 50% 100%;
             text-align: center;
-            border-radius: 8px;
+            font: 600 14px 'Rubik', sans-serif;
         }
-
-        .section-card-veggie {
-            background: #6b8c3a;
-            font-size: 2rem;
+        .seal .mid {
+            position: absolute;
+            inset: 50px;
+            border-radius: 50%;
+            background: var(--acc);
+            display: grid;
+            place-items: center;
+            font-size: 2.6rem;
+            box-shadow: 0 10px 30px rgba(255,90,31,0.35);
         }
+        @keyframes turn { to { transform: rotate(360deg); } }
+        .hero .sub {
+            margin-top: 28px;
+            font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+            color: var(--muted);
+            max-width: 40em;
+            line-height: 1.6;
+            opacity: 0;
+            transition: opacity 0.8s 0.35s;
+        }
+        .hero .sub b { color: var(--ink); font-weight: 600; }
+        .hero.go .sub { opacity: 1; }
+        .hero .ctas { display: flex; gap: 10px; margin-top: 30px; flex-wrap: wrap; opacity: 0; transition: opacity 0.8s 0.5s; }
+        .hero.go .ctas { opacity: 1; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            border: 1.5px solid var(--ink);
+            transition: transform 0.2s, background 0.2s, color 0.2s;
+        }
+        .btn.solid { background: var(--ink); color: #fff; }
+        .btn:hover { transform: translateY(-2px); }
 
-        .section-card-portfolio {
-            background: #2d2d2d;
+        /* bento grid */
+        .work { max-width: 1120px; margin: 0 auto; padding: 20px 24px 40px; }
+        .sec-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
+        .sec-head h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -0.02em; }
+        .sec-head span { color: var(--muted); font-size: 0.95rem; }
+        .bento {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 230px;
+            gap: 16px;
+        }
+        .tile {
+            position: relative;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            overflow: hidden;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s, opacity 0.7s ease, translate 0.7s cubic-bezier(.2,.8,.2,1);
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+        .tile:hover { box-shadow: 0 24px 50px -18px rgba(0,0,0,0.25); }
+        .tile .k { font-size: 0.8rem; font-weight: 500; color: var(--muted); letter-spacing: 0.04em; }
+        .tile h3 { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-top: 4px; }
+        .tile p { color: var(--muted); font-size: 0.95rem; line-height: 1.5; margin-top: 6px; }
+        .tile .go { margin-top: auto; font-weight: 600; font-size: 0.9rem; }
+
+        .t-words { grid-column: span 2; grid-row: span 2; background: #151515; color: #fff; border-color: #151515; }
+        .t-words .k, .t-words p { color: #b9b5ad; }
+        .t-words .logo { width: 44%; max-width: 210px; border-radius: 18px; position: absolute; top: 22px; left: 22px; transform: rotate(-4deg); box-shadow: 0 18px 40px rgba(0,0,0,0.5); }
+        .t-words .fan { position: absolute; bottom: -30px; left: 0; right: 0; height: 190px; }
+        .t-words .fan img {
+            position: absolute;
+            bottom: 0;
+            width: 34%;
+            max-width: 170px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.45s cubic-bezier(.2,.9,.3,1.2);
+        }
+        .t-words .fan img:nth-child(1) { right: 6%;  transform: rotate(-9deg) translateY(30px); }
+        .t-words .fan img:nth-child(2) { right: 24%; transform: rotate(-3deg) translateY(14px); }
+        .t-words .fan img:nth-child(3) { right: 42%; transform: rotate(3deg) translateY(18px); }
+        .t-words .fan img:nth-child(4) { right: 60%; transform: rotate(9deg) translateY(34px); }
+        .t-words:hover .fan img:nth-child(1) { transform: rotate(-14deg) translate(-10px, -6px); }
+        .t-words:hover .fan img:nth-child(2) { transform: rotate(-5deg) translateY(-20px); }
+        .t-words:hover .fan img:nth-child(3) { transform: rotate(5deg) translateY(-16px); }
+        .t-words:hover .fan img:nth-child(4) { transform: rotate(14deg) translate(10px, -2px); }
+        .t-words .txt { max-width: 52%; position: relative; z-index: 2; }
+
+        .t-site { grid-row: span 2; padding: 0; }
+        .t-site .screen { position: absolute; inset: 0; }
+        .t-site video { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform 0.6s cubic-bezier(.2,.8,.2,1); }
+        .t-site:hover video { transform: scale(1.04); }
+        .t-site .label {
+            position: absolute;
+            right: 12px;
+            left: 12px;
+            bottom: 12px;
+            padding: 14px 16px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.86);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .t-site .label h3 { font-size: 1.15rem; }
+        .t-site .label p { font-size: 0.85rem; margin-top: 2px; }
+
+        .t-veg { grid-column: span 2; background: #e6f0d8; border-color: #d3e3bf; }
+        .t-veg .marquee { position: absolute; bottom: 18px; left: 0; right: 0; overflow: hidden; direction: ltr; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+        .t-veg .track { display: flex; gap: 12px; width: max-content; animation: slide 38s linear infinite; }
+        .t-veg:hover .track { animation-play-state: paused; }
+        .t-veg .track img { height: 104px; border-radius: 12px; background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+        @keyframes slide { to { transform: translateX(-50%); } }
+
+        .t-word { background: #ffe14d; border-color: #f2d23a; cursor: pointer; text-align: center; justify-content: center; align-items: center; }
+        .t-word .k { color: #6b5d12; }
+        .t-word .word { font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 900; letter-spacing: -0.02em; line-height: 1.1; margin: 10px 0 12px; }
+        .t-word .again { font-size: 0.85rem; font-weight: 600; }
+        .t-word .word.flip { animation: flip 0.5s cubic-bezier(.2,.9,.3,1.3); }
+        @keyframes flip { from { opacity: 0; transform: rotateX(80deg) translateY(10px); } to { opacity: 1; transform: none; } }
+
+        .t-rescue { background: #fbefe0; border-color: #efdcc4; }
+        .t-rescue img { position: absolute; width: 58%; left: -6%; bottom: -10%; transform: rotate(14deg); transition: transform 0.4s cubic-bezier(.2,.9,.3,1.3); filter: drop-shadow(0 14px 18px rgba(0,0,0,0.2)); }
+        .t-rescue:hover img { transform: rotate(4deg) translateY(-10px); }
+        .t-rescue .txt { max-width: 60%; }
+
+        /* ── word stickers around the headline (drag them) ── */
+        .sticker {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 5;
+            padding: 8px 15px 9px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+            white-space: nowrap;
+            border: 3px solid #fff;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.16);
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            opacity: 0;
+            scale: 0.3;
+            transition: opacity 0.35s, scale 0.5s cubic-bezier(.2,1.6,.4,1);
+        }
+        .sticker.on { opacity: 1; scale: 1; }
+        .sticker.on.dragging { cursor: grabbing; scale: 1.08; box-shadow: 0 18px 36px rgba(0,0,0,0.24); transition: none; }
+        .sticker[hidden] { display: none; }
+
+        /* ── running band of words ── */
+        .band-wrap { overflow: hidden; padding: 26px 0 46px; }
+        .words-band {
+            background: var(--ink);
             color: #fff;
-            font-size: 1.25rem;
-            line-height: 1.4;
+            padding: 15px 0;
+            margin: 0 -3%;
+            rotate: -1.6deg;
+            overflow: hidden;
+            direction: ltr;
         }
-
-        /* ── ABOUT ── */
-        #about {
-            max-width: 580px;
-            margin: 90px auto 60px;
-            padding: 0 30px;
-            font-family: 'Rubik', sans-serif;
-            font-size: 1.2rem;
-            line-height: 1.75;
+        .wb-track { display: flex; align-items: center; width: max-content; animation: slide 90s linear infinite; }
+        .words-band:hover .wb-track { animation-play-state: paused; }
+        .wb-track button {
+            font: 800 clamp(1.25rem, 2.6vw, 2rem) 'Rubik', sans-serif;
+            letter-spacing: -0.01em;
+            color: #fff;
+            background: none;
+            border: 0;
+            padding: 0 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            direction: rtl;
+            transition: color 0.2s;
         }
+        .wb-track button:hover { color: #ffe14d; }
+        .wb-track i { font-style: normal; font-size: 0.8rem; }
 
-        #about a {
-            color: #000;
-            text-decoration: underline;
-            text-underline-offset: 3px;
+        #word-pop {
+            position: fixed;
+            z-index: 400;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 14px 18px 12px;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+            min-width: 210px;
+            animation: pop 0.25s cubic-bezier(.2,.9,.3,1.4);
         }
+        #word-pop[hidden] { display: none; }
+        #word-pop b { display: block; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.2; }
+        #word-pop span { display: block; font-size: 0.8rem; color: var(--muted); margin: 3px 0 9px; }
+        #word-pop a { font-weight: 700; font-size: 0.9rem; color: var(--acc); }
+        @keyframes pop { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: none; } }
 
-        #about a:hover { opacity: 0.5; }
-
-        /* ── WORD WALL ── */
-        #word-wall {
+        /* ── Instagram-style stories for the posts ── */
+        .t-words .logo { padding: 4px; background: conic-gradient(from 200deg, #f09433, #dc2743, #bc1888, #833ab4, #f09433); }
+        .t-words .watch {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 12px;
+            padding: 6px 13px;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.12);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .t-words .watch i { width: 8px; height: 8px; border-radius: 50%; background: #ff3b5c; animation: ping 1.8s infinite; }
+        #stories {
             position: fixed;
             inset: 0;
-            z-index: 0;
+            z-index: 600;
+            background: rgba(10,10,10,0.92);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #stories[hidden] { display: none; }
+        .st-frame {
+            position: relative;
+            width: min(420px, 100vw);
+            height: min(760px, 100vh);
+            height: min(760px, 100dvh);
+            background: #141414;
+            border-radius: 18px;
             overflow: hidden;
-            direction: rtl;
-            font-family: 'Rubik', sans-serif;
-            font-size: 1rem;
-            line-height: 1.85;
-            color: #d8d8d8;
-            padding: 16px 20px;
-            pointer-events: none;
+            color: #fff;
+            animation: st-in 0.35s cubic-bezier(.2,.9,.3,1.1);
+            touch-action: none;
+        }
+        @keyframes st-in { from { opacity: 0; transform: scale(0.92) translateY(20px); } }
+        .st-bars { position: absolute; top: 12px; left: 10px; right: 10px; display: flex; gap: 4px; z-index: 3; }
+        .st-bars span { flex: 1; height: 3px; border-radius: 3px; background: rgba(255,255,255,0.35); overflow: hidden; }
+        .st-bars span i { display: block; height: 100%; width: 0; background: #fff; }
+        .st-bars span.done i { width: 100%; }
+        .st-bars span.now i { animation: fill 4.5s linear forwards; }
+        @keyframes fill { to { width: 100%; } }
+        .st-head { position: absolute; top: 26px; right: 12px; left: 12px; display: flex; align-items: center; gap: 10px; z-index: 4; }
+        .st-head img { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; }
+        .st-head b { font-size: 0.9rem; direction: ltr; }
+        .st-close { margin-inline-start: auto; background: none; border: 0; color: #fff; font-size: 2rem; line-height: 1; cursor: pointer; padding: 2px 8px; }
+        .st-slide {
+            position: absolute;
+            inset: 0;
             display: flex;
             flex-direction: column;
-            flex-wrap: wrap;
-            align-content: flex-start;
-            gap: 0 32px;
-        }
-
-        #word-wall span {
-            pointer-events: auto;
-            cursor: default;
-            transition: color 0.2s, transform 0.2s;
-            white-space: nowrap;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 18px 40px;
             text-align: center;
-            display: inline-block;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
         }
-
-        #word-wall span:hover {
-            color: #111;
-            transform: scale(1.18);
-        }
-
-        /* ── FOOTER ── */
-        footer {
-            text-align: center;
-            padding: 40px;
-            font-size: 0.68rem;
-            letter-spacing: 0.1em;
-            color: #aaa;
-            text-transform: uppercase;
-            background: rgba(255,255,255,0.85);
+        .st-slide.on { opacity: 1; visibility: visible; }
+        .st-slide img { width: 100%; max-width: 384px; aspect-ratio: 1; object-fit: cover; border-radius: 10px; }
+        .st-slide h4 { font-size: 1.9rem; font-weight: 900; letter-spacing: -0.02em; margin-top: 20px; }
+        .st-slide p { color: #bdbdbd; margin-top: 6px; line-height: 1.5; max-width: 22em; }
+        .st-slide .big { font-size: 4rem; }
+        .st-ig {
             position: relative;
-            z-index: 1;
-        }
-
-        /* ── זכוכית מגדלת ── */
-        #cv-lens {
-            position: absolute;
-            width: 340px;
-            height: 340px;
-            border-radius: 50%;
-            border: 3px solid rgba(255,255,255,0.7);
-            box-shadow: 0 0 0 2px rgba(0,0,0,0.25), 0 8px 24px rgba(0,0,0,0.4);
-            pointer-events: none;
-            display: none;
-            z-index: 10;
-            overflow: hidden;
-            cursor: none;
-        }
-        #cv-paper:hover { cursor: none; }
-
-
-        /* ── DIGITAL GIFTS ── */
-        .section-card-gifts {
-            background: #e8572a;
+            z-index: 5;
+            margin-top: 24px;
+            padding: 13px 26px;
+            border-radius: 40px;
+            background: linear-gradient(90deg, #f09433, #dc2743, #bc1888);
             color: #fff;
-            font-size: 1.25rem;
-            line-height: 1.25;
-            flex-direction: column;
-            gap: 8px;
+            font-weight: 700;
         }
-        .section-card-gifts small {
-            font-family: 'Rubik', sans-serif;
-            font-weight: 400;
-            font-size: 0.78rem;
-            opacity: 0.92;
-        }
+        .st-tap { position: absolute; top: 70px; bottom: 0; width: 50%; z-index: 2; background: none; border: 0; cursor: pointer; }
+        .st-tap.prev { right: 0; }
+        .st-tap.next { left: 0; }
 
-        .item-phone {
-            background: transparent;
-            display: block;
-            text-decoration: none;
-            color: #000;
+        /* cursor label (mouse only) */
+        #cursor {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 500;
+            pointer-events: none;
+            padding: 9px 16px;
+            border-radius: 30px;
+            background: var(--ink);
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            scale: 0.6;
+            transition: opacity 0.2s, scale 0.2s;
+        }
+        #cursor.on { opacity: 1; scale: 1; }
+
+        /* chat */
+        .chat-sec { max-width: 1120px; margin: 40px auto 0; padding: 0 24px 60px; }
+        .chat-card {
+            background: radial-gradient(circle at 20% 0%, #fff 0, #ece8de 70%);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 50px 24px;
             text-align: center;
         }
-        .mini-phone {
-            display: block;
-            aspect-ratio: 390 / 664;
-            padding: 5px;
-            border-radius: 20px;
-            background: #111;
-            box-shadow: 0 10px 28px rgba(0,0,0,0.22);
-            transition: transform 0.3s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s;
-        }
-        .mini-phone img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 15px;
-            display: block;
-        }
-        .tilt-r .mini-phone { transform: rotate(4deg); }
-        .tilt-l .mini-phone { transform: rotate(-4deg); }
-        .item-phone:hover .mini-phone, .item-phone:focus-visible .mini-phone {
-            transform: rotate(0deg) translateY(-6px) scale(1.05);
-            box-shadow: 0 18px 40px rgba(0,0,0,0.28);
-        }
-        .phone-cap {
-            display: inline-block;
-            margin-top: 12px;
-            font-family: 'Alef', sans-serif;
-            font-weight: 700;
-            font-size: 0.98rem;
-            line-height: 1.3;
-            direction: rtl;
-            background: rgba(255,255,255,0.9);
-            padding: 2px 8px;
-            border-radius: 3px;
-        }
-        .phone-cap small {
-            display: block;
-            font-family: 'Rubik', sans-serif;
-            font-weight: 400;
-            font-size: 0.75rem;
-            color: #e8572a;
-        }
+        .chat-card h2 { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 30px; }
 
+        footer { direction: ltr; text-align: center; padding: 20px 20px 80px; font-size: 0.7rem; letter-spacing: 0.12em; color: #aaa; text-transform: uppercase; }
+
+        @media (max-width: 980px) { .seal { display: none; } }
+        @media (max-width: 820px) {
+            .bento { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 190px; gap: 12px; }
+            .t-words { grid-column: span 2; grid-row: span 2; }
+            .t-veg { grid-column: span 2; }
+            .tile { padding: 18px; border-radius: 22px; }
+            .tile h3 { font-size: 1.2rem; }
+            .t-words .logo { width: 38%; }
+            .t-words .fan { height: 150px; }
+        }
         @media (max-width: 600px) {
-            .section-card-gifts { font-size: 0.95rem; }
-            .section-card-portfolio { font-size: 1.1rem; }
-            .section-card-gifts small { font-size: 0.68rem; }
-            .mini-phone { padding: 4px; border-radius: 15px; }
-            .mini-phone img { border-radius: 11px; }
-            .phone-cap { font-size: 0.8rem; }
-            #word-wall {
-                font-size: 0.85rem;
-                line-height: 2;
-                gap: 0 20px;
-            }
-            .hero { font-size: 1.25rem; padding: 28px 20px 40px; }
-            nav { padding: 18px 20px; }
-            #cv-paper img {
-                height: auto;
-                width: 92vw;
-            }
+            .st-frame { width: 100vw; border-radius: 0; height: 100vh; height: 100dvh; }
+            .sticker { border-width: 2px; padding: 6px 11px 7px; border-radius: 11px; }
+            .band-wrap { padding: 14px 0 30px; }
+            nav { padding: 6px 6px 6px 16px; }
+            nav .name { font-size: 0.75rem; letter-spacing: 0.06em; }
+            nav [data-cv] { padding: 9px 16px; }
+            .ig { width: 38px; height: 38px; }
+            .hero { padding: 120px 18px 50px; }
+            .work, .chat-sec { padding-left: 14px; padding-right: 14px; }
+            .t-site .label { padding: 10px 12px; border-radius: 16px; right: 8px; left: 8px; bottom: 8px; }
+            .t-site .label h3 { font-size: 0.98rem; }
+            .t-site .label p { display: none; }
+            .t-veg .track img { height: 84px; }
+            .tile p { font-size: 0.85rem; }
+            .t-rescue .txt { max-width: 70%; }
+            .chat-card { padding: 36px 10px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero h1 .line > span { translate: 0 0; transition: none; }
+            .hero .sub, .hero .ctas { opacity: 1; transition: none; }
+            .t-veg .track, .status i, .seal .ring, .wb-track, .t-words .watch i { animation: none; }
+            .sticker { transition: none; }
         }
     </style>
 </head>
 <body>
+<script src="assets/shared.js"></script>
 
-    <!-- CV OVERLAY -->
-    <div id="cv-overlay">
-        <div id="cv-paper">
-            <div id="cv-lens"></div>
-            <img src="cv.jpg.jpg" alt="קורות חיים - אלון צבי סבג" id="cv-img">
-        </div>
-        <button id="cv-skip">דלג/י ←</button>
-    </div>
-
-    <!-- PAPER PLANE -->
-    <div id="paper-plane" aria-hidden="true">
-        <svg viewBox="0 0 64 40">
-            <path d="M62 20 L2 6 L20 22 Z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/>
-            <path d="M62 20 L20 22 L26 34 Z" fill="#d6d6d6" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/>
-        </svg>
-    </div>
-
-    <!-- WORD WALL BACKGROUND -->
-    <div id="word-wall"></div>
-
-    <!-- PORTFOLIO -->
-    <nav>
-        <a class="name" href="#" id="name-btn">Alon Zvi Sabag</a>
-        <div class="links">
-            <a href="#" id="cv-nav-btn">CV</a>
-            <a href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener" class="ig-icon" aria-label="Instagram">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                    <circle cx="12" cy="12" r="4.5"/>
-                    <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
-                </svg>
-            </a>
-        </div>
-    </nav>
-
-    <div class="hero" id="hero">
-        <span id="hero-line1"></span><span class="hero-cursor" style="background:rgba(255,255,255,0.88);padding:2px 4px 2px 0;border-radius:0 3px 3px 0;">|</span>
-        <br>
-        <em><span id="hero-line2"></span></em>
-    </div>
-
-    <div class="grid">
-        <!-- מילים של מבוגרים -->
-        <div class="grid-item item-logo" data-label="מילים של מבוגרים"><img id="img-logo" alt="מילים של מבוגרים"></div>
-        <div class="grid-item" data-label="שלאגר"><img id="img-shlagr" alt="שלאגר"></div>
-        <div class="grid-item" data-label="לא אין אין"><img id="img-lo" alt="לא אין אין"></div>
-        <div class="grid-item" data-label="פריג׳ידר"><img id="img-fridge" alt="פריג׳ידר"></div>
-        <div class="grid-item" data-label="ערוץ החיים הטובים"><img id="img-channel" alt="ערוץ החיים הטובים"></div>
-        <!-- פרי וירק -->
-        <div class="grid-item item-section-header" data-label="">
-            <div class="section-card section-card-veggie">פרי וירק</div>
-        </div>
-        <div class="grid-item" data-label="אגס מסורס"><img src="image-1-nobg.png" alt="אגס מסורס"></div>
-        <div class="grid-item" data-label="אפונה מפונה"><img src="image-2-nobg.png" alt="אפונה מפונה"></div>
-        <div class="grid-item" data-label="חסה קלבסה"><img src="image-3-nobg.png" alt="חסה קלבסה"></div>
-        <div class="grid-item" data-label="כרוב מגנוב"><img src="image-4-nobg.png" alt="כרוב מגנוב"></div>
-        <div class="grid-item" data-label="מישמש טיפש"><img src="image-5-nobg.png" alt="מישמש טיפש"></div>
-        <div class="grid-item" data-label="ענבים מגניבים"><img src="image-6-nobg.png" alt="ענבים מגניבים"></div>
-        <div class="grid-item" data-label="פול מהבול"><img src="image-7-nobg.png" alt="פול מהבול"></div>
-        <div class="grid-item" data-label="פקאן מסוכן"><img src="image-8-nobg.png" alt="פקאן מסוכן"></div>
-        <div class="grid-item" data-label="צ׳ילי דבילי"><img src="image-9-nobg.png" alt="צ׳ילי דבילי"></div>
-        <div class="grid-item" data-label="צימוק דפוק"><img src="image-10-nobg.png" alt="צימוק דפוק"></div>
-        <!-- מתנות דיגיטליות -->
-        <div class="grid-item item-section-header" data-label="">
-            <div class="section-card section-card-gifts">מתנות דיגיטליות<small>שני אתרים שבניתי</small></div>
-        </div>
-        <a class="grid-item item-phone tilt-r" href="portfolio/far.html" data-label="לפתוח כשצריך">
-            <span class="mini-phone"><img src="portfolio/media/far_poster.jpg" alt="אתר המכתבים בטלפון"></span>
-            <span class="phone-cap">לפתוח כשצריך<small>לסיפור המלא ←</small></span>
+<nav>
+    <a class="name" href="#" data-veggies>Alon Zvi Sabag</a>
+    <div class="links">
+        <a href="#" data-cv>CV</a>
+        <a class="ig" href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/></svg>
         </a>
-        <a class="grid-item item-phone tilt-l" href="portfolio/sixty.html" data-label="60 ברכות ל-60 שנה">
-            <span class="mini-phone"><img src="portfolio/media/birthday_poster.jpg" alt="אתר יום ההולדת בטלפון"></span>
-            <span class="phone-cap">60 ברכות ל-60 שנה<small>לסיפור המלא ←</small></span>
-        </a>
-        <div class="grid-item item-section-header" data-label="">
-            <div class="section-card section-card-portfolio">(יעני) תיק עבודות</div>
-        </div>
-        <div class="grid-item" data-label="בקבוק רסקיו" id="rescue-item" style="cursor:pointer"><img src="rescue-bottle-nobg.png" alt="בקבוק רסקיו"></div>
     </div>
+</nav>
 
-    <section id="cover-letter">
-        <p>שלום,</p>
-        <p>אם אתם מחפשים קורות חיים עם חמש שנות ניסיון במשרד פרסום, כנראה ששלי לא ירשימו אתכם במבט ראשון. אבל אם אתם מחפשים את האדם שמבין שפרסום הוא שילוב של פסיכולוגיה עמוקה ושורה תחתונה עסקית - אז יש לי חדשות טובות בשבילכם.</p>
-        <p>אני סטודנט שנה ב׳ לפסיכולוגיה ומנהל עסקים ברופין. השילוב הזה הוא לא מקרי: הפסיכולוגיה נותנת לי את המפתחות להבנת הצרכן, הטריגרים הרגשיים וקבלת ההחלטות, בזמן שמנהל העסקים מאפשר לי לראות את התמונה הגדולה - אסטרטגיה, שיווק ויעדים עסקיים. אלו הכלים הדרושים כדי לגשר בין צרכי הלקוח למעוף של מחלקת הקריאייטיב.</p>
-        <p>הוכחה סבירה ליכולות שלי היא ״מילים של מבוגרים״ - עמוד אינסטגרם הומוריסטי שהקמתי ובו מעל 100 מונחים שאספתי בפינצטה (והיד עוד נטויה...). שם למדתי בדרך המהנה איך בונים שפה מותגית ואיך הופכים תובנה אנושית פשוטה לתוכן שגורם לאנשים לעצור, לצחוק ולשתף.</p>
-        <p>בתחילת המלחמה, בין הקפצה לרגיעה, חשבתי על חקלאי הצפון. רציתי לעשות משהו. הרעיון: קולקציית ביגוד ירקות וחרוזים, שרווחיה ייתרמו לחקלאים שנפגעו מהמלחמה. לקחתי עט פנקס - והאיורים שאתם רואים פה הם התוצאה.</p>
-        <p>אני רוצה להיות קופירייטר בעתיד, אבל אני מבין שכדי לכתוב מילים שמוכרות, אני חייב קודם ללמוד את המערכת מלמטה. אני מחפש להיכנס למשרד פרסום, ללמוד איך קמפיין נולד ולהיות מאסטר של הפרטים הקטנים.</p>
-        <p>אני מגיע עם רעב גדול, אפס התנצלות על חוסר הניסיון הפורמלי, ומקסימום מוטיבציה להוכיח שהשילוב בין הבנה פסיכולוגית לחוש עסקי הוא מה שאתם צריכים במשרד.</p>
-        <p>אשמח מאוד להזדמנות להציג את עצמי בראיון.</p>
-        <div class="sig">
-            <p>בברכה,<br>אלון צבי סבג<br>053-8322416</p>
+<header class="hero" id="hero">
+    <div class="status"><i></i>פתוח להצעות</div>
+    <div class="seal" aria-hidden="true">
+        <div class="ring" data-text="קופירייטינג · קריאייטיב · פסיכולוגיה · מנהל עסקים · "></div>
+        <div class="mid">🍐</div>
+    </div>
+    <h1>
+        <span class="line"><span>יותר מדי</span></span>
+        <span class="line"><span>רעיונות טובים</span></span>
+        <span class="line"><span class="acc">לשמור לעצמי.</span></span>
+    </h1>
+    <p class="sub"><b>אלון צבי סבג.</b> פסיכולוגיה + מנהל עסקים. קופירייטינג, קריאייטיב, ו״מילים של מבוגרים״.</p>
+    <div class="ctas">
+        <a class="btn solid" href="#work">לעבודות ↓</a>
+        <a class="btn" href="#chat">בואו נדבר</a>
+    </div>
+</header>
+
+<div class="band-wrap">
+    <div class="words-band" aria-label="מילים של מבוגרים"><div class="wb-track" id="wb-track"></div></div>
+</div>
+
+<section class="work" id="work">
+    <div class="sec-head" data-reveal><h2>עבודות נבחרות</h2></div>
+    <div class="bento">
+        <a class="tile t-words" href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener" data-cursor="לצפייה ▶" data-stories data-reveal>
+            <div class="txt">
+                <div class="k">עמוד אינסטגרם</div>
+                <h3>מילים של מבוגרים</h3>
+                <p>מעל 100 מונחים שאספתי בפינצטה, והיד עוד נטויה.</p>
+                <span class="watch"><i></i>לצפייה בפוסטים</span>
+            </div>
+            <img class="logo" data-src="לוגו.png" alt="מילים של מבוגרים">
+            <div class="fan">
+                <img data-src="שְׁלָּאַגֵר.png" alt="שלאגר">
+                <img data-src="לא אַיִּי אַיִּי אַיִּי.png" alt="לא איי איי איי">
+                <img data-src="פְרִיגִ'ידֵר.png" alt="פריג׳ידר">
+                <img data-src="עֲרוּץ הַחַיִּים הַטּוֹבִים.png" alt="ערוץ החיים הטובים">
+            </div>
+        </a>
+        <a class="tile t-site" href="portfolio/far.html" data-cursor="לסיפור המלא" data-reveal>
+            <div class="screen"><video muted loop playsinline preload="none" poster="portfolio/media/far_poster.jpg" data-video="portfolio/media/far.mp4"></video></div>
+            <div class="label"><div class="k">מתנה דיגיטלית</div><h3>לפתוח כשצריך</h3><p>מכתבים מחברים, לפי סיטואציה.</p></div>
+        </a>
+        <a class="tile t-site" href="portfolio/sixty.html" data-cursor="לסיפור המלא" data-reveal>
+            <div class="screen"><video muted loop playsinline preload="none" poster="portfolio/media/birthday_poster.jpg" data-video="portfolio/media/birthday.mp4"></video></div>
+            <div class="label"><div class="k">מתנה דיגיטלית</div><h3>60 ברכות ל-60 שנה</h3><p>אתר בהפתעה ליום ההולדת של אמא.</p></div>
+        </a>
+        <div class="tile t-veg" data-reveal>
+            <div class="k">קולקציה לחקלאי הצפון</div>
+            <h3>פרי וירק</h3>
+            <div class="marquee"><div class="track" id="veg-track">
+                <img src="image-1-nobg.png" alt="אגס מסורס"><img src="image-2-nobg.png" alt="אפונה מפונה"><img src="image-3-nobg.png" alt="חסה קלבסה"><img src="image-4-nobg.png" alt="כרוב מגנוב"><img src="image-5-nobg.png" alt="מישמש טיפש"><img src="image-6-nobg.png" alt="ענבים מגניבים"><img src="image-7-nobg.png" alt="פול מהבול"><img src="image-8-nobg.png" alt="פקאן מסוכן"><img src="image-9-nobg.png" alt="צ׳ילי דבילי"><img src="image-10-nobg.png" alt="צימוק דפוק">
+            </div></div>
         </div>
-    </section>
+        <button class="tile t-word" type="button" data-cursor="עוד מילה ↻" data-reveal>
+            <span class="k">מילה של מבוגרים</span>
+            <span class="word" id="word">פריג׳ידר</span>
+            <span class="again">עוד מילה ↻</span>
+        </button>
+        <a class="tile t-rescue" href="rescue-banner.html" target="_blank" rel="noopener" data-cursor="לפתוח ↗" data-reveal>
+            <div class="txt"><div class="k">(יעני) תיק עבודות</div><h3>רסקיו</h3></div>
+            <img src="rescue-bottle-nobg.png" alt="בקבוק רסקיו">
+        </a>
+    </div>
+</section>
 
-    <footer>
-        &copy; 2026 Alon Zvi Sabag ✦
-    </footer>
+<section class="chat-sec" id="chat">
+    <div class="chat-card" data-reveal>
+        <h2>בואו נדבר</h2>
+        <div data-icq></div>
+    </div>
+</section>
 
-    <script>
-        // ── Hebrew image filenames (set via JS to handle Unicode safely) ──
-        document.getElementById('img-logo').src    = encodeURIComponent('לוגו.png');
-        document.getElementById('img-shlagr').src  = encodeURIComponent('שְׁלָּאַגֵר.png');
-        document.getElementById('img-lo').src      = encodeURIComponent('לא אַיִּי אַיִּי אַיִּי.png');
-        document.getElementById('img-fridge').src  = encodeURIComponent('פְרִיגִ\'ידֵר.png');
-        document.getElementById('img-channel').src = encodeURIComponent('עֲרוּץ הַחַיִּים הַטּוֹבִים.png');
+<footer>&copy; 2026 Alon Zvi Sabag ✦</footer>
 
-        // ── Word Wall ──
-        const words = ['בלאו הכי','רפורט','לשים ראש','מתחת לכל ביקורת','וינטלטור','פריג\'ידר','טמפרמנט','באחריות','במחיר','לך תזדיין ותביא קבלה','דפוק עם תעודות','אני אעשה לו מי שבירך','פירמה','קיסמים','צורפת','הצנטרום של הצנטרום','פר','קנדום','יחזור על ארבע','ובגדול','הצעקה האחרונה','ווטקה','קרי','מודה','עד כדי','גזעי','טוניזאי','תקף','דבר ללמפה','בשביל הספורט','ברושור','רבותיי','חבל על הזמן','לטרפד','פונקט','ג\'ק רובינזון','בן כיתה','ערוץ החיים הטובים','פושטק','בנדיט','בחיי','שאפה','יחפן','וואצאפ','חתיכה','רצפט','מנבל את הפה','מקרר','לעומת זאת','כדי שתשאל','מונו','יוצמח','ברדק','פורפרה','גרושים','חנטריש','פלאח','לתפוס ראש','עצרו סוסים','לגנוב איתו סוסים','פוץ','קיבלת קצת שכל','דפוק או עושה את עצמך','פרענק','שאטר','שבוע ימים','זד','יוגורט','על זמני','מיקרוב','פישר','לתפוס קריזה','שוס','אגזוזן','תרוויח','תהפוך כוס','פציינט','הלך פייפן','דגנרט','חלאה','דרעק','חינגה','שלומפר','בית שימוש','אכלנו מאותו המסטינג','בן אחותי','פרוספקט','יורם','ישר כוח','פרזיט','דלפק','זיפת','קקמייקה','דחילק','מקגייוור','שחק אותה','לפזר את ההפגנה','ארחי פרחי','יקירי','מזל שהראש מחובר לגוף','קליבר','פוטר','טריקו','לעשות ממנו קציצות','דיסקוטק','הרגת אותנו','כלבויניק','ביצעלך','טעטעלה','לנגס','דחעלה','מכר','גיסנו','דוקטור','על חשבון הברון','מוגז','לעשות ביצה','דיאט','למזוג אוכל','אסקימו','חולירע','סובייטים','זפטה','פיקס','קרח','קוטר','יקה','קוזינה','שאלטר','טיפ טופ','צ\'אנסה','מארס','שטיק','קונץ','ונטה','ברוך','ג\'ון בריון','גומי','צ\'חצ\'ח','חמור גדול','מינוי','ז\'ונגלר','זה יכול להוציא למישהו עין','להחטיף מכות','שוד לאור יום','פרופר','שלאגר','ז\'רגון','פלומבה','קלמפה','בוננזה','יושב','בשצף קצף','צחוק מעבודה','חדר כוח','פרה פרה','קשקוש בלבוש','ג\'בלאות','כהנה וכהנה','משגע','לעמוד על רגליים אחוריות','יו טרן','חזק ביותר','בראבו','דמיקולו','לצלצל','לטלפן','תרמית','נבלה','משהו משהו','זבנג','מילא','קבסה','ספרדים','פולניה','לוקסוס','לגזור קופון','יצאת מדעתך','תוכנית כבקשתך','צ\'ופר','פרנסה','קומזיץ','וברכה','אל תעשה חוכמות','כל טוב','למוחורת','חכם בלילה','בכבוד','מזיקים','שמשון ויובב','סבתא רבתא','טוכעס','אין דבר','נהג בוס','מם כף','סקנדל','רבע עוף','זיל הזול','סוף הדרך','צוציקים','יאלה','דיפלומה','קלפתה','גילית לי את אמריקה','מעדן','חמדלה','קטונתי','שטיף','שטיקים','לא מקובל עליי','קרסול','סוטול','שמחה גדולה','דמה','גראס','סופרסל','אבועגלה','לקבל חום','להסריט','שיבר','קוץ בתחת','יהושע פרוע','שאפו','שופרא דשופרא','אקדמיה','כמו','פרונקל','ירדת מהפסים','קליינט','ילקוט','חמור גארם','סנצ\'ו פנצ\'ו','אחורנית','פרסי','ומהר','ועד הודעה חדשה','מסיבת חשק','ביצה מבולבלת','עם מי יש לך עסק','קוקוריקו','בעל מקצוע','בלבוסתה','יציאת מצרים','שאין כמוהו','קסקסה','כל שני וחמישי','מוהיקן','איקס מיקס דריקס','קופי','לוקשים','טיקט','מדרוב','שמנדריק','בלי הכרה','שיהיה לו לתרופות','בשורות טובות','פספורט','מיליון דולר','חכם גדול','הפקה','ברדקיסט','מרשם','מעלה לי את הסעיף','לצעוד','פולקע','פיצ\'פקעס','פספוס','גישפט','כמו כוסות רוח למת','שיפוץ','סערה בכוס תה','תעשה לי טובה','אורנג\'דה','קינלי','סמל סטטוס','לשים יד','זה לא שיטה','נחלאי','סלמון','סנוקרת','שתי סטירות','רזרבה','מיזבלה','גנון','תותחן','אסטרונאוט','ביג טיים','לקלוף','בלגן שלם','בשר תותחים','גייז','לסדר','אוי לך','הפנקס פתוח והיד רושמת','נקניק','בן גילי','אוהו','פנומן','לא נולדתי אתמול','מסובב על האצבע הקטנה','האוכל של האוכל שלי','הכיס הקטן','גוגל','אחותך הצולעת','פרוזדור','ווזווז','דרדלה','לעצום עין','הפרצוף האמיתי','ושלום על ישראל','טררם','מה קרה לך','שוויצריה','ישן בעמידה','כמו הצרות שלי','גפרור','להעיף על טיל','בדרן','נולדת באוטובוס','בלעה אותו האדמה','רמת גן','קריית שמונה','סיגריה','דוט קום','תכף פה','מה הקשר בירה נשר','חתונה קתולית','לא עשו אותי באצבע','שטנץ','טיפין טיפין','סתום בלחץ','מה הנזק','זה פשע לא לקנות','חלסטרה','פר אקסלנס','גמרנו','לנדנד','לא שם קצוץ','לא היה ולא נברא','בורדל','לערבב','חתול בשק','טרגדיה','זה מה שחסר לי','שוק בשר','מוזיאון','אכלו לי שתו לי','איפה בחיפו','אינפנטיל','נעלי התעמלות','גזל','ציטרואן','קומפלימנט','נסיעה לחו\'\'ל','ליטול ידיים','קובוי','אמהמה','להבין את הפרינציפ','פרימדונה','בסוף לא ישאר ממך כלום','סרטים כחולים','סטודנט חופשי','מי נגד מי','באורך הגלות','כאוס','אירו','סוס מת','לחרבן קוביות'];
+<div id="word-pop" role="status" hidden>
+    <b></b><span>מתוך ״מילים של מבוגרים״</span>
+    <a href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener">לעמוד באינסטגרם ↗</a>
+</div>
 
-        const wall = document.getElementById('word-wall');
-        // Fill screen height with repeated phrases, each as its own line
-        const wallH = window.innerHeight;
-        const lineH = 16 * 1.85; // font-size * line-height
-        const linesNeeded = Math.ceil(wallH / lineH) + 2;
-        const colsNeeded = Math.ceil(window.innerWidth / 160) + 1;
-        const total = linesNeeded * colsNeeded;
+<div id="stories" hidden role="dialog" aria-modal="true" aria-label="מילים של מבוגרים · פוסטים">
+    <div class="st-frame">
+        <div class="st-bars"></div>
+        <div class="st-head">
+            <img data-src="לוגו.png" alt="">
+            <b>milim_shel_mevugarim</b>
+            <button type="button" class="st-close" aria-label="סגירה">×</button>
+        </div>
+        <div class="st-slides"></div>
+        <button type="button" class="st-tap prev" aria-label="הקודם"></button>
+        <button type="button" class="st-tap next" aria-label="הבא"></button>
+    </div>
+</div>
 
-        const repeated = [];
-        while (repeated.length < total) repeated.push(...words);
-        repeated.slice(0, total).forEach(w => {
-            const span = document.createElement('span');
-            span.textContent = w;
-            wall.appendChild(span);
+<div id="cursor" aria-hidden="true"></div>
+
+<script src="assets/words.js"></script>
+<script src="assets/icq.js"></script>
+<script>
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const mouse = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    document.querySelectorAll('img[data-src]').forEach(img => { img.src = encodeURIComponent(img.dataset.src); });
+
+    // hero words slide up once the opening is over, then the stickers land around them
+    Intro.whenDone(() => {
+        document.getElementById('hero').classList.add('go');
+        setTimeout(placeStickers, still ? 0 : 1100);
+    });
+
+    // ── a card for any tapped word ──
+    const pop = document.getElementById('word-pop');
+    let popTimer;
+    function showPop(word, el) {
+        pop.querySelector('b').textContent = '״' + word + '״';
+        pop.hidden = false;
+        const r = el.getBoundingClientRect();
+        const x = Math.min(innerWidth - pop.offsetWidth - 12, Math.max(12, r.left + r.width / 2 - pop.offsetWidth / 2));
+        const below = r.bottom + 12 + pop.offsetHeight < innerHeight;
+        pop.style.left = x + 'px';
+        pop.style.top = (below ? r.bottom + 12 : r.top - pop.offsetHeight - 12) + 'px';
+        clearTimeout(popTimer);
+        popTimer = setTimeout(() => { pop.hidden = true; }, 4500);
+    }
+    document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#word-pop, .sticker, .wb-track button')) pop.hidden = true; });
+    addEventListener('scroll', () => { pop.hidden = true; }, { passive: true });
+
+    // ── stickers: words placed in the free space beside the headline; drag them around ──
+    const hero = document.getElementById('hero');
+    const STICKERS = [
+        { w: 'שאפו',         bg: '#ffe14d', fg: '#111', rot: -9, anchor: '.status',                             depth: 0.6 },
+        { w: 'ביג טיים',     bg: '#ff8fb8', fg: '#111', rot: 7,  anchor: '.hero h1 .line:nth-child(1) > span', depth: 1 },
+        { w: 'שופרא דשופרא', bg: '#b8e86b', fg: '#111', rot: -5, anchor: '.hero h1 .line:nth-child(2) > span', depth: 0.8 },
+        { w: 'פר אקסלנס',    bg: '#8ec5ff', fg: '#111', rot: 6,  anchor: '.hero h1 .line:nth-child(3) > span', depth: 1.2 },
+        { w: 'מיליון דולר',  bg: '#111',    fg: '#fff', rot: -6, anchor: '.hero .ctas .btn:last-child',        depth: 0.9 },
+    ];
+    STICKERS.forEach(st => {
+        st.dx = 0; st.dy = 0;
+        st.el = document.createElement('div');
+        st.el.className = 'sticker';
+        st.el.textContent = st.w;
+        st.el.style.background = st.bg;
+        st.el.style.color = st.fg;
+        st.el.hidden = true;
+        hero.appendChild(st.el);
+    });
+    let mx = 0, my = 0;
+    function renderStickers() {
+        STICKERS.forEach(st => {
+            if (st.el.hidden) return;
+            st.el.style.transform = `translate(${st.x + st.dx + mx * 16 * st.depth}px, ${st.y + st.dy + my * 12 * st.depth}px) rotate(${st.rot}deg)`;
         });
-
-        // ── Hero typewriter animation ──
-        const heroLine1 = document.getElementById('hero-line1');
-        const heroLine2 = document.getElementById('hero-line2');
-        const heroCursor = document.querySelector('.hero-cursor');
-        const introSeen  = document.documentElement.classList.contains('intro-seen');
-        const line1Text = 'פסיכולוגיה + עסקים + יותר מדי רעיונות טובים לשמור לעצמי.';
-        const line2Text = 'בואו נתחיל.';
-
-        function lightNext() {
-            let i = 0;
-            function typeLine1() {
-                if (i <= line1Text.length) {
-                    heroLine1.textContent = line1Text.slice(0, i);
-                    i++;
-                    setTimeout(typeLine1, 40);
-                } else {
-                    // pause then type line 2
-                    heroCursor.style.display = 'none';
-                    setTimeout(() => {
-                        let j = 0;
-                        function typeLine2() {
-                            if (j <= line2Text.length) {
-                                heroLine2.textContent = line2Text.slice(0, j);
-                                j++;
-                                setTimeout(typeLine2, 60);
-                            } else {
-                                // done — hide cursor
-                                heroCursor.style.display = 'none';
-                            }
-                        }
-                        typeLine2();
-                    }, 400);
-                }
-            }
-            typeLine1();
-        }
-
-        // lightNext is triggered after the CV lands on its button — or skipped for a returning visitor
-        if (introSeen) {
-            heroLine1.textContent = line1Text;
-            heroLine2.textContent = line2Text;
-            heroCursor.style.display = 'none';
-        }
-
-
-        // ── Instagram sparkles ──
-        const igIcon = document.querySelector('.ig-icon');
-        igIcon.addEventListener('mouseenter', () => {
-            const colors = ['#f09433','#e6683c','#dc2743','#cc2366','#bc1888','#833ab4'];
-            for (let i = 0; i < 8; i++) {
-                const spark = document.createElement('div');
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const size = 4 + Math.random() * 5;
-                const rect = igIcon.getBoundingClientRect();
-                const cx = rect.left + rect.width / 2;
-                const cy = rect.top + rect.height / 2;
-                spark.style.cssText = `
-                    position: fixed;
-                    width: ${size}px; height: ${size}px;
-                    border-radius: 50%;
-                    background: ${color};
-                    left: ${cx}px; top: ${cy}px;
-                    pointer-events: none;
-                    z-index: 9999;
-                `;
-                document.body.appendChild(spark);
-                const angle = Math.random() * 2 * Math.PI;
-                const dist = 30 + Math.random() * 40;
-                spark.animate([
-                    { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
-                    { transform: `translate(calc(-50% + ${Math.cos(angle)*dist}px), calc(-50% + ${Math.sin(angle)*dist}px)) scale(0)`, opacity: 0 }
-                ], { duration: 500 + Math.random() * 300, easing: 'ease-out', fill: 'forwards' })
-                .onfinish = () => spark.remove();
-            }
+    }
+    function placeStickers() {
+        const hr = hero.getBoundingClientRect();
+        const blockers = Array.from(hero.querySelectorAll('.status, h1 .line > span, .sub, .ctas .btn, .seal'))
+            .filter(el => getComputedStyle(el).display !== 'none').map(el => el.getBoundingClientRect());
+        const placed = [];
+        let k = 0;
+        STICKERS.forEach(st => {
+            const a = hero.querySelector(st.anchor).getBoundingClientRect();
+            st.el.hidden = false;
+            const w = st.el.offsetWidth, h = st.el.offsetHeight;
+            const x = a.left - hr.left - w - (innerWidth < 600 ? 10 : 22);
+            const y = a.top - hr.top + (a.height - h) / 2;
+            const box = { left: hr.left + x - 6, right: hr.left + x + w + 6, top: hr.top + y - 6, bottom: hr.top + y + h + 6 };
+            const hit = (r) => !(r.right < box.left || r.left > box.right || r.bottom < box.top || r.top > box.bottom);
+            if (x < 4 || blockers.some(hit) || placed.some(hit)) { st.el.hidden = true; return; }
+            placed.push(box);
+            st.x = x; st.y = y;
+            setTimeout(() => st.el.classList.add('on'), still ? 0 : 120 * k++);
         });
-
-        // ── veggie explosion ──
-        const veggies = ['🍐','🥬','🌶️','🍇','🥦','🍑','🫘','🥑','🥕','🌽','🍅','🧅','🫑','🥒','🍆','🧄','🌿','🥝'];
-
-        document.getElementById('name-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            const count = 40;
-            for (let i = 0; i < count; i++) {
-                const el = document.createElement('div');
-                const emoji = veggies[Math.floor(Math.random() * veggies.length)];
-                const size = 20 + Math.random() * 30;
-                el.textContent = emoji;
-                el.style.cssText = `
-                    position: fixed;
-                    font-size: ${size}px;
-                    left: ${e.clientX}px;
-                    top: ${e.clientY}px;
-                    pointer-events: none;
-                    z-index: 9999;
-                    user-select: none;
-                    transition: none;
-                `;
-                document.body.appendChild(el);
-
-                const angle = Math.random() * 2 * Math.PI;
-                const speed = 120 + Math.random() * 500;
-                const tx = Math.cos(angle) * speed;
-                const ty = Math.sin(angle) * speed;
-                const rot = (Math.random() - 0.5) * 1080;
-                const duration = 600 + Math.random() * 800;
-
-                el.animate([
-                    { transform: `translate(0,0) rotate(0deg)`, opacity: 1 },
-                    { transform: `translate(${tx}px, ${ty}px) rotate(${rot}deg)`, opacity: 0 }
-                ], {
-                    duration,
-                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                    fill: 'forwards'
-                }).onfinish = () => el.remove();
+        renderStickers();
+    }
+    if (mouse && !still) addEventListener('mousemove', (e) => {
+        mx = e.clientX / innerWidth - 0.5; my = e.clientY / innerHeight - 0.5;
+        requestAnimationFrame(renderStickers);
+    }, { passive: true });
+    STICKERS.forEach(st => st.el.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        st.el.setPointerCapture(e.pointerId);
+        const startX = e.clientX, startY = e.clientY, baseX = st.dx, baseY = st.dy;
+        let moved = false;
+        st.el.classList.add('dragging');
+        const move = (ev) => {
+            st.dx = baseX + ev.clientX - startX;
+            st.dy = baseY + ev.clientY - startY;
+            if (Math.abs(ev.clientX - startX) + Math.abs(ev.clientY - startY) > 5) moved = true;
+            renderStickers();
+        };
+        const up = () => {
+            st.el.classList.remove('dragging');
+            st.el.removeEventListener('pointermove', move);
+            st.el.removeEventListener('pointerup', up);
+            st.el.removeEventListener('pointercancel', up);
+            if (!moved) {
+                st.el.animate([{ rotate: '0deg' }, { rotate: '-9deg' }, { rotate: '9deg' }, { rotate: '0deg' }], { duration: 400 });
+                showPop(st.w, st.el);
             }
+        };
+        st.el.addEventListener('pointermove', move);
+        st.el.addEventListener('pointerup', up);
+        st.el.addEventListener('pointercancel', up);
+    }));
+    let stickerTimer;
+    addEventListener('resize', () => {
+        clearTimeout(stickerTimer);
+        stickerTimer = setTimeout(() => { if (hero.classList.contains('go')) { STICKERS.forEach(st => { st.dx = 0; st.dy = 0; }); placeStickers(); } }, 200);
+    });
+
+    // ── running band of words (doubled for a seamless loop); tap a word for its card ──
+    const band = document.getElementById('wb-track');
+    const bandWords = OLD_WORDS.filter(w => w.length <= 16).sort(() => Math.random() - 0.5).slice(0, 36);
+    const dots = ['#ff5a1f', '#ffe14d', '#8ec5ff', '#b8e86b', '#ff8fb8'];
+    const bandHTML = (tab) => bandWords.map((w, i) => `<button type="button"${tab}>${w}</button><i style="color:${dots[i % dots.length]}">●</i>`).join('');
+    band.innerHTML = bandHTML('') + bandHTML(' tabindex="-1" aria-hidden="true"');
+    band.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) showPop(b.textContent, b); });
+
+    // ── stories: the Instagram posts, one by one ──
+    const SLIDES = [
+        { img: 'לוגו.png', title: 'מילים של מבוגרים', text: 'עמוד אינסטגרם הומוריסטי. מעל 100 מונחים שאספתי בפינצטה, והיד עוד נטויה.' },
+        { img: 'שְׁלָּאַגֵר.png', title: 'שלאגר' },
+        { img: 'לא אַיִּי אַיִּי אַיִּי.png', title: 'לא איי איי איי' },
+        { img: "פְרִיגִ'ידֵר.png", title: 'פריג׳ידר' },
+        { img: 'עֲרוּץ הַחַיִּים הַטּוֹבִים.png', title: 'ערוץ החיים הטובים' },
+        { end: true, title: 'רוצים עוד?', text: 'עוד המון מילים של מבוגרים מחכות בעמוד.' }
+    ];
+    const stories = document.getElementById('stories');
+    const bars = stories.querySelector('.st-bars');
+    const slidesBox = stories.querySelector('.st-slides');
+    bars.innerHTML = SLIDES.map(() => '<span><i></i></span>').join('');
+    slidesBox.innerHTML = SLIDES.map(sl => sl.end
+        ? `<div class="st-slide"><div class="big">🍐</div><h4>${sl.title}</h4><p>${sl.text}</p><a class="st-ig" href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener">לעמוד באינסטגרם ↗</a></div>`
+        : `<div class="st-slide"><img data-story="${sl.img}" alt="${sl.title}"><h4>${sl.title}</h4>${sl.text ? `<p>${sl.text}</p>` : ''}</div>`).join('');
+    let cur = 0;
+    function showSlide(i) {
+        cur = i;
+        stories.querySelectorAll('.st-slide').forEach((el, k) => el.classList.toggle('on', k === i));
+        bars.querySelectorAll('span').forEach((b, k) => {
+            b.classList.remove('now');
+            b.classList.toggle('done', k < i);
         });
+        const bar = bars.children[i];
+        void bar.offsetWidth;
+        if (!still) bar.classList.add('now');
+    }
+    function nextSlide() { if (cur < SLIDES.length - 1) showSlide(cur + 1); else closeStories(); }
+    function prevSlide() { if (cur > 0) showSlide(cur - 1); }
+    function openStories() {
+        stories.querySelectorAll('img[data-story]').forEach(img => { if (!img.getAttribute('src')) img.src = encodeURIComponent(img.dataset.story); });
+        stories.hidden = false;
+        document.documentElement.style.overflow = 'hidden';
+        showSlide(0);
+        stories.querySelector('.st-close').focus({ preventScroll: true });
+    }
+    function closeStories() {
+        stories.hidden = true;
+        document.documentElement.style.overflow = '';
+        bars.querySelectorAll('span').forEach(b => b.classList.remove('now'));
+    }
+    bars.addEventListener('animationend', (e) => { if (e.target.parentElement === bars.children[cur] && cur < SLIDES.length - 1) nextSlide(); });
+    stories.querySelector('.st-tap.next').addEventListener('click', nextSlide);
+    stories.querySelector('.st-tap.prev').addEventListener('click', prevSlide);
+    stories.querySelector('.st-close').addEventListener('click', closeStories);
+    stories.addEventListener('click', (e) => { if (e.target === stories) closeStories(); });
+    addEventListener('keydown', (e) => {
+        if (stories.hidden) return;
+        if (e.key === 'Escape') closeStories();
+        if (e.key === 'ArrowLeft') nextSlide();
+        if (e.key === 'ArrowRight') prevSlide();
+    });
+    let swipeY = null;
+    stories.addEventListener('pointerdown', (e) => { swipeY = e.clientY; });
+    stories.addEventListener('pointerup', (e) => { if (swipeY !== null && e.clientY - swipeY > 90) closeStories(); swipeY = null; });
+    document.querySelectorAll('[data-stories]').forEach(a => a.addEventListener('click', (e) => { e.preventDefault(); openStories(); }));
 
-        // ── CV folds into a paper plane and flies to the CV button ──
-        const overlay  = document.getElementById('cv-overlay');
-        const paper    = document.getElementById('cv-paper');
-        const plane    = document.getElementById('paper-plane');
-        const skipBtn  = document.getElementById('cv-skip');
-        const cvBtn    = document.getElementById('cv-nav-btn');
+    // letters around the spinning badge (Hebrew doesn't sit well on an SVG text path), reading right to left
+    const ring = document.querySelector('.seal .ring');
+    const ringChars = [...ring.dataset.text];
+    ring.innerHTML = ringChars.map((c, i) => `<span style="transform: rotate(${-i * 360 / ringChars.length}deg)">${c}</span>`).join('');
 
-        let cvSent = introSeen;   // the plane has landed once, so the hero has started typing
-        let flying = false;
+    // the vegetables run in an endless strip (the set is doubled so the loop is seamless)
+    const track = document.getElementById('veg-track');
+    track.innerHTML += track.innerHTML;
 
-        function launchAnimation() {
-            if (flying) return;
-            flying = true;
+    // a random "old people's word", and another one on every tap
+    const wordEl = document.getElementById('word');
+    function newWord() {
+        let w;
+        do { w = OLD_WORDS[Math.floor(Math.random() * OLD_WORDS.length)]; } while (w === wordEl.textContent || w.length > 22);
+        wordEl.textContent = w;
+        wordEl.classList.remove('flip');
+        void wordEl.offsetWidth;
+        wordEl.classList.add('flip');
+    }
+    document.querySelector('.t-word').addEventListener('click', newWord);
+    newWord();
 
-            if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                overlay.style.display = 'none';
-                land();
-                return;
-            }
-
-            // Phase 1: the page folds up and tips over while the dark backdrop fades
-            skipBtn.style.visibility = 'hidden';
-            overlay.style.transition = 'background-color 0.6s';
-            overlay.style.backgroundColor = 'rgba(0,0,0,0)';
-            paper.animate([
-                { transform: 'scale(1) rotateX(0deg) rotate(0deg)', opacity: 1 },
-                { transform: 'scale(0.5) rotateX(55deg) rotate(-8deg)', opacity: 1, offset: 0.55 },
-                { transform: 'scale(0.06) rotateX(80deg) rotate(-25deg)', opacity: 0 }
-            ], { duration: 650, easing: 'ease-in', fill: 'forwards' }).onfinish = fly;
-        }
-
-        // Phase 2: a paper plane takes off from where the page was and swoops up to the CV button
-        function fly() {
-            const pr = paper.getBoundingClientRect();
-            const br = cvBtn.getBoundingClientRect();
-            const sx = pr.left + pr.width / 2, sy = pr.top + pr.height / 2;
-            const ex = br.left + br.width / 2, ey = br.top + br.height / 2;
-            overlay.style.display = 'none';
-
-            // out and down first, then up and around to the button
-            const c1x = sx - innerWidth * 0.3,  c1y = sy + innerHeight * 0.25;
-            const c2x = ex - innerWidth * 0.15, c2y = ey + innerHeight * 0.5;
-            const at    = (t, a, b, c, d) => { const u = 1 - t; return u*u*u*a + 3*u*u*t*b + 3*u*t*t*c + t*t*t*d; };
-            const slope = (t, a, b, c, d) => { const u = 1 - t; return 3*u*u*(b - a) + 6*u*t*(c - b) + 3*t*t*(d - c); };
-
-            const duration = 1300;
-            const big = innerWidth > 700 ? 1.5 : 1.1;
-            const start = performance.now();
-            plane.style.opacity = '0';
-            plane.style.display = 'block';
-
-            function frame(now) {
-                const t = Math.min((now - start) / duration, 1);
-                const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-                const x = at(e, sx, c1x, c2x, ex);
-                const y = at(e, sy, c1y, c2y, ey);
-                const angle = Math.atan2(slope(e, sy, c1y, c2y, ey), slope(e, sx, c1x, c2x, ex));
-                const scale = big - (big - 0.3) * e;   // starts big, lands small
-                plane.style.transform = `translate(${x}px, ${y}px) rotate(${angle}rad) scale(${scale})`;
-                plane.style.opacity   = t > 0.88 ? (1 - t) / 0.12 : Math.min(1, t / 0.08);
-
-                if (t < 1) {
-                    requestAnimationFrame(frame);
-                } else {
-                    plane.style.display = 'none';
-                    land();
-                }
-            }
-
-            requestAnimationFrame(frame);
-        }
-
-        // The CV button catches the plane
-        function land() {
-            flying = false;
-            skipBtn.style.visibility = '';
-            cvBtn.animate([
-                { transform: 'scale(1)' },
-                { transform: 'scale(1.45) rotate(-6deg)' },
-                { transform: 'scale(1)' }
-            ], { duration: 450, easing: 'ease-out' });
-            if (!cvSent) {
-                cvSent = true;
-                try { localStorage.setItem('intro-seen', '1'); } catch (e) {}
-                setTimeout(lightNext, 300);
-            }
-        }
-
-        // Auto-trigger after 2 seconds
-        const autoTimer = introSeen ? null : setTimeout(launchAnimation, 2000);
-
-        // Skip button
-        skipBtn.addEventListener('click', () => {
-            clearTimeout(autoTimer);
-            launchAnimation();
+    // site videos play on hover (mouse) or while on screen (touch)
+    const vids = Array.from(document.querySelectorAll('video[data-video]'));
+    const play = (v) => { if (!v.getAttribute('src')) v.src = v.dataset.video; v.play().catch(() => {}); };
+    const pause = (v) => v.pause();
+    if (mouse) {
+        vids.forEach(v => {
+            const tile = v.closest('.tile');
+            tile.addEventListener('mouseenter', () => play(v));
+            tile.addEventListener('mouseleave', () => pause(v));
         });
+    } else if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((en) => en.forEach(e => e.isIntersecting ? play(e.target) : pause(e.target)), { threshold: 0.6 });
+        vids.forEach(v => io.observe(v));
+    }
 
-        // Click outside the CV once it has flown before — it folds up and flies back to its button
-        overlay.addEventListener('click', (e) => {
-            if (cvSent && !paper.contains(e.target) && e.target !== skipBtn) {
-                launchAnimation();
-            }
-        });
-
-        // CV nav button — reopen the CV overlay
-        cvBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (flying) return;
-            paper.getAnimations().forEach(a => a.cancel());
-            overlay.style.transition = 'none';
-            overlay.style.backgroundColor = '';
-            overlay.style.display = 'flex';
-        });
-        // ── ציר זמן שלום ──
-        function layoutSlalom() {
-            const ex = document.getElementById('slalom-svg');
-            if (ex) ex.remove();
-            if (window._sushiRAF) cancelAnimationFrame(window._sushiRAF);
-
-            const items     = Array.from(document.querySelectorAll('.grid-item'));
-            const grid      = document.querySelector('.grid');
-            const vw        = window.innerWidth;
-            const centerX   = vw / 2;
-            const amplitude = centerX * 0.52;
-            const waves     = 4;
-            const baseW     = Math.min(130, vw * 0.22);
-            const logoW     = Math.min(230, vw * 0.40);
-            const headerW   = Math.min(170, vw * 0.30);
-            const gridTop   = grid.offsetTop;
-            const pathH     = Math.max(window.innerHeight * 3, items.length * 290);
-
-            grid.style.height = pathH + 'px';
-
-            // גודל לפי סוג פריט
-            items.forEach(item => {
-                item.style.position = 'absolute';
-                if (item.classList.contains('item-logo'))           item.style.width = logoW + 'px';
-                else if (item.classList.contains('item-section-header')) item.style.width = headerW + 'px';
-                else if (item.classList.contains('item-phone'))          item.style.width = Math.min(150, vw * 0.27) + 'px';
-                else                                                item.style.width = baseW + 'px';
-            });
-
-            // מצייר את הקו
-            const svgNS = 'http://www.w3.org/2000/svg';
-            const pageH = document.documentElement.scrollHeight;
-            const pts   = [];
-            for (let y = 0; y <= pathH; y += 4) {
-                const t = y / pathH;
-                const x = centerX + amplitude * Math.sin(t * waves * Math.PI * 2);
-                pts.push(`${x.toFixed(1)},${gridTop + y}`);
-            }
-            const svg = document.createElementNS(svgNS, 'svg');
-            svg.id = 'slalom-svg';
-            svg.setAttribute('width', vw);
-            svg.setAttribute('height', pageH);
-            svg.style.cssText = `position:absolute;top:0;left:0;width:100%;height:${pageH}px;pointer-events:none;z-index:1;overflow:visible;`;
-            const poly = document.createElementNS(svgNS, 'polyline');
-            poly.setAttribute('points', pts.join(' '));
-            poly.setAttribute('stroke', '#bbb');
-            poly.setAttribute('stroke-width', '2.5');
-            poly.setAttribute('stroke-dasharray', '8 12');
-            poly.setAttribute('stroke-linecap', 'round');
-            poly.setAttribute('fill', 'none');
-            svg.appendChild(poly);
-
-            if (window._sushiScroll) window.removeEventListener('scroll', window._sushiScroll);
-
-            // מציב פריטים ומוסיף נקודות ציון
-            items.forEach((item, i) => {
-                const t   = (i + 0.5) / items.length;
-                const x   = centerX + amplitude * Math.sin(t * waves * Math.PI * 2);
-                const y   = t * pathH;
-                const w   = parseFloat(item.style.width);
-                item.style.left      = (x - w / 2) + 'px';
-                item.style.top       = y + 'px';
-                item.style.transform = 'translateY(-50%)';
-                item.style.opacity   = '1';
-
-                // נקודת ציון על הקו עבור כותרות
-                if (item.classList.contains('item-logo') || item.classList.contains('item-section-header')) {
-                    const dot = document.createElementNS(svgNS, 'circle');
-                    dot.setAttribute('cx', x.toFixed(1));
-                    dot.setAttribute('cy', (gridTop + y).toFixed(1));
-                    dot.setAttribute('r', '7');
-                    dot.setAttribute('fill', '#000');
-                    dot.setAttribute('stroke', '#fff');
-                    dot.setAttribute('stroke-width', '2.5');
-                    svg.appendChild(dot);
-                }
-            });
-
-            document.body.appendChild(svg);
-        }
-
-        // ── זכוכית מגדלת על הקורות חיים ──
-        (function() {
-            const paper = document.getElementById('cv-paper');
-            const lens  = document.getElementById('cv-lens');
-            const img   = document.getElementById('cv-img');
-            const zoom  = 1.7;
-            const lensR = 170; // רדיוס הלנס
-
-            paper.addEventListener('mousemove', function(e) {
-                const rect   = img.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-
-                // מציב את הלנס סביב הסמן
-                lens.style.left = (mouseX - lensR) + 'px';
-                lens.style.top  = (mouseY - lensR) + 'px';
-
-                // מחשב את מיקום הרקע המוגדל
-                const bgX = -(mouseX * zoom - lensR);
-                const bgY = -(mouseY * zoom - lensR);
-
-                lens.style.backgroundImage    = `url('cv.jpg.jpg')`;
-                lens.style.backgroundSize     = `${rect.width * zoom}px ${rect.height * zoom}px`;
-                lens.style.backgroundPosition = `${bgX}px ${bgY}px`;
-                lens.style.backgroundRepeat   = 'no-repeat';
-                lens.style.display = 'block';
-            });
-
-            paper.addEventListener('mouseleave', function() {
-                lens.style.display = 'none';
-            });
+    // tiles lean toward the mouse, and a label follows the cursor
+    if (mouse && !still) {
+        const cursor = document.getElementById('cursor');
+        let cx = 0, cy = 0, x = 0, y = 0;
+        addEventListener('mousemove', (e) => { cx = e.clientX; cy = e.clientY; }, { passive: true });
+        (function follow() {
+            x += (cx - x) * 0.22; y += (cy - y) * 0.22;
+            cursor.style.transform = `translate(${x + 14}px, ${y + 16}px)`;
+            requestAnimationFrame(follow);
         })();
-
-        document.getElementById('rescue-item').addEventListener('click', () => {
-            window.open('rescue-banner.html', '_blank');
+        document.querySelectorAll('[data-cursor]').forEach(t => {
+            t.addEventListener('mouseenter', () => { cursor.textContent = t.dataset.cursor; cursor.classList.add('on'); });
+            t.addEventListener('mouseleave', () => { cursor.classList.remove('on'); t.style.transform = ''; });
+            t.addEventListener('mousemove', (e) => {
+                const r = t.getBoundingClientRect();
+                const dx = (e.clientX - r.left) / r.width - 0.5, dy = (e.clientY - r.top) / r.height - 0.5;
+                t.style.transform = `perspective(900px) rotateY(${dx * 7}deg) rotateX(${-dy * 7}deg) translateY(-4px)`;
+            });
         });
-
-        window.addEventListener('load', function() {
-            // מילא את הגיבור בטקסט הסופי כדי למדוד גובה
-            heroLine1.textContent = line1Text;
-            heroLine2.textContent = line2Text;
-            const hero = document.getElementById('hero');
-            hero.style.height = hero.offsetHeight + 'px';
-            // מנקה ומתחיל טקסטרייטר כרגיל (בביקור חוזר הטקסט נשאר כמו שהוא)
-            if (!introSeen) {
-                heroLine1.textContent = '';
-                heroLine2.textContent = '';
-            }
-            // מציב תמונות וקו עכשיו כשהגובה קבוע
-            layoutSlalom();
-        });
-        window.addEventListener('resize', layoutSlalom);
-    </script>
-
+    }
+</script>
 </body>
 </html>

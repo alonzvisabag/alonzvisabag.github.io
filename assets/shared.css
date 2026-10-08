@@ -1,4 +1,4 @@
-/* Shared by the design previews: the opening CV, the paper plane, the preview badge, scroll reveals. */
+/* Shared by the main page: the opening CV, the paper plane, scroll reveals. */
 
 #cv-overlay {
     position: fixed;
@@ -60,23 +60,6 @@
     filter: drop-shadow(0 6px 8px rgba(0,0,0,0.25));
 }
 #paper-plane svg { width: 100%; height: 100%; display: block; }
-
-/* switch between the previews */
-.preview-badge {
-    position: fixed;
-    bottom: 14px;
-    left: 14px;
-    z-index: 300;
-    background: #000;
-    color: #fff;
-    font: 500 0.8rem 'Rubik', sans-serif;
-    padding: 7px 14px;
-    border-radius: 30px;
-    direction: rtl;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-}
-.preview-badge a { color: #fff; opacity: 0.5; text-decoration: none; padding: 0 4px; }
-.preview-badge a.on { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
 
 /* scroll reveal */
 [data-reveal] {
