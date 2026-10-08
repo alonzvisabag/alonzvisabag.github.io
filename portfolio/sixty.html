@@ -18,7 +18,7 @@
 
 <nav>
     <a class="name" href="../">Alon Zvi Sabag</a>
-    <a class="back" href="../" id="back">חזרה לתיק העבודות <span aria-hidden="true">→</span></a>
+    <a class="back" href="../" data-back>חזרה לתיק העבודות <span aria-hidden="true">→</span></a>
 </nav>
 
 <header class="hero">
@@ -163,9 +163,9 @@
 </main>
 
 <div class="next">
-    <a href="far.html">
-        <div><small>הפרויקט הבא</small><span class="t">לפתוח כשצריך</span></div>
-        <span class="arrow" aria-hidden="true">←</span>
+    <a href="../" data-back>
+        <div><small>זהו, נגמר</small><span class="t">חזרה לתיק העבודות</span></div>
+        <span class="arrow" aria-hidden="true">→</span>
     </a>
 </div>
 
@@ -173,14 +173,14 @@
 
 <script>
     // "Back" returns to the page that opened this one (the main page or a preview of it).
-    document.getElementById('back').addEventListener('click', (e) => {
+    document.querySelectorAll('[data-back]').forEach(a => a.addEventListener('click', (e) => {
         try {
             if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) {
                 e.preventDefault();
                 history.back();
             }
         } catch (err) {}
-    });
+    }));
 </script>
 </body>
 </html>
