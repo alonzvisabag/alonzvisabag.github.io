@@ -62,6 +62,8 @@
         }
         nav .name { font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.9rem; }
         nav .links { display: flex; gap: 8px; align-items: center; }
+        nav .nav-milon { direction: rtl; font-weight: 600; padding: 10px 12px; border-radius: 40px; transition: background 0.2s; }
+        nav .nav-milon:hover { background: #ffe14d; }
         nav [data-cv] {
             background: var(--ink);
             color: #fff;
@@ -330,6 +332,7 @@
         #word-pop[hidden] { display: none; }
         #word-pop b { display: block; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.2; }
         #word-pop span { display: block; font-size: 0.8rem; color: var(--muted); margin: 3px 0 9px; }
+        #word-pop .pop-links { display: flex; gap: 16px; }
         #word-pop a { font-weight: 700; font-size: 0.9rem; color: var(--acc); }
         @keyframes pop { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: none; } }
 
@@ -408,6 +411,7 @@
             color: #fff;
             font-weight: 700;
         }
+        .st-milon { position: relative; z-index: 5; margin-top: 14px; color: #fff; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.5); }
         .st-tap { position: absolute; top: 70px; bottom: 0; width: 50%; z-index: 2; background: none; border: 0; cursor: pointer; }
         .st-tap.prev { right: 0; }
         .st-tap.next { left: 0; }
@@ -462,6 +466,7 @@
             nav { padding: 6px 6px 6px 16px; }
             nav .name { font-size: 0.75rem; letter-spacing: 0.06em; }
             nav [data-cv] { padding: 9px 16px; }
+            nav .nav-milon { padding: 8px 6px; font-size: 0.88rem; }
             .ig { width: 38px; height: 38px; }
             .hero { padding: 120px 18px 50px; }
             .work, .chat-sec { padding-left: 14px; padding-right: 14px; }
@@ -487,6 +492,7 @@
 <nav>
     <a class="name" href="#" data-veggies>Alon Zvi Sabag</a>
     <div class="links">
+        <a class="nav-milon" href="milon.html">המילון</a>
         <a href="#" data-cv>CV</a>
         <a class="ig" href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener" aria-label="Instagram">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/></svg>
@@ -571,7 +577,7 @@
 
 <div id="word-pop" role="status" hidden>
     <b></b><span>מתוך ״מילים של מבוגרים״</span>
-    <a href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener">לעמוד באינסטגרם ↗</a>
+    <div class="pop-links"><a href="milon.html">לכל המילים ←</a><a href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener">לאינסטגרם ↗</a></div>
 </div>
 
 <div id="stories" hidden role="dialog" aria-modal="true" aria-label="מילים של מבוגרים · פוסטים">
@@ -726,7 +732,7 @@
     const slidesBox = stories.querySelector('.st-slides');
     bars.innerHTML = SLIDES.map(() => '<span><i></i></span>').join('');
     slidesBox.innerHTML = SLIDES.map(sl => sl.end
-        ? `<div class="st-slide"><div class="big">🍐</div><h4>${sl.title}</h4><p>${sl.text}</p><a class="st-ig" href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener">לעמוד באינסטגרם ↗</a></div>`
+        ? `<div class="st-slide"><div class="big">🍐</div><h4>${sl.title}</h4><p>${sl.text}</p><a class="st-ig" href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener">לעמוד באינסטגרם ↗</a><a class="st-milon" href="milon.html">לכל המילים במילון ←</a></div>`
         : `<div class="st-slide"><img data-story="${sl.img}" alt="${sl.title}"><h4>${sl.title}</h4>${sl.text ? `<p>${sl.text}</p>` : ''}</div>`).join('');
     let cur = 0;
     function showSlide(i) {

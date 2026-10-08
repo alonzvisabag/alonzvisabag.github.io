@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>המילון · מילים של מבוגרים · אלון צבי סבג</title>
+    <meta name="description" content="כל המילים והביטויים מ״מילים של מבוגרים״, האוסף של אלון צבי סבג. בדקו אם המילה של סבתא שלכם כבר באוסף, או הציעו מילה חדשה.">
+    <meta property="og:title" content="המילון · מילים של מבוגרים">
+    <meta property="og:description" content="כל המילים והביטויים מ״מילים של מבוגרים״. בדקו אם המילה של סבתא שלכם כבר באוסף.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://alonzvisabag.github.io/milon.html">
+    <meta property="og:locale" content="he_IL">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon-32.png">
+    <link rel="apple-touch-icon" href="favicon-180.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f4f2ed;
+            --card: #ffffff;
+            --ink: #111;
+            --muted: #6d6a64;
+            --line: #e4e0d6;
+            --acc: #ff5a1f;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { background: var(--bg); }
+        body {
+            font-family: 'Rubik', sans-serif;
+            color: var(--ink);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        a { color: inherit; text-decoration: none; }
+
+        nav {
+            direction: ltr;
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            translate: -50% 0;
+            z-index: 100;
+            width: min(1120px, calc(100% - 24px));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 8px 8px 22px;
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(14px) saturate(1.4);
+            -webkit-backdrop-filter: blur(14px) saturate(1.4);
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 60px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+        }
+        nav .name { font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.9rem; }
+        nav .links { display: flex; gap: 8px; align-items: center; }
+        nav .home {
+            direction: rtl;
+            background: var(--ink);
+            color: #fff;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 40px;
+        }
+        nav .home:hover { background: var(--acc); }
+        .ig {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(from 210deg, #f09433, #dc2743, #bc1888, #833ab4, #f09433);
+            color: #fff;
+        }
+        .ig svg { width: 22px; height: 22px; }
+
+        .m-hero { max-width: 1120px; margin: 0 auto; padding: 140px 24px 26px; }
+        .k { font-size: 0.9rem; font-weight: 500; color: var(--muted); letter-spacing: 0.04em; }
+        h1 { font-size: clamp(3.4rem, 11vw, 8rem); font-weight: 900; letter-spacing: -0.045em; line-height: 0.95; margin: 6px 0 14px; }
+        h1 span { color: var(--acc); }
+        .lead { font-size: clamp(1.1rem, 2vw, 1.35rem); color: var(--muted); }
+        .lead b { color: var(--ink); }
+
+        .search {
+            margin-top: 34px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            padding: 22px;
+            max-width: 720px;
+        }
+        .search label { display: block; font-weight: 700; font-size: 1.15rem; margin-bottom: 12px; }
+        .box { display: flex; gap: 10px; }
+        .box input {
+            flex: 1;
+            min-width: 0;
+            font: 500 1.15rem 'Rubik', sans-serif;
+            padding: 13px 18px;
+            border-radius: 40px;
+            border: 1.5px solid var(--line);
+            background: var(--bg);
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .box input:focus { border-color: var(--ink); background: #fff; }
+        .btn {
+            font: 600 1rem 'Rubik', sans-serif;
+            padding: 12px 18px;
+            border-radius: 40px;
+            border: 1.5px solid var(--ink);
+            background: var(--ink);
+            color: #fff;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .btn:hover { background: var(--acc); border-color: var(--acc); }
+        .btn.light { background: transparent; color: var(--ink); }
+        .btn.light:hover { color: #fff; }
+        #verdict { margin-top: 14px; font-size: 1.05rem; line-height: 1.6; min-height: 1.6em; }
+        #verdict b { font-weight: 800; }
+        #verdict .btn { margin-top: 10px; display: inline-block; }
+
+        .letters {
+            position: sticky;
+            top: 82px;
+            z-index: 50;
+            max-width: 1120px;
+            margin: 26px auto 0;
+            padding: 0 24px;
+        }
+        .letters .row {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 8px;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--line);
+            border-radius: 40px;
+            scrollbar-width: none;
+        }
+        .letters .row::-webkit-scrollbar { display: none; }
+        .letters button {
+            flex: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 0;
+            background: transparent;
+            font: 700 1.05rem 'Rubik', sans-serif;
+            cursor: pointer;
+            color: var(--ink);
+            transition: background 0.2s, opacity 0.2s;
+        }
+        .letters button:hover { background: #ffe14d; }
+        .letters button.off { opacity: 0.25; pointer-events: none; }
+
+        main { max-width: 1120px; margin: 0 auto; padding: 10px 24px 40px; }
+        .letter { padding-top: 34px; scroll-margin-top: 150px; }
+        .letter[hidden] { display: none; }
+        .letter h2 {
+            font-size: 2.6rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .letter h2 small { font-size: 0.9rem; font-weight: 500; color: var(--muted); }
+        .tags { display: flex; flex-wrap: wrap; gap: 10px; }
+        .tag {
+            font: 700 1.1rem 'Rubik', sans-serif;
+            padding: 9px 16px 10px;
+            border-radius: 14px;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            cursor: pointer;
+            color: #111;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .tag:hover { transform: rotate(-3deg) scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.12); }
+        .tag[hidden] { display: none; }
+        .tag.c0 { background: #ffe14d; }
+        .tag.c1 { background: #ff8fb8; }
+        .tag.c2 { background: #b8e86b; }
+        .tag.c3 { background: #8ec5ff; }
+        .tag.c4 { background: #fff; border-color: var(--line); }
+        .tag mark { background: rgba(0,0,0,0.12); color: inherit; border-radius: 4px; }
+        .tag.pulse { animation: pulse 0.6s ease 3; }
+        @keyframes pulse { 50% { transform: scale(1.18) rotate(-4deg); box-shadow: 0 14px 30px rgba(0,0,0,0.2); } }
+
+        .suggest {
+            max-width: 1120px;
+            margin: 30px auto 0;
+            padding: 0 24px 40px;
+        }
+        .suggest .card {
+            background: #151515;
+            color: #fff;
+            border-radius: 28px;
+            padding: 40px 28px;
+            text-align: center;
+        }
+        .suggest h3 { font-size: clamp(1.7rem, 4vw, 2.6rem); font-weight: 900; letter-spacing: -0.03em; }
+        .suggest p { color: #b9b5ad; margin: 8px 0 22px; }
+        .suggest .btn { background: #fff; color: #111; border-color: #fff; }
+        .suggest .btn:hover { background: var(--acc); border-color: var(--acc); color: #fff; }
+
+        #word-pop {
+            position: fixed;
+            z-index: 400;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 14px 18px 12px;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+            min-width: 210px;
+            animation: pop 0.25s cubic-bezier(.2,.9,.3,1.4);
+        }
+        #word-pop[hidden] { display: none; }
+        #word-pop b { display: block; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.2; }
+        #word-pop span { display: block; font-size: 0.8rem; color: var(--muted); margin: 3px 0 9px; }
+        #word-pop a { font-weight: 700; font-size: 0.9rem; color: var(--acc); }
+        @keyframes pop { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: none; } }
+
+        footer { direction: ltr; text-align: center; padding: 10px 20px 60px; font-size: 0.7rem; letter-spacing: 0.12em; color: #aaa; text-transform: uppercase; }
+
+        @media (max-width: 600px) {
+            nav { padding: 6px 6px 6px 16px; }
+            nav .name { font-size: 0.75rem; letter-spacing: 0.06em; }
+            nav .home { padding: 9px 14px; font-size: 0.9rem; }
+            .ig { width: 38px; height: 38px; }
+            .m-hero { padding: 116px 16px 16px; }
+            .search { padding: 18px 16px; border-radius: 22px; }
+            .search label { font-size: 1.02rem; }
+            .box { flex-direction: column; }
+            .box .btn { align-self: flex-start; }
+            .letters { top: 70px; padding: 0 12px; }
+            .letters button { width: 34px; height: 34px; font-size: 0.98rem; }
+            main { padding: 6px 16px 30px; }
+            .letter { scroll-margin-top: 130px; padding-top: 26px; }
+            .letter h2 { font-size: 2.1rem; }
+            .tags { gap: 8px; }
+            .tag { font-size: 1rem; padding: 7px 13px 8px; border-radius: 12px; }
+            .suggest { padding: 0 16px 30px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .tag, .tag:hover { transition: none; transform: none; }
+            .tag.pulse { animation: none; outline: 3px solid var(--acc); }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a class="name" href="./">Alon Zvi Sabag</a>
+    <div class="links">
+        <a class="home" href="./">← לאתר</a>
+        <a class="ig" href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/></svg>
+        </a>
+    </div>
+</nav>
+
+<header class="m-hero">
+    <div class="k">מילים של מבוגרים</div>
+    <h1>המילון<span>.</span></h1>
+    <p class="lead"><b id="count">368</b> מילים וביטויים שאספתי בפינצטה. והיד עוד נטויה.</p>
+    <div class="search">
+        <label for="q">בדקו אם המילה של סבתא שלכם כבר באוסף</label>
+        <div class="box">
+            <input id="q" type="search" placeholder="למשל: פריג׳ידר" autocomplete="off" enterkeyhint="search">
+            <button id="rand" class="btn light" type="button">מילה אקראית 🎲</button>
+        </div>
+        <p id="verdict" aria-live="polite"></p>
+    </div>
+</header>
+
+<div class="letters"><div class="row" id="letters" aria-label="קפיצה לאות"></div></div>
+
+<main id="dict"></main>
+
+<section class="suggest">
+    <div class="card">
+        <h3>חסרה לכם מילה?</h3>
+        <p>מכירים מילה של מבוגרים שעוד לא כאן? שלחו לי אותה.</p>
+        <button class="btn" type="button" id="suggest-any">להציע מילה ✉️</button>
+    </div>
+</section>
+
+<footer>&copy; 2026 Alon Zvi Sabag ✦</footer>
+
+<div id="word-pop" role="status" hidden>
+    <b></b><span>מתוך ״מילים של מבוגרים״</span>
+    <a href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener">לעמוד באינסטגרם ↗</a>
+</div>
+
+<script src="assets/words.js"></script>
+<script>
+    const EMAIL = ['alonzvi99', 'gmail.com'].join('@');   // put together here so it isn't sitting in the page for scrapers
+    const show = (w) => w.replace(/''/g, '״').replace(/'/g, '׳');
+    // for matching: no vowel marks, no apostrophes or quotes, single spaces
+    const norm = (w) => w.normalize('NFC').replace(/[֑-ׇ]/g, '').replace(/['"׳״`’]/g, '').replace(/\s+/g, ' ').trim();
+    const escape = (s) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    const words = [...new Set(OLD_WORDS.map(w => w.trim()))].sort((a, b) => norm(a).localeCompare(norm(b), 'he'));
+    document.getElementById('count').textContent = words.length;
+
+    // group by first letter
+    const groups = new Map();
+    words.forEach(w => {
+        const l = norm(w)[0];
+        if (!groups.has(l)) groups.set(l, []);
+        groups.get(l).push(w);
+    });
+    const dict = document.getElementById('dict');
+    let n = 0;
+    dict.innerHTML = [...groups].map(([l, list]) => `
+        <section class="letter" id="l-${l}" data-l="${l}">
+            <h2>${l}<small>${list.length}</small></h2>
+            <div class="tags">${list.map(w => `<button type="button" class="tag c${n++ % 5}" data-w="${escape(w)}">${escape(show(w))}</button>`).join('')}</div>
+        </section>`).join('');
+    const tags = Array.from(dict.querySelectorAll('.tag'));
+    tags.forEach(t => { t._n = norm(t.dataset.w); t._label = show(t.dataset.w); });
+
+    const lettersRow = document.getElementById('letters');
+    lettersRow.innerHTML = [...groups.keys()].map(l => `<button type="button" data-l="${l}">${l}</button>`).join('');
+    lettersRow.addEventListener('click', (e) => {
+        const b = e.target.closest('button');
+        if (b) document.getElementById('l-' + b.dataset.l).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // tap a word for its card
+    const pop = document.getElementById('word-pop');
+    let popTimer;
+    function showPop(t) {
+        pop.querySelector('b').textContent = '״' + t._label + '״';
+        pop.hidden = false;
+        const r = t.getBoundingClientRect();
+        const x = Math.min(innerWidth - pop.offsetWidth - 12, Math.max(12, r.left + r.width / 2 - pop.offsetWidth / 2));
+        const below = r.bottom + 12 + pop.offsetHeight < innerHeight;
+        pop.style.left = x + 'px';
+        pop.style.top = (below ? r.bottom + 12 : r.top - pop.offsetHeight - 12) + 'px';
+        clearTimeout(popTimer);
+        popTimer = setTimeout(() => { pop.hidden = true; }, 4500);
+    }
+    dict.addEventListener('click', (e) => { const t = e.target.closest('.tag'); if (t) showPop(t); });
+    document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#word-pop, .tag, #rand')) pop.hidden = true; });
+    addEventListener('scroll', () => { pop.hidden = true; }, { passive: true });
+
+    // suggesting a word opens a ready email
+    function suggest(word) {
+        const subject = word ? `מילה של מבוגרים: ${word}` : 'מילה של מבוגרים בשבילך';
+        const body = word ? `היי אלון, יש לי מילה בשבילך: ${word}` : 'היי אלון, יש לי מילה בשבילך: ';
+        location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+    document.getElementById('suggest-any').addEventListener('click', () => suggest(''));
+
+    // search: filters as you type and says whether the word is in the collection
+    const q = document.getElementById('q');
+    const verdict = document.getElementById('verdict');
+    function filter() {
+        const raw = q.value.trim();
+        const term = norm(raw);
+        let matches = 0, exact = null;
+        tags.forEach(t => {
+            const hit = !term || t._n.includes(term);
+            t.hidden = !hit;
+            if (hit) {
+                matches++;
+                if (term && t._n === term) exact = t;
+                const i = term ? t._n.indexOf(term) : -1;
+                // highlight the matching part (labels without vowel marks line up with the normalized text)
+                t.innerHTML = i >= 0 && t._label.replace(/['"׳״]/g, '') === t._n
+                    ? escape(t._n.slice(0, i)) + '<mark>' + escape(t._n.slice(i, i + term.length)) + '</mark>' + escape(t._n.slice(i + term.length))
+                    : escape(t._label);
+            }
+        });
+        dict.querySelectorAll('.letter').forEach(sec => { sec.hidden = !sec.querySelector('.tag:not([hidden])'); });
+        lettersRow.querySelectorAll('button').forEach(b => {
+            b.classList.toggle('off', !!term && document.getElementById('l-' + b.dataset.l).hidden);
+        });
+
+        if (!term) { verdict.innerHTML = ''; return; }
+        const safe = escape(raw);
+        if (exact) {
+            verdict.innerHTML = `יש! <b>״${escape(exact._label)}״</b> כבר באוסף 🎉`;
+        } else if (matches) {
+            verdict.innerHTML = `<b>${matches}</b> ${matches === 1 ? 'מילה מתאימה' : 'מילים מתאימות'}. לא מצאתם בדיוק את שלכם?<br><button class="btn" type="button" data-suggest>להציע את ״${safe}״ ✉️</button>`;
+        } else {
+            verdict.innerHTML = `<b>״${safe}״</b> עוד לא באוסף. רוצים להציע אותה?<br><button class="btn" type="button" data-suggest>להציע את ״${safe}״ ✉️</button>`;
+        }
+    }
+    q.addEventListener('input', filter);
+    verdict.addEventListener('click', (e) => { if (e.target.closest('[data-suggest]')) suggest(q.value.trim()); });
+
+    // a random word: clears the search, jumps to it and shows its card
+    document.getElementById('rand').addEventListener('click', () => {
+        if (q.value) { q.value = ''; filter(); }
+        const t = tags[Math.floor(Math.random() * tags.length)];
+        t.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+        t.classList.remove('pulse');
+        void t.offsetWidth;
+        t.classList.add('pulse');
+        // open its card once the page has stopped scrolling (scrolling closes cards)
+        let still;
+        const settle = () => {
+            clearTimeout(still);
+            still = setTimeout(() => { removeEventListener('scroll', settle); showPop(t); }, 180);
+        };
+        addEventListener('scroll', settle, { passive: true });
+        settle();
+    });
+
+    // open straight to a word: milon.html#פריג׳ידר
+    if (location.hash.length > 1) {
+        q.value = decodeURIComponent(location.hash.slice(1));
+        filter();
+    }
+</script>
+</body>
+</html>
