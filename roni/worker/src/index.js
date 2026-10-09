@@ -318,6 +318,97 @@ async function handleContribute(request, env) {
   return json({ ok: true });
 }
 
+// ── Visit alerts: a Telegram message when someone opens the portfolio (sent by assets/visit.js) ──
+
+const PAGE_NAMES = {
+  '/': 'העמוד הראשי',
+  '/index.html': 'העמוד הראשי',
+  '/milon.html': 'המילון',
+  '/portfolio/far.html': 'לפתוח כשצריך',
+  '/portfolio/sixty.html': '60 ברכות ל-60 שנה',
+  '/demo/far/': 'ההדגמה של לפתוח כשצריך',
+  '/demo/far/index.html': 'ההדגמה של לפתוח כשצריך',
+  '/demo/birthday/': 'ההדגמה של 60 ברכות',
+  '/demo/birthday/index.html': 'ההדגמה של 60 ברכות',
+  '/demo/birthday/contribute.html': 'ההדגמה של דף המברכים',
+  '/rescue-banner.html': 'הבאנר של רסקיו',
+};
+const BOT_UA = /bot|crawl|spider|slurp|preview|headless|lighthouse|facebookexternalhit|whatsapp\/|telegrambot/i;
+const VISIT_GAP_MS = 30 * 60 * 1000;   // the same visitor is reported at most once per half hour
+const VISIT_MAX_PER_HOUR = 40;         // and never more than this, so the alerts can't be flooded
+const lastSeen = new Map();
+let hourStart = 0;
+let hourCount = 0;
+
+function sourceOf(ref, ua) {
+  if (/LinkedInApp/i.test(ua)) return 'לינקדאין (האפליקציה)';
+  if (/Instagram/i.test(ua)) return 'אינסטגרם (האפליקציה)';
+  if (/FBAN|FBAV/i.test(ua)) return 'פייסבוק (האפליקציה)';
+  let host = '';
+  try { host = new URL(ref).hostname.replace(/^www\./, ''); } catch (e) {}
+  if (!host) return 'ישיר (קישור מוואטסאפ, מייל או הקלדה)';
+  if (/(^|\.)linkedin\.com$|^lnkd\.in$/.test(host)) return 'לינקדאין';
+  if (/^mail\.google\.com$/.test(host)) return "ג'ימייל";
+  if (/(^|\.)google\./.test(host)) return 'גוגל';
+  if (/(^|\.)instagram\.com$/.test(host)) return 'אינסטגרם';
+  if (/(^|\.)facebook\.com$|^fb\.me$/.test(host)) return 'פייסבוק';
+  if (/^t\.co$|(^|\.)x\.com$|(^|\.)twitter\.com$/.test(host)) return 'X (טוויטר)';
+  if (/(^|\.)bing\.com$/.test(host)) return 'בינג';
+  if (host === 'alonzvisabag.github.io') return 'מתוך האתר';
+  return host;
+}
+
+function deviceOf(ua) {
+  if (/iPhone/i.test(ua)) return 'טלפון (אייפון)';
+  if (/iPad/i.test(ua)) return 'טאבלט (אייפד)';
+  if (/Android/i.test(ua)) return /Mobile/i.test(ua) ? 'טלפון (אנדרואיד)' : 'טאבלט (אנדרואיד)';
+  if (/Windows/i.test(ua)) return 'מחשב (Windows)';
+  if (/Macintosh|Mac OS X/i.test(ua)) return 'מחשב (מק)';
+  if (/Linux/i.test(ua)) return 'מחשב (Linux)';
+  return 'לא ידוע';
+}
+
+async function handleVisit(request, env) {
+  const done = () => new Response(null, { status: 204, headers: corsHeaders() });
+  if (request.headers.get('Origin') !== ALLOWED_ORIGIN) return done();
+  const ua = request.headers.get('User-Agent') || '';
+  if (!ua || BOT_UA.test(ua)) return done();
+
+  let body = {};
+  try {
+    const raw = await request.text();
+    if (raw.length > 2000) return done();
+    body = JSON.parse(raw);
+  } catch (e) {
+    return done();
+  }
+  const page = typeof body.page === 'string' ? body.page.slice(0, 200) : '/';
+  const ref = typeof body.ref === 'string' ? body.ref.slice(0, 500) : '';
+  const tag = typeof body.from === 'string' ? body.from.replace(/[^\w֐-׿-]/g, '').slice(0, 40) : '';
+
+  const now = Date.now();
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (now - (lastSeen.get(ip) || 0) < VISIT_GAP_MS) return done();
+  if (now - hourStart > 60 * 60 * 1000) { hourStart = now; hourCount = 0; }
+  if (hourCount >= VISIT_MAX_PER_HOUR) return done();
+  lastSeen.set(ip, now);
+  hourCount++;
+  if (lastSeen.size > 500) lastSeen.clear();
+
+  const cf = request.cf || {};
+  const place = [cf.city, cf.country].filter(Boolean).join(', ') || 'לא ידוע';
+  const lines = [
+    '👀 מישהו נכנס לאתר',
+    `עמוד: ${PAGE_NAMES[page] || page}`,
+    `הגיע מ: ${sourceOf(ref, ua)}`,
+    `מכשיר: ${deviceOf(ua)}`,
+    `מיקום משוער: ${place}`,
+  ];
+  if (tag) lines.push(`תגית בקישור: ${tag}`);
+  await notify(env, lines.join('\n'));
+  return done();
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
@@ -326,6 +417,9 @@ export default {
     const url = new URL(request.url);
     if (request.method === 'POST' && url.pathname === '/contribute') {
       return handleContribute(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/visit') {
+      return handleVisit(request, env);
     }
     return json({ ok: false, error: 'not found' }, 404);
   },
