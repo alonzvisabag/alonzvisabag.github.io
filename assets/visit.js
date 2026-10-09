@@ -13,8 +13,12 @@
         return;
     }
     const body = JSON.stringify({ page: location.pathname, ref: document.referrer || '', from: params.get('from') || '' });
-    try {
-        if (navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, new Blob([body], { type: 'text/plain' }))) return;
-    } catch (e) {}
-    fetch(ENDPOINT, { method: 'POST', body, keepalive: true, mode: 'no-cors', headers: { 'Content-Type': 'text/plain' } }).catch(() => {});
+    // A plain request goes out right away; a beacon can be held back by the browser (iPhones often
+    // wait until the page is closed), so it's only the fallback.
+    const beacon = () => { try { navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, new Blob([body], { type: 'text/plain' })); } catch (e) {} };
+    if (window.fetch) {
+        fetch(ENDPOINT, { method: 'POST', body, keepalive: true, mode: 'no-cors', headers: { 'Content-Type': 'text/plain' } }).catch(beacon);
+    } else {
+        beacon();
+    }
 })();
