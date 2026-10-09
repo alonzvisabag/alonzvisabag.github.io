@@ -12,7 +12,9 @@
     } catch (e) {
         return;
     }
-    const body = JSON.stringify({ page: location.pathname, ref: document.referrer || '', from: params.get('from') || '' });
+    // the link in Alon's CV ends with #about, so those visits are tagged as coming from the CV
+    const tag = params.get('from') || (location.hash === '#about' ? 'הקורות-חיים' : '');
+    const body = JSON.stringify({ page: location.pathname, ref: document.referrer || '', from: tag });
     // A plain request goes out right away; a beacon can be held back by the browser (iPhones often
     // wait until the page is closed), so it's only the fallback.
     const beacon = () => { try { navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, new Blob([body], { type: 'text/plain' })); } catch (e) {} };
