@@ -155,6 +155,37 @@
         @keyframes turn { to { transform: rotate(360deg); } }
         .hero .ctas { display: flex; gap: 10px; margin-top: 38px; flex-wrap: wrap; opacity: 0; transition: opacity 0.8s 0.5s; }
         .hero.go .ctas { opacity: 1; }
+
+        /* the email, always in sight: tap to write, or copy it */
+        .contact-line { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; opacity: 0; transition: opacity 0.8s 0.65s; }
+        .hero.go .contact-line { opacity: 1; }
+        .contact {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 6px 6px 16px;
+            border-radius: 40px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+        }
+        .contact a { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 1.02rem; padding: 4px 0; }
+        .contact a bdi { direction: ltr; unicode-bidi: isolate; }
+        .contact a:hover bdi { color: var(--acc); }
+        .contact .ico { font-size: 1.1rem; }
+        .contact button {
+            font: 600 0.85rem 'Rubik', sans-serif;
+            border: 0;
+            border-radius: 30px;
+            padding: 8px 14px;
+            background: var(--bg);
+            color: var(--ink);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .contact button:hover { background: var(--ink); color: #fff; }
+        .contact button.done { background: #22c55e; color: #fff; }
+        .chat-contacts { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: -12px 0 30px; }
         .btn {
             display: inline-flex;
             align-items: center;
@@ -480,7 +511,7 @@
         }
         @media (prefers-reduced-motion: reduce) {
             .hero h1 .line > span { translate: 0 0; transition: none; }
-            .hero .ctas { opacity: 1; transition: none; }
+            .hero .ctas, .contact-line { opacity: 1; transition: none; }
             .t-veg .track, .status i, .seal .ring, .wb-track, .t-words .watch i { animation: none; }
             .sticker { transition: none; }
         }
@@ -514,6 +545,9 @@
     <div class="ctas">
         <a class="btn solid" href="#work">לעבודות ↓</a>
         <a class="btn" href="#chat">בואו נדבר</a>
+    </div>
+    <div class="contact-line">
+        <div class="contact" data-email></div>
     </div>
 </header>
 
@@ -569,6 +603,10 @@
 <section class="chat-sec" id="chat">
     <div class="chat-card" data-reveal>
         <h2>בואו נדבר</h2>
+        <div class="chat-contacts">
+            <div class="contact" data-email></div>
+            <div class="contact"><a href="tel:0538322416"><span class="ico">📞</span><bdi>053-8322416</bdi></a></div>
+        </div>
         <div data-icq></div>
     </div>
 </section>
@@ -603,6 +641,26 @@
     const mouse = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
     document.querySelectorAll('img[data-src]').forEach(img => { img.src = encodeURIComponent(img.dataset.src); });
+
+    // ── the email: put together here (not sitting in the page source for scrapers), with a copy button ──
+    const EMAIL = ['alonzvi99', 'gmail.com'].join('@');
+    document.querySelectorAll('[data-email]').forEach(box => {
+        box.innerHTML = `<a href="mailto:${EMAIL}"><span class="ico">✉️</span><bdi>${EMAIL}</bdi></a><button type="button">העתקה</button>`;
+        const btn = box.querySelector('button');
+        btn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(EMAIL);
+            } catch (e) {
+                const t = document.createElement('textarea');
+                t.value = EMAIL; document.body.appendChild(t); t.select();
+                try { document.execCommand('copy'); } catch (err) {}
+                t.remove();
+            }
+            btn.textContent = 'הועתק ✓';
+            btn.classList.add('done');
+            setTimeout(() => { btn.textContent = 'העתקה'; btn.classList.remove('done'); }, 1800);
+        });
+    });
 
     // hero words slide up once the opening is over, then the stickers land around them
     Intro.whenDone(() => {
@@ -655,7 +713,7 @@
     }
     function placeStickers() {
         const hr = hero.getBoundingClientRect();
-        const blockers = Array.from(hero.querySelectorAll('.status, h1 .line > span, .ctas .btn, .seal'))
+        const blockers = Array.from(hero.querySelectorAll('.status, h1 .line > span, .ctas .btn, .contact, .seal'))
             .filter(el => getComputedStyle(el).display !== 'none').map(el => el.getBoundingClientRect());
         const placed = [];
         let k = 0;
