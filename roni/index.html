@@ -1159,6 +1159,107 @@
     .confetti-piece{ display:none; }
     .shake{ animation:none; }
   }
+
+  /* ── SOS: one tap away from the people and numbers that matter, on every screen ── */
+  #sos-btn{
+    position:fixed;
+    left:16px;
+    bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index:300;
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    border:3px solid #fff;
+    background:#e5383b;
+    color:#fff;
+    font:800 1rem 'Rubik', sans-serif;
+    letter-spacing:.04em;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(229,56,59,.45);
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .15s;
+  }
+  #sos-btn::after{
+    content:'';
+    position:absolute;
+    inset:-3px;
+    border-radius:50%;
+    border:3px solid #e5383b;
+    animation:sos-ring 2.4s ease-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sos-ring{ 0%{ opacity:.7; transform:scale(1); } 70%,100%{ opacity:0; transform:scale(1.5); } }
+  #sos-btn:active{ transform:scale(.94); }
+
+  #sos-sheet{
+    position:fixed;
+    inset:0;
+    z-index:310;
+    background:rgba(40,20,20,.45);
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    animation:sos-fade .2s ease;
+  }
+  #sos-sheet[hidden]{ display:none; }
+  @keyframes sos-fade{ from{ opacity:0; } }
+  .sos-panel{
+    width:100%;
+    max-width:480px;
+    max-height:92vh;
+    max-height:92dvh;
+    overflow-y:auto;
+    background:var(--card);
+    border-radius:24px 24px 0 0;
+    padding:10px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    box-shadow:0 -10px 40px rgba(0,0,0,.2);
+    animation:sos-up .3s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes sos-up{ from{ transform:translateY(40px); opacity:.4; } }
+  .sos-grab{ width:44px; height:5px; border-radius:5px; background:var(--border); margin:2px auto 12px; }
+  .sos-panel h2{ font-size:1.5rem; font-weight:800; text-align:center; }
+  .sos-sub{ text-align:center; color:var(--muted); font-size:.9rem; margin:2px 0 16px; }
+  .sos-label{ font-size:.85rem; font-weight:700; color:#c1121f; margin:18px 4px 8px; }
+  .sos-call{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px 14px;
+    margin-bottom:9px;
+    border-radius:16px;
+    background:#fff;
+    border:2px solid var(--border);
+    color:var(--ink);
+    text-decoration:none;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .12s;
+  }
+  .sos-call[hidden]{ display:none; }
+  .sos-call:active{ transform:scale(.98); }
+  .sos-call .ic{ font-size:1.6rem; width:34px; text-align:center; flex:none; }
+  .sos-call .who{ display:flex; flex-direction:column; flex:1; font-weight:700; font-size:1.1rem; line-height:1.25; }
+  .sos-call .who small{ font-weight:400; font-size:.78rem; color:var(--muted); }
+  .sos-call .num{ direction:ltr; font-weight:700; font-size:1.05rem; color:var(--muted); }
+  .sos-call .dial{ flex:none; width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:var(--mint); color:#fff; font-size:1.05rem; }
+  .sos-call.red{ background:#fff3f2; border-color:#ffc9c5; }
+  .sos-call.red .num{ color:#c1121f; font-size:1.25rem; }
+  .sos-call.red .dial{ background:#e5383b; }
+  .sos-close{
+    display:block;
+    width:100%;
+    margin-top:12px;
+    padding:13px;
+    border:none;
+    border-radius:14px;
+    background:#f3ece4;
+    color:var(--ink);
+    font:700 1rem 'Rubik', sans-serif;
+    cursor:pointer;
+  }
+  @media (prefers-reduced-motion: reduce){
+    #sos-btn::after{ animation:none; }
+    #sos-sheet, .sos-panel{ animation:none; }
+  }
 </style>
 </head>
 <body>
@@ -1294,6 +1395,37 @@
     <button id="pace-dismiss-btn" type="button">המשיכי בכל זאת</button>
   </div>
 </div>
+
+<!-- SOS: on every screen, even before the password -->
+<button id="sos-btn" type="button" aria-haspopup="dialog" aria-controls="sos-sheet" aria-label="SOS - לחייג לעזרה">SOS</button>
+<div id="sos-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sos-title">
+  <div class="sos-panel">
+    <div class="sos-grab"></div>
+    <h2 id="sos-title">צריכה עזרה?</h2>
+    <p class="sos-sub">לוחצים ומתקשרים ישר</p>
+    <a class="sos-call" href="tel:+972538322416"><span class="ic">❤️</span><span class="who">אלון</span><span class="num">053-8322416</span><span class="dial">📞</span></a>
+    <a class="sos-call" data-person="mom" hidden><span class="ic">👩</span><span class="who">אמא</span><span class="num"></span><span class="dial">📞</span></a>
+    <a class="sos-call" data-person="dad" hidden><span class="ic">👨</span><span class="who">אבא</span><span class="num"></span><span class="dial">📞</span></a>
+    <div class="sos-label">חירום באוסטריה</div>
+    <a class="sos-call red" href="tel:112"><span class="ic">🆘</span><span class="who">מוקד חירום אירופי<small>עובד בכל אירופה, גם מקו ישראלי</small></span><span class="num">112</span><span class="dial">📞</span></a>
+    <a class="sos-call red" href="tel:133"><span class="ic">🚓</span><span class="who">משטרה</span><span class="num">133</span><span class="dial">📞</span></a>
+    <a class="sos-call red" href="tel:144"><span class="ic">🚑</span><span class="who">אמבולנס</span><span class="num">144</span><span class="dial">📞</span></a>
+    <a class="sos-call red" href="tel:122"><span class="ic">🚒</span><span class="who">מכבי אש</span><span class="num">122</span><span class="dial">📞</span></a>
+    <button class="sos-close" type="button">סגירה</button>
+  </div>
+</div>
+<script>
+(function () {
+  const btn = document.getElementById('sos-btn');
+  const sheet = document.getElementById('sos-sheet');
+  const open = () => { sheet.hidden = false; sheet.querySelector('.sos-close').focus({ preventScroll: true }); };
+  const close = () => { sheet.hidden = true; btn.focus({ preventScroll: true }); };
+  btn.addEventListener('click', open);
+  sheet.querySelector('.sos-close').addEventListener('click', close);
+  sheet.addEventListener('click', (e) => { if (e.target === sheet) close(); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden) close(); });
+})();
+</script>
 
 <script>
 const TYPE_META = {
