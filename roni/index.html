@@ -14,7 +14,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="לרונני">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://api.open-meteo.com; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://api.open-meteo.com https://roni-contribute.alonzvisabag.workers.dev; object-src 'none'; base-uri 'self';">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -600,7 +600,7 @@
     margin-bottom:16px;
   }
 
-  #memory-open-btn, #nickname-open-btn, #bored-open-btn, #hungry-open-btn{
+  #memory-open-btn, #nickname-open-btn, #bored-open-btn, #hungry-open-btn, #words-open-btn{
     padding:12px 26px;
   }
 
@@ -871,6 +871,101 @@
   .rc-actions{ display:flex; gap:10px; margin-top:22px; }
   .rc-actions .btn{ flex:1; padding:13px 10px; }
   .rc-actions .btn.soft{ background:#f3ece4; color:var(--ink); box-shadow:0 6px 0 #e3d6c8; }
+  .hungry-or{ text-align:center; font-size:.85rem; font-weight:700; color:var(--muted); margin:4px 0 12px; }
+  .pantry-btn{ border-style:dashed; border-color:var(--mint); box-shadow:0 4px 0 #bfeee0; }
+  .pantry-btn:active{ box-shadow:0 1px 0 #bfeee0; }
+  .pantry-group h4{ font-size:.95rem; font-weight:800; color:var(--coral-dark); margin:18px 0 10px; }
+  .pantry-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    font-family:'Rubik', sans-serif;
+    font-size:.95rem;
+    font-weight:600;
+    padding:9px 14px;
+    border-radius:999px;
+    border:2px solid var(--border);
+    background:#fff;
+    color:var(--ink);
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .12s, background .15s, border-color .15s;
+  }
+  .chip:active{ transform:scale(.94); }
+  .chip[aria-pressed="true"]{ background:var(--mint); border-color:var(--mint); color:#fff; }
+  .chip[aria-pressed="true"]::before{ content:'✓ '; }
+  #pantry-count{ text-align:center; font-size:.92rem; font-weight:700; color:var(--mint-dark); min-height:1.4em; margin:22px 0 12px; }
+  #pantry-go{ display:block; width:100%; }
+  #pantry-clear{ display:block; margin:16px auto 0; background:none; border:none; font:500 .85rem 'Rubik', sans-serif; color:var(--muted); text-decoration:underline; cursor:pointer; }
+  .match-title{ font-size:1.05rem; font-weight:800; margin:4px 0 12px; }
+  .match-gap{ height:14px; }
+  .rc-row .rc-n small{ display:block; font-size:.8rem; font-weight:500; color:var(--muted); margin-top:2px; }
+  .rc-row .rc-n small.ready{ color:var(--mint-dark); }
+  .match-empty{ text-align:center; line-height:1.6; color:var(--muted); padding:10px 4px 18px; }
+
+  /* ── German words she learned: her own little dictionary ── */
+  #words-view{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:60;
+    overflow-y:auto;
+    background:linear-gradient(120deg, var(--bg1), var(--bg2) 45%, var(--bg3) 100%);
+    padding:20px 20px calc(100px + env(safe-area-inset-bottom, 0px));
+  }
+  #words-view.show{ display:block; }
+  #words-card, #words-shelf{
+    max-width:460px;
+    margin:0 auto;
+    background:var(--card);
+    border-radius:20px;
+    padding:24px 18px;
+    box-shadow:0 12px 40px rgba(0,0,0,0.08);
+  }
+  #words-shelf{ margin-top:16px; }
+  #word-form label{ display:block; font-size:.9rem; font-weight:700; margin-bottom:12px; }
+  #word-form input, #words-search{
+    display:block;
+    width:100%;
+    margin-top:6px;
+    font:400 1.05rem 'Rubik', sans-serif;
+    padding:12px 14px;
+    border-radius:12px;
+    border:2px solid var(--border);
+    background:#fff;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s;
+  }
+  #word-form input:focus, #words-search:focus{ border-color:var(--coral); }
+  #word-de{ text-align:left; }
+  #word-form .btn{ display:block; width:100%; margin-top:6px; }
+  #words-count{ text-align:center; font-size:.95rem; font-weight:700; color:var(--mint-dark); min-height:1.4em; margin-top:16px; }
+  #words-search{ margin:0 0 12px; font-size:.95rem; padding:10px 14px; }
+  #words-list{ list-style:none; }
+  .word-item{ display:flex; align-items:center; gap:10px; padding:12px 2px; border-bottom:1px dashed var(--border); }
+  .word-item:last-child{ border-bottom:none; }
+  .word-item .w-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .word-item .w-de{ font-weight:800; font-size:1.1rem; text-align:right; overflow-wrap:anywhere; }
+  .word-item .w-he{ font-size:.95rem; color:var(--ink); overflow-wrap:anywhere; }
+  .word-item .w-at{ font-size:.75rem; color:var(--muted); }
+  .word-item button{
+    flex:none;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    border:none;
+    display:grid;
+    place-items:center;
+    cursor:pointer;
+    font-size:1rem;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .word-item .w-say{ background:#e8f6ff; }
+  .word-item .w-del{ background:none; color:var(--muted); }
+  .word-item.fresh{ animation:rise-in .5s cubic-bezier(.22,1,.36,1); }
+  #words-empty{ text-align:center; color:var(--muted); line-height:1.6; padding:6px 0; }
+  #words-status{ text-align:center; font-size:.78rem; color:var(--muted); margin-top:12px; }
+  .view-enter #words-card{ animation:rise-in .6s cubic-bezier(.22,1,.36,1) .15s backwards; }
+  .view-enter #words-shelf{ animation:rise-in .6s cubic-bezier(.22,1,.36,1) .25s backwards; }
 
   #pace-view{
     display:none;
@@ -1242,6 +1337,9 @@
     .view-enter #bored-card,
     .view-enter #hungry-card,
     .hungry-step.step-in,
+    .view-enter #words-card,
+    .view-enter #words-shelf,
+    .word-item.fresh,
     #pace-view.show #pace-card{ animation-name:fade-in; }
     #reveal-photo.pop{ animation:fade-in .6s ease forwards; transform:none; }
     .capsule.sr, footer.sr{ translate:none; }
@@ -1419,6 +1517,7 @@
       <button id="nickname-open-btn" class="btn">פאזל כינויים</button>
       <button id="bored-open-btn" class="btn">משעמם לי<br>מה לעשות?</button>
       <button id="hungry-open-btn" class="btn">אני רעבה<br>מה לאכול?</button>
+      <button id="words-open-btn" class="btn">למדתי מילה<br>חדשה בגרמנית</button>
     </div>
     <button id="reset-link">נעלי הכל מחדש</button>
   </footer>
@@ -1482,13 +1581,49 @@
     <div id="hungry-levels" class="hungry-step">
       <p class="hungry-ask">כמה כוח יש לך עכשיו?</p>
       <div id="hungry-level-list"></div>
+      <p class="hungry-or">או</p>
+      <button type="button" class="level-btn pantry-btn" data-pantry><span class="lv-ic">🧺</span><span class="lv-txt"><b>לפי מה שיש לי בבית</b><small>מסמנים מה יש, ומקבלים מה אפשר להכין</small></span></button>
       <p class="hungry-hint">ליד המצרכים כתוב גם איך הם נקראים בסופר פה</p>
     </div>
     <div id="hungry-list" class="hungry-step" hidden>
       <button id="hungry-surprise" class="btn" type="button">🎲 תפתיעו אותי</button>
       <div id="hungry-items"></div>
     </div>
+    <div id="hungry-pantry" class="hungry-step" hidden>
+      <p class="hungry-ask">מה יש לך בבית?</p>
+      <p class="hungry-hint">מלח, שמן ותבלינים לא צריך לסמן</p>
+      <div id="pantry-groups"></div>
+      <p id="pantry-count" aria-live="polite"></p>
+      <button id="pantry-go" class="btn" type="button">מה אפשר להכין?</button>
+      <button id="pantry-clear" type="button">לנקות את הסימונים</button>
+    </div>
+    <div id="hungry-match" class="hungry-step" hidden></div>
     <article id="hungry-recipe" class="hungry-step" hidden></article>
+  </div>
+</div>
+
+<div id="words-view">
+  <div class="view-header">
+    <button id="words-back-btn" class="back-btn" type="button" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <h2>המילון שלי</h2>
+  </div>
+  <div id="words-card">
+    <form id="word-form" autocomplete="off">
+      <label>המילה בגרמנית
+        <input id="word-de" dir="ltr" lang="de" maxlength="80" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Gemütlichkeit" required>
+      </label>
+      <label>מה זה אומר
+        <input id="word-he" maxlength="200" placeholder="תחושה נעימה של בית" required>
+      </label>
+      <button class="btn" type="submit">להוסיף למילון</button>
+    </form>
+    <p id="words-count" aria-live="polite"></p>
+  </div>
+  <div id="words-shelf">
+    <input id="words-search" type="search" placeholder="חיפוש במילון" aria-label="חיפוש במילון" hidden>
+    <ul id="words-list"></ul>
+    <p id="words-empty"></p>
+    <p id="words-status"></p>
   </div>
 </div>
 
@@ -1511,12 +1646,12 @@
     <div class="sos-grab"></div>
     <h2 id="sos-title">צריכה עזרה?</h2>
     <p class="sos-sub">לוחצים ומתקשרים ישר</p>
-    <a class="sos-call" href="tel:+972538322416"><span class="ic">❤️</span><span class="who">אלון</span><span class="num">053-8322416</span><span class="dial">📞</span></a>
+    <a class="sos-call" data-sos="alon" href="tel:+972538322416"><span class="ic">❤️</span><span class="who">אלון</span><span class="num">053-8322416</span><span class="dial">📞</span></a>
     <div class="sos-label">חירום באוסטריה</div>
-    <a class="sos-call red" href="tel:112"><span class="ic">🆘</span><span class="who">מוקד חירום אירופי<small>עובד בכל אירופה, גם מקו ישראלי</small></span><span class="num">112</span><span class="dial">📞</span></a>
-    <a class="sos-call red" href="tel:133"><span class="ic">🚓</span><span class="who">משטרה</span><span class="num">133</span><span class="dial">📞</span></a>
-    <a class="sos-call red" href="tel:144"><span class="ic">🚑</span><span class="who">אמבולנס</span><span class="num">144</span><span class="dial">📞</span></a>
-    <a class="sos-call red" href="tel:122"><span class="ic">🚒</span><span class="who">מכבי אש</span><span class="num">122</span><span class="dial">📞</span></a>
+    <a class="sos-call red" data-sos="112" href="tel:112"><span class="ic">🆘</span><span class="who">מוקד חירום אירופי<small>עובד בכל אירופה, גם מקו ישראלי</small></span><span class="num">112</span><span class="dial">📞</span></a>
+    <a class="sos-call red" data-sos="police" href="tel:133"><span class="ic">🚓</span><span class="who">משטרה</span><span class="num">133</span><span class="dial">📞</span></a>
+    <a class="sos-call red" data-sos="ambulance" href="tel:144"><span class="ic">🚑</span><span class="who">אמבולנס</span><span class="num">144</span><span class="dial">📞</span></a>
+    <a class="sos-call red" data-sos="fire" href="tel:122"><span class="ic">🚒</span><span class="who">מכבי אש</span><span class="num">122</span><span class="dial">📞</span></a>
     <button class="sos-close" type="button">סגירה</button>
   </div>
 </div>
@@ -1530,6 +1665,18 @@
   sheet.querySelector('.sos-close').addEventListener('click', close);
   sheet.addEventListener('click', (e) => { if (e.target === sheet) close(); });
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden) close(); });
+
+  // Tell Alon on Telegram who she's calling. The call itself never waits for this.
+  const ALERT_URL = 'https://roni-contribute.alonzvisabag.workers.dev/sos';
+  sheet.querySelectorAll('[data-sos]').forEach((a) => a.addEventListener('click', () => {
+    const body = JSON.stringify({ to: a.dataset.sos });
+    const beacon = () => { try { navigator.sendBeacon && navigator.sendBeacon(ALERT_URL, new Blob([body], { type: 'text/plain' })); } catch (e) {} };
+    try {
+      fetch(ALERT_URL, { method: 'POST', body, keepalive: true, mode: 'no-cors', headers: { 'Content-Type': 'text/plain' } }).catch(beacon);
+    } catch (e) {
+      beacon();
+    }
+  }));
 })();
 </script>
 
@@ -2611,104 +2758,125 @@ document.getElementById('bored-again-btn').addEventListener('click', showBoredId
 // ── hungry: three levels of effort, then recipes. "עברית|Deutsch" = what it's called in the supermarket here
 const HUNGRY_LEVELS = [
   { ic: '😴', name: 'אין לי כוח לכלום', sub: 'עד 10 דקות, כמעט בלי לבשל', chip: 'קל' },
-  { ic: '🍳', name: 'יש קצת כוח', sub: '15–30 דקות, סיר או מחבת אחת', chip: 'בינוני' },
+  { ic: '🍳', name: 'יש קצת כוח', sub: '15–30 דקות, סיר או מחבת', chip: 'בינוני' },
   { ic: '👩‍🍳', name: 'בא לי לבשל', sub: 'מושקע יותר, ושווה כל דקה', chip: 'מושקע' },
 ];
 const RECIPES = [
-  { level: 0, emoji: '🧀', name: 'טוסט במחבת', time: '10 דקות',
+  { level: 0, emoji: '🧀', name: 'טוסט במחבת', time: '10 דקות', needs: ['bread', 'cheese'],
     ing: ['2 פרוסות לחם', '2 פרוסות גבינה צהובה|Gouda / Toastkäse', 'קצת חמאה|Butter', 'מה שיש בבית: עגבנייה, זיתים, קטשופ'],
     steps: ['מורחים חמאה דקה על הצד החיצוני של שתי הפרוסות.', 'שמים את הגבינה והתוספות בין הפרוסות, עם החמאה כלפי חוץ.', 'מחבת על אש בינונית, מניחים את הטוסט ומכסים במכסה או בצלחת.', '3–4 דקות לכל צד, עד שהלחם זהוב והגבינה נמסה.'],
     tip: 'אין חמאה? גם קצת שמן במחבת עובד.' },
-  { level: 0, emoji: '🥑', name: 'טוסט אבוקדו וביצה', time: '10 דקות',
+  { level: 0, emoji: '🥑', name: 'טוסט אבוקדו וביצה', time: '10 דקות', needs: ['bread', 'avocado', 'eggs'],
     ing: ['פרוסה או שתיים של לחם טוב', 'אבוקדו בשל|Avocado', 'ביצה', 'חצי לימון, מלח ופלפל שחור', 'אם יש: צ׳ילי גרוס ושמן זית'],
     steps: ['קולים את הלחם בטוסטר או במחבת יבשה.', 'מועכים את האבוקדו במזלג עם מלח, פלפל וכמה טיפות לימון.', 'בינתיים מטגנים ביצת עין, או מבשלים ביצה 7 דקות במים רותחים.', 'מורחים את האבוקדו על הלחם ושמים את הביצה מעל.'] },
-  { level: 0, emoji: '🍜', name: 'נודלס משודרגים', time: '7 דקות',
+  { level: 0, emoji: '🍜', name: 'נודלס משודרגים', time: '7 דקות', needs: ['noodles', 'eggs'],
     ing: ['חבילת נודלס אינסטנט|Instant-Nudeln', 'ביצה', 'בצל ירוק|Frühlingszwiebel', 'רוטב סויה|Sojasauce'],
     steps: ['מרתיחים 2 כוסות מים בסיר קטן ומכניסים את הנודלס ואת שקית התיבול.', 'אחרי דקה שוברים פנימה ביצה, ולא מערבבים.', 'מכסים ומבשלים עוד 2–3 דקות, עד שהלבן מתייצב.', 'שופכים לקערה ומוסיפים בצל ירוק קצוץ וכמה טיפות סויה.'] },
-  { level: 0, emoji: '🥗', name: 'סלט קצוץ עם קוטג׳', time: '10 דקות',
+  { level: 0, emoji: '🥗', name: 'סלט קצוץ עם קוטג׳', time: '10 דקות', needs: ['tomato', 'cucumber', 'cottage'],
     ing: ['עגבנייה ומלפפון', 'קופסת קוטג׳|Hüttenkäse', 'שמן זית, מלח, פלפל, ולימון אם יש', 'לחם או פיתה|Fladenbrot'],
     steps: ['קוצצים עגבנייה ומלפפון לקוביות קטנות.', 'מתבלים בשמן זית, מלח, פלפל וקצת לימון.', 'מגישים עם קוטג׳ ולחם. עם ביצה קשה או חביתה זאת כבר ארוחת ערב של בית.'],
     tip: 'המלפפונים פה ענקיים, אז חצי אחד מספיק.' },
-  { level: 0, emoji: '🍕', name: 'פיצה טורטייה', time: '10 דקות',
+  { level: 0, emoji: '🍕', name: 'פיצה טורטייה', time: '10 דקות', needs: ['tortilla', 'cheese'],
     ing: ['טורטייה|Tortilla Wraps', '2–3 כפות רוטב עגבניות או קטשופ|Passata / Pizzasauce', 'גבינה מגורדת|geriebener Käse', 'אורגנו, ומה שיש: זיתים, תירס, פטריות'],
     steps: ['מורחים רוטב על הטורטייה ומפזרים גבינה ותוספות.', 'מניחים במחבת יבשה על אש בינונית־נמוכה ומכסים.', '5–6 דקות, עד שהתחתית קריספית והגבינה נמסה.', 'מפזרים אורגנו, חותכים למשולשים וזהו.'] },
-  { level: 0, emoji: '🍯', name: 'לחם עם טחינה וסילאן', time: '2 דקות',
+  { level: 0, emoji: '🍯', name: 'לחם עם טחינה וסילאן', time: '2 דקות', needs: ['bread', 'tahini', 'silan'],
     ing: ['פרוסת לחם (או שתיים, אף אחד לא סופר)', 'טחינה גולמית|Tahin / Sesammus', 'סילאן, ואם אין אז דבש|Dattelsirup / Honig'],
     steps: ['מורחים טחינה גולמית על הלחם.', 'מזלפים סילאן מעל.', 'אוכלים מעל הכיור. זה חלק מהמתכון.'] },
 
-  { level: 1, emoji: '🍳', name: 'שקשוקה', time: '25 דקות',
+  { level: 1, emoji: '🍳', name: 'שקשוקה', time: '25 דקות', needs: ['eggs', 'cantomato', 'onion'],
     ing: ['3 ביצים', 'קופסת עגבניות מרוסקות|gehackte Tomaten', 'בצל ו־2 שיני שום', 'כפית פפריקה מתוקה|Paprikapulver edelsüß', 'חצי כפית כמון|Kreuzkümmel', 'מלח, שמן, ולחם לניגוב'],
     steps: ['מטגנים בצל קצוץ בשמן כ־5 דקות, עד שהוא רך.', 'מוסיפים שום קצוץ, פפריקה וכמון ומערבבים דקה.', 'שופכים את העגבניות, מוסיפים מלח ומבשלים 10 דקות על אש בינונית, עד שהרוטב מסמיך.', 'עושים 3 גומות בכף ושוברים לתוכן את הביצים.', 'מכסים ומבשלים 5–7 דקות, עד שהלבן מתייצב והחלמון עוד רך.'],
     tip: 'שימי לב בסופר: כמון זה Kreuzkümmel. מה שכתוב עליו רק Kümmel זה בכלל קימל.' },
-  { level: 1, emoji: '🍝', name: 'פסטה רוזה', time: '20 דקות',
+  { level: 1, emoji: '🍝', name: 'פסטה רוזה', time: '20 דקות', needs: ['pasta', 'cantomato', 'cream', 'garlic'],
     ing: ['חצי חבילת פסטה|Penne / Spaghetti', '2 שיני שום', 'קופסת עגבניות מרוסקות|passierte Tomaten', 'חצי גביע שמנת מתוקה|Schlagobers', 'פרמזן או כל גבינה מגורדת|Parmesan', 'מלח, פלפל, ובזיליקום אם יש'],
     steps: ['מבשלים את הפסטה במים רותחים עם הרבה מלח, לפי הזמן שעל האריזה.', 'בינתיים מטגנים שום קצוץ בשמן זית דקה, בלי לשרוף.', 'מוסיפים את העגבניות, מלח ופלפל ומבשלים 8 דקות.', 'מוסיפים את השמנת ומערבבים עד שהרוטב ורוד.', 'מסננים את הפסטה, מערבבים עם הרוטב ומגררים גבינה מעל.'] },
-  { level: 1, emoji: '🥣', name: 'פתיתים של בית', time: '25 דקות',
+  { level: 1, emoji: '🥣', name: 'פתיתים של בית', time: '25 דקות', needs: ['ptitim', 'onion'],
     ing: ['כוס פתיתים|Perlcouscous', 'בצל קטן', 'כוס וחצי מים רותחים', 'כפית אבקת מרק|Gemüsebrühe / Suppenwürze', 'שמן ומלח'],
     steps: ['מטגנים בצל קצוץ דק בכף שמן, עד שהוא שקוף.', 'מוסיפים את הפתיתים ומערבבים 2–3 דקות, עד שחלקם משחימים קצת.', 'מוסיפים מים רותחים ואבקת מרק ומערבבים פעם אחת.', 'מכסים, מנמיכים לאש קטנה ומבשלים 10 דקות, עד שכל המים נספגים.', 'מכבים, משאירים מכוסה עוד 5 דקות ומפרידים במזלג.'],
     tip: 'אין Perlcouscous בסופר? אפשר במקומם Risoni (פסטה בצורת אורז), וזה יוצא דומה מאוד.' },
-  { level: 1, emoji: '🍲', name: 'מרק עדשים כתומות', time: '30 דקות',
+  { level: 1, emoji: '🍲', name: 'מרק עדשים כתומות', time: '30 דקות', needs: ['redlentils', 'onion', 'carrot'],
     ing: ['כוס עדשים כתומות|rote Linsen', 'בצל, גזר ו־2 שיני שום', 'כפית כמון|Kreuzkümmel', 'ליטר מים וכף אבקת מרק|Gemüsebrühe', 'חצי לימון, מלח ושמן'],
     steps: ['מטגנים בצל וגזר קצוצים בשמן 5 דקות.', 'מוסיפים שום וכמון ומערבבים דקה.', 'מוסיפים את העדשים אחרי שטיפה, את המים ואת אבקת המרק, ומביאים לרתיחה.', 'מבשלים 20 דקות על אש בינונית, עד שהעדשים מתפרקות.', 'טוחנים בבלנדר מוט או מועכים, מתקנים מלח וסוחטים לימון.'],
     tip: 'מושלם לערב קר בגראץ, ונשמר במקרר 3 ימים.' },
-  { level: 1, emoji: '🍚', name: 'אורז מוקפץ', time: '15 דקות',
+  { level: 1, emoji: '🍚', name: 'אורז מוקפץ', time: '15 דקות', needs: ['rice', 'eggs', 'frozenveg', 'soy'],
     ing: ['2 כוסות אורז מבושל, הכי טוב מאתמול', '2 ביצים', 'כוס ירקות קפואים|TK-Gemüse', '2 כפות רוטב סויה|Sojasauce', 'בצל ירוק|Frühlingszwiebel', 'שמן'],
     steps: ['מחממים שמן במחבת גדולה על אש גבוהה.', 'מקפיצים את הירקות הקפואים 3 דקות.', 'מזיזים אותם לצד, שוברים את הביצים בצד השני ומערבבים עד שהן כמעט מוכנות.', 'מוסיפים את האורז והסויה ומקפיצים 4–5 דקות, עד שהאורז חם וקצת קריספי.', 'מפזרים בצל ירוק קצוץ.'],
     tip: 'אורז טרי יוצא דביק. אם אין מאתמול, מבשלים ומפזרים על צלחת לרבע שעה שיתייבש.' },
-  { level: 1, emoji: '🌮', name: 'קסדייה', time: '15 דקות',
+  { level: 1, emoji: '🌮', name: 'קסדייה', time: '15 דקות', needs: ['tortilla', 'beans', 'cheese'],
     ing: ['2 טורטיות|Tortilla Wraps', 'חצי קופסת שעועית אדומה|Kidneybohnen', '3 כפות תירס|Mais', 'גבינה מגורדת|geriebener Käse', 'אם יש: שמנת חמוצה|Sauerrahm'],
     steps: ['שוטפים את השעועית ומועכים אותה קצת במזלג עם מלח.', 'מורחים על חצי מכל טורטייה, מפזרים תירס וגבינה ומקפלים לחצי.', 'מחבת יבשה על אש בינונית, 3 דקות לכל צד, עד שהגבינה נמסה.', 'חותכים למשולשים ומגישים עם שמנת חמוצה.'] },
 
-  { level: 2, emoji: '🍗', name: 'שניצל', time: '45 דקות',
+  { level: 2, emoji: '🍗', name: 'שניצל', time: '45 דקות', needs: ['chicken', 'eggs', 'flour', 'crumbs'],
     ing: ['2 חזות עוף|Hühnerbrust', '2 ביצים', 'חצי כוס קמח|Mehl glatt', 'כוס פירורי לחם|Semmelbrösel', 'מלח, פלפל ופפריקה', 'שמן לטיגון ולימון להגשה'],
     steps: ['פורסים כל חזה לרוחבו לשתי פרוסות דקות, ומשטחים קצת עם התחתית של סיר.', 'מתבלים במלח, פלפל ופפריקה.', 'מסדרים שלוש צלחות: קמח, ביצים טרופות ופירורי לחם.', 'כל פרוסה עוברת קמח, ביצה ופירורים, ולוחצים טוב.', 'מחממים שמן בגובה חצי ס״מ ומטגנים 3–4 דקות לכל צד, עד שזהוב.', 'מעבירים לנייר סופג ומגישים עם לימון.'],
     tip: 'באוסטריה מותר לקרוא "וינר שניצל" רק לשניצל של עגל. של עוף זה Hühnerschnitzel, וזה בסדר גמור.' },
-  { level: 2, emoji: '🍛', name: 'מג׳דרה', time: 'שעה',
+  { level: 2, emoji: '🍛', name: 'מג׳דרה', time: 'שעה', needs: ['lentils', 'rice', 'onion'],
     ing: ['כוס עדשים חומות או ירוקות|Tellerlinsen', 'כוס אורז בסמטי|Basmatireis', '3 בצלים', 'כפית כמון|Kreuzkümmel', 'חצי כוס שמן, מלח ופלפל', 'יוגורט וסלט בצד'],
     steps: ['מבשלים את העדשים ב־3 כוסות מים 15 דקות, עד שהן כמעט רכות, ומסננים.', 'בינתיים פורסים את הבצלים לרצועות ומטגנים בשמן על אש בינונית 20–25 דקות, עד שהם חומים ומתוקים.', 'מוציאים חצי מהבצל לצלחת.', 'לסיר עם שאר הבצל מוסיפים את האורז והכמון ומערבבים 2 דקות.', 'מוסיפים את העדשים, 2 כוסות מים רותחים וכפית מלח, ומביאים לרתיחה.', 'מכסים ומבשלים על אש קטנה 18 דקות. מגישים עם הבצל ששמרנו מעל.'] },
-  { level: 2, emoji: '🥔', name: 'עוף בתנור עם תפוחי אדמה', time: 'שעה ורבע',
+  { level: 2, emoji: '🥔', name: 'עוף בתנור עם תפוחי אדמה', time: 'שעה ורבע', needs: ['chicken', 'potato', 'garlic'],
     ing: ['4 ירכי עוף עם עור|Hühnerkeulen', '4–5 תפוחי אדמה|Erdäpfel', '4 שיני שום', '3 כפות שמן זית', 'כפית פפריקה, מלח ופלפל', 'רוזמרין אם יש|Rosmarin'],
     steps: ['מחממים תנור ל־200 מעלות.', 'חותכים את תפוחי האדמה לרבעים ומפזרים בתבנית עם שיני השום.', 'מערבבים שמן, פפריקה, מלח ופלפל ומורחים על העוף ועל תפוחי האדמה.', 'מניחים את העוף מעל, עם העור למעלה.', 'אופים 50–60 דקות, עד שהעור זהוב ופריך ותפוחי האדמה רכים.'],
     tip: 'באוסטריה תפוחי אדמה הם בדרך כלל Erdäpfel, ולא Kartoffeln כמו בגרמניה.' },
-  { level: 2, emoji: '🧆', name: 'קציצות ברוטב עגבניות', time: 'שעה',
+  { level: 2, emoji: '🧆', name: 'קציצות ברוטב עגבניות', time: 'שעה', needs: ['meat', 'eggs', 'crumbs', 'onion', 'cantomato'],
     ing: ['חצי קילו בשר טחון|Faschiertes', 'ביצה', '3 כפות פירורי לחם|Semmelbrösel', 'בצל וחופן פטרוזיליה|Petersilie', '2 קופסאות עגבניות מרוסקות|gehackte Tomaten', '3 שיני שום, פפריקה, כמון ומלח'],
     steps: ['מגררים חצי בצל לקערה ומוסיפים בשר, ביצה, פירורים, פטרוזיליה קצוצה, מלח וכמון. לשים טוב.', 'יוצרים כדורים בגודל של כדור פינג־פונג.', 'בסיר רחב מטגנים את חצי הבצל השני ואת השום, ומוסיפים פפריקה, עגבניות, כוס מים ומלח.', 'כשהרוטב מבעבע, מכניסים את הקציצות אחת־אחת.', 'מכסים ומבשלים על אש קטנה 35 דקות, ומנערים את הסיר מדי פעם.', 'מגישים עם אורז, פתיתים או לחם.'],
     tip: 'על האריזה בסופר יהיה כתוב Faschiertes, ככה קוראים פה לבשר טחון.' },
-  { level: 2, emoji: '🥞', name: 'קייזרשמארן', time: '30 דקות',
+  { level: 2, emoji: '🥞', name: 'קייזרשמארן', time: '30 דקות', needs: ['eggs', 'milk', 'flour', 'butter', 'sugar'],
     ing: ['3 ביצים', '200 מ״ל חלב|Milch', '100 גרם קמח|Mehl glatt', 'כף סוכר וקורט מלח', '2 כפות חמאה|Butter', 'אבקת סוכר ורסק תפוחים להגשה|Staubzucker / Apfelmus'],
     steps: ['מפרידים את הביצים. מערבבים חלמונים, חלב, קמח וסוכר לבלילה חלקה.', 'מקציפים את החלבונים עם קורט מלח לקצף יציב, ומקפלים בעדינות לתוך הבלילה.', 'ממיסים כף חמאה במחבת על אש בינונית ושופכים את הבלילה.', 'אחרי 4–5 דקות, כשהתחתית זהובה, חותכים לרבעים עם מרית והופכים כל רבע.', 'אחרי עוד 2–3 דקות קורעים לחתיכות עם שתי מריות, מוסיפים את שאר החמאה וכף סוכר ומקפיצים דקה, עד שמתקרמל קצת.', 'מפזרים אבקת סוכר ומגישים עם רסק תפוחים.'],
     tip: 'הקינוח הכי אוסטרי שיש. אם הצליח לך, את רשמית מקומית.' },
-  { level: 2, emoji: '🍫', name: 'עוגה בחושה', time: '50 דקות',
+  { level: 2, emoji: '🍫', name: 'עוגה בחושה', time: '50 דקות', needs: ['eggs', 'flour', 'cocoa', 'sugar', 'milk'],
     ing: ['2 ביצים', 'כוס סוכר', 'כוס קמח|Mehl glatt', 'חצי כוס קקאו|Backkakao', '2 כפיות אבקת אפייה (בערך חצי שקית)|Backpulver', 'חצי כוס שמן', 'כוס חלב חם או מים רותחים'],
     steps: ['מחממים תנור ל־180 מעלות ומשמנים תבנית 20×20 או תבנית אינגליש קייק.', 'בקערה אחת טורפים ביצים, סוכר ושמן.', 'מוסיפים קמח, קקאו ואבקת אפייה ומערבבים.', 'מוסיפים את החלב החם ומערבבים עד שהבלילה חלקה. היא אמורה להיות נוזלית.', 'אופים 30–35 דקות, עד שקיסם שננעץ במרכז יוצא כמעט יבש.'] },
 ];
-const hungry = { step: 'levels', level: 0, recipe: -1 };
+// what she can tick in "לפי מה שיש לי בבית"; every key in a recipe's needs is one of these
+const PANTRY = [
+  { title: 'מהמקרר', items: [['eggs', 'ביצים'], ['milk', 'חלב'], ['cheese', 'גבינה צהובה'], ['cottage', 'קוטג׳'], ['cream', 'שמנת מתוקה'], ['butter', 'חמאה'], ['chicken', 'עוף'], ['meat', 'בשר טחון']] },
+  { title: 'ירקות', items: [['tomato', 'עגבנייה'], ['cucumber', 'מלפפון'], ['onion', 'בצל'], ['garlic', 'שום'], ['carrot', 'גזר'], ['potato', 'תפוחי אדמה'], ['avocado', 'אבוקדו'], ['frozenveg', 'ירקות קפואים']] },
+  { title: 'מהמזווה', items: [['bread', 'לחם'], ['tortilla', 'טורטייה'], ['pasta', 'פסטה'], ['rice', 'אורז'], ['ptitim', 'פתיתים'], ['noodles', 'נודלס'], ['flour', 'קמח'], ['crumbs', 'פירורי לחם'], ['sugar', 'סוכר'], ['cocoa', 'קקאו']] },
+  { title: 'קופסאות וצנצנות', items: [['cantomato', 'עגבניות בקופסה'], ['beans', 'שעועית'], ['redlentils', 'עדשים כתומות'], ['lentils', 'עדשים חומות'], ['tahini', 'טחינה'], ['silan', 'סילאן או דבש'], ['soy', 'רוטב סויה']] },
+];
+const PANTRY_NAMES = Object.fromEntries(PANTRY.flatMap(g => g.items));
+const PANTRY_KEY = 'roni-pantry';
+const HUNGRY_TITLES = { levels: 'רעבה?', pantry: 'מה יש בבית?', match: 'מה אפשר להכין' };
+const hungry = { step: 'levels', level: 0, recipe: -1, from: 'list' };
+let pantry = new Set();
+try { pantry = new Set(JSON.parse(localStorage.getItem(PANTRY_KEY) || '[]')); } catch(e){}
 
 document.getElementById('hungry-level-list').innerHTML = HUNGRY_LEVELS.map((l, i) =>
   `<button type="button" class="level-btn lv-${i}" data-level="${i}"><span class="lv-ic">${l.ic}</span><span class="lv-txt"><b>${l.name}</b><small>${l.sub}</small></span><span class="lv-chip">${l.chip}</span></button>`
 ).join('');
+document.getElementById('pantry-groups').innerHTML = PANTRY.map(g =>
+  `<div class="pantry-group"><h4>${g.title}</h4><div class="pantry-chips">${g.items.map(([k, name]) =>
+    `<button type="button" class="chip" data-chip="${k}" aria-pressed="${pantry.has(k)}">${name}</button>`).join('')}</div></div>`
+).join('');
 
 function showHungryStep(step, animate = true){
   hungry.step = step;
-  ['levels', 'list', 'recipe'].forEach(s => { document.getElementById('hungry-' + s).hidden = s !== step; });
+  ['levels', 'list', 'recipe', 'pantry', 'match'].forEach(s => { document.getElementById('hungry-' + s).hidden = s !== step; });
   const el = document.getElementById('hungry-' + step);
   el.classList.remove('step-in');
   if(animate){ void el.offsetWidth; el.classList.add('step-in'); }
-  document.getElementById('hungry-title').textContent = step === 'levels' ? 'רעבה?' : HUNGRY_LEVELS[hungry.level].name;
+  document.getElementById('hungry-title').textContent = HUNGRY_TITLES[step] || HUNGRY_LEVELS[hungry.level].name;
   document.getElementById('hungry-view').scrollTop = 0;
+}
+
+function recipeRow(i, note){
+  const r = RECIPES[i];
+  return `<button type="button" class="rc-row" data-recipe="${i}"><span class="rc-e">${r.emoji}</span><span class="rc-n">${escapeHTML(r.name)}${note || ''}</span><span class="rc-t">${escapeHTML(r.time)}</span></button>`;
 }
 
 function showHungryLevel(level){
   hungry.level = level;
-  document.getElementById('hungry-items').innerHTML = RECIPES.map((r, i) => r.level !== level ? '' :
-    `<button type="button" class="rc-row" data-recipe="${i}"><span class="rc-e">${r.emoji}</span><span class="rc-n">${escapeHTML(r.name)}</span><span class="rc-t">${escapeHTML(r.time)}</span></button>`
-  ).join('');
+  document.getElementById('hungry-items').innerHTML = RECIPES.map((r, i) => r.level === level ? recipeRow(i) : '').join('');
   showHungryStep('list');
 }
 
-function showRecipe(i){
+function showRecipe(i, from){
   const r = RECIPES[i];
   hungry.recipe = i;
+  hungry.level = r.level;
+  if(from) hungry.from = from;
   const ing = r.ing.map(line => {
     const [he, de] = line.split('|');
     return `<li><label><input type="checkbox"><span>${escapeHTML(he)}${de ? `<small dir="ltr">${escapeHTML(de)}</small>` : ''}</span></label></li>`;
@@ -2726,14 +2894,49 @@ function showRecipe(i){
     ${r.tip ? `<p class="rc-tip">💡 ${escapeHTML(r.tip)}</p>` : ''}
     <div class="rc-actions">
       <button type="button" class="btn" data-hungry="another">מתכון אחר</button>
-      <button type="button" class="btn soft" data-hungry="list">לכל המתכונים</button>
+      <button type="button" class="btn soft" data-hungry="back">חזרה לרשימה</button>
     </div>`;
   showHungryStep('recipe');
 }
 
-function randomRecipe(){
+function randomRecipe(from){
   const pool = RECIPES.map((r, i) => i).filter(i => RECIPES[i].level === hungry.level && i !== hungry.recipe);
-  showRecipe(pool[Math.floor(Math.random() * pool.length)]);
+  showRecipe(pool[Math.floor(Math.random() * pool.length)], from);
+}
+
+// recipes by what's missing from the pantry: ready ones first (easiest first), then the ones missing one or two things
+function pantryMatches(){
+  return RECIPES.map((r, i) => ({ i, missing: r.needs.filter(k => !pantry.has(k)) }))
+    .sort((a, b) => a.missing.length - b.missing.length || RECIPES[a.i].level - RECIPES[b.i].level);
+}
+
+function updatePantryCount(){
+  const ready = pantryMatches().filter(m => !m.missing.length).length;
+  document.getElementById('pantry-count').textContent = !pantry.size ? '' :
+    ready === 0 ? `סימנת ${pantry.size}. עוד אין מתכון מלא, אבל יש כמה שחסר בהם רק מעט` :
+    ready === 1 ? `סימנת ${pantry.size}, ויש כבר מתכון אחד שאפשר להכין` :
+    `סימנת ${pantry.size}, ואפשר כבר להכין ${ready} מתכונים`;
+}
+
+function showPantryMatches(){
+  const all = pantryMatches();
+  const ready = all.filter(m => !m.missing.length);
+  const close = all.filter(m => m.missing.length && m.missing.length <= 2);
+  const names = (keys) => keys.map(k => PANTRY_NAMES[k]).join(', ');
+  let html = '';
+  if(ready.length){
+    html += `<p class="match-title">✅ אפשר להכין עכשיו</p>` + ready.map(m => recipeRow(m.i, '<small class="ready">יש לך הכל</small>')).join('');
+  }
+  if(close.length){
+    if(ready.length) html += '<div class="match-gap"></div>';
+    html += `<p class="match-title">🛒 חסר רק קצת</p>` + close.map(m => recipeRow(m.i, `<small>חסר: ${escapeHTML(names(m.missing))}</small>`)).join('');
+  }
+  if(!html){
+    html = `<p class="match-empty">עם מה שסימנת עוד אין מתכון שמתאים.<br>אולי יש עוד משהו במקרר? אפשר לחזור ולסמן עוד.</p>`;
+  }
+  html += `<div class="rc-actions"><button type="button" class="btn soft" data-hungry="pantry">לשנות את מה שיש בבית</button></div>`;
+  document.getElementById('hungry-match').innerHTML = html;
+  showHungryStep('match');
 }
 
 function openHungry(pt, done){
@@ -2742,22 +2945,192 @@ function openHungry(pt, done){
   openView(document.getElementById('hungry-view'), pt, done);
 }
 
+function openPantry(){
+  updatePantryCount();
+  showHungryStep('pantry');
+}
+
 document.getElementById('hungry-open-btn').addEventListener('click', (e) => openHungry(tapPoint(e)));
 document.getElementById('hungry-back-btn').addEventListener('click', () => {
-  if(hungry.step === 'recipe') showHungryStep('list');
-  else if(hungry.step === 'list') showHungryStep('levels');
+  if(hungry.step === 'recipe') showHungryStep(hungry.from);
+  else if(hungry.step === 'match') showHungryStep('pantry');
+  else if(hungry.step === 'list' || hungry.step === 'pantry') showHungryStep('levels');
   else closeView(document.getElementById('hungry-view'));
 });
-document.getElementById('hungry-surprise').addEventListener('click', randomRecipe);
+document.getElementById('hungry-surprise').addEventListener('click', () => randomRecipe('list'));
+document.getElementById('pantry-go').addEventListener('click', showPantryMatches);
+document.getElementById('pantry-clear').addEventListener('click', () => {
+  pantry.clear();
+  try { localStorage.removeItem(PANTRY_KEY); } catch(e){}
+  document.querySelectorAll('#pantry-groups .chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+  updatePantryCount();
+});
 document.getElementById('hungry-card').addEventListener('click', (e) => {
   const level = e.target.closest('[data-level]');
   const row = e.target.closest('[data-recipe]');
+  const chip = e.target.closest('[data-chip]');
   const action = e.target.closest('[data-hungry]');
   if(level) showHungryLevel(Number(level.dataset.level));
-  else if(row) showRecipe(Number(row.dataset.recipe));
+  else if(e.target.closest('[data-pantry]')) openPantry();
+  else if(row) showRecipe(Number(row.dataset.recipe), hungry.step);
+  else if(chip){
+    const k = chip.dataset.chip;
+    if(pantry.has(k)) pantry.delete(k); else pantry.add(k);
+    chip.setAttribute('aria-pressed', String(pantry.has(k)));
+    try { localStorage.setItem(PANTRY_KEY, JSON.stringify([...pantry])); } catch(e){}
+    updatePantryCount();
+  }
   else if(action && action.dataset.hungry === 'another') randomRecipe();
-  else if(action && action.dataset.hungry === 'list') showHungryStep('list');
+  else if(action && action.dataset.hungry === 'back') showHungryStep(hungry.from);
+  else if(action && action.dataset.hungry === 'pantry') showHungryStep('pantry');
 });
+
+// ── German words she learned. Saved on her phone right away, then backed up through the worker into
+// roni/words.json, so a cleared browser or a new phone doesn't lose them. Changes made offline wait in a
+// queue and go out with the next save; the server ignores an add it already has, so resending is safe.
+const WORDS_API = 'https://roni-contribute.alonzvisabag.workers.dev/words';
+const WORDS_KEY = 'roni-words';
+const WORDS_PENDING_KEY = 'roni-words-pending';
+const WORD_MILESTONES = [10, 25, 50, 100, 150, 200, 300, 365, 500, 1000];
+const readStore = (key) => { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ return []; } };
+const writeStore = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch(e){} };
+let wordsSaved = readStore(WORDS_KEY);
+let wordsPending = readStore(WORDS_PENDING_KEY);
+let wordsSyncing = false;
+let freshWordId = null;
+
+function allWords(){
+  let list = wordsSaved.slice();
+  for(const op of wordsPending){
+    if(op.op === 'add' && !list.some(w => w.id === op.word.id)) list.push(op.word);
+    if(op.op === 'del') list = list.filter(w => w.id !== op.id);
+  }
+  return list.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+}
+
+// for search: ignore case, umlauts (ü finds u) and niqqud
+const normWord = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-֑ͯ-ׇ]/g, '');
+
+function formatWordDate(at){
+  try { return new Date(at).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }); }
+  catch(e){ return ''; }
+}
+
+function setWordsCount(justAdded){
+  const n = allWords().length;
+  const el = document.getElementById('words-count');
+  if(justAdded && WORD_MILESTONES.includes(n)) el.innerHTML = `🎉 ${n} מילים! <bdi lang="de">Wunderbar!</bdi>`;
+  else if(justAdded) el.textContent = n === 1 ? 'המילה הראשונה במילון! 🎉' : `נוספה! כבר ${n} מילים במילון שלך`;
+  else el.textContent = !n ? '' : n === 1 ? 'מילה אחת במילון שלך' : `${n} מילים במילון שלך`;
+}
+
+function renderWords(){
+  const words = allWords();
+  const search = document.getElementById('words-search');
+  const q = normWord(search.value.trim());
+  const shown = q ? words.filter(w => normWord(w.de).includes(q) || normWord(w.he).includes(q)) : words;
+  const canSay = 'speechSynthesis' in window;
+  search.hidden = words.length < 6;
+  document.getElementById('words-list').innerHTML = shown.map(w => `
+    <li class="word-item${w.id === freshWordId ? ' fresh' : ''}" data-word="${escapeHTML(w.id)}">
+      ${canSay ? '<button type="button" class="w-say" aria-label="להשמיע">🔊</button>' : ''}
+      <div class="w-txt"><span class="w-de" dir="ltr" lang="de">${escapeHTML(w.de)}</span><span class="w-he">${escapeHTML(w.he)}</span><span class="w-at">${formatWordDate(w.at)}</span></div>
+      <button type="button" class="w-del" aria-label="למחוק">✕</button>
+    </li>`).join('');
+  freshWordId = null;
+  document.getElementById('words-empty').textContent =
+    !words.length ? 'המילון עוד ריק. המילה הראשונה מחכה לך 🙂' : !shown.length ? 'אין במילון מילה כזאת (עדיין)' : '';
+  document.getElementById('words-status').textContent = !words.length ? '' :
+    !wordsPending.length ? '✓ הכל מגובה' : wordsSyncing ? 'בשמירה…' : 'נשמר בטלפון. יגובה ברגע שיהיה אינטרנט';
+}
+
+async function syncWords(){
+  if(wordsSyncing) return;
+  wordsSyncing = true;
+  const sending = wordsPending.slice();
+  let ok = false;
+  try {
+    const res = sending.length
+      ? await fetch(WORDS_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ops: sending }) })
+      : await fetch(WORDS_API);
+    const data = await res.json();
+    if(res.ok && Array.isArray(data.words)){
+      wordsSaved = data.words;
+      wordsPending = wordsPending.filter(op => !sending.includes(op));
+      writeStore(WORDS_KEY, wordsSaved);
+      writeStore(WORDS_PENDING_KEY, wordsPending);
+      ok = true;
+    }
+  } catch(e){}
+  wordsSyncing = false;
+  renderWords();
+  if(!document.getElementById('words-count').textContent) setWordsCount(false);
+  if(ok && wordsPending.length) syncWords();
+}
+
+function sayWord(text){
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'de-DE';
+    const voice = speechSynthesis.getVoices().find(v => /^de([-_]|$)/i.test(v.lang));
+    if(voice) u.voice = voice;
+    u.rate = 0.9;
+    speechSynthesis.speak(u);
+  } catch(e){}
+}
+
+function openWords(pt, done){
+  document.getElementById('words-search').value = '';
+  setWordsCount(false);
+  renderWords();
+  openView(document.getElementById('words-view'), pt, done);
+  syncWords();
+}
+
+document.getElementById('words-open-btn').addEventListener('click', (e) => openWords(tapPoint(e)));
+document.getElementById('words-back-btn').addEventListener('click', () => closeView(document.getElementById('words-view')));
+document.getElementById('words-search').addEventListener('input', renderWords);
+document.getElementById('word-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const deInput = document.getElementById('word-de');
+  const heInput = document.getElementById('word-he');
+  const de = deInput.value.trim();
+  const he = heInput.value.trim();
+  if(!de || !he) return;
+  const known = allWords().find(w => normWord(w.de) === normWord(de));
+  if(known){
+    document.getElementById('words-count').innerHTML = `<bdi lang="de">${escapeHTML(known.de)}</bdi> כבר במילון: ${escapeHTML(known.he)}`;
+    return;
+  }
+  const word = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), de, he, at: new Date().toISOString() };
+  wordsPending.push({ op: 'add', word });
+  writeStore(WORDS_PENDING_KEY, wordsPending);
+  freshWordId = word.id;
+  deInput.value = '';
+  heInput.value = '';
+  document.getElementById('words-search').value = '';
+  if(document.activeElement) document.activeElement.blur();
+  setWordsCount(true);
+  const r = e.submitter ? e.submitter.getBoundingClientRect() : null;
+  if(r) burstConfetti(r.left + r.width / 2, r.top + r.height / 2);
+  renderWords();
+  syncWords();
+});
+document.getElementById('words-list').addEventListener('click', (e) => {
+  const item = e.target.closest('[data-word]');
+  const w = item && allWords().find(x => x.id === item.dataset.word);
+  if(!w) return;
+  if(e.target.closest('.w-say')) sayWord(w.de);
+  else if(e.target.closest('.w-del') && confirm(`למחוק את "${w.de}" מהמילון?`)){
+    wordsPending.push({ op: 'del', id: w.id });
+    writeStore(WORDS_PENDING_KEY, wordsPending);
+    setWordsCount(false);
+    renderWords();
+    syncWords();
+  }
+});
+if(wordsPending.length) syncWords();
 
 function hidePace(){
   const pace = document.getElementById('pace-view');

@@ -39,7 +39,7 @@ async function notify(env, text) {
 function corsHeaders() {
   return {
     'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
 }
@@ -409,6 +409,126 @@ async function handleVisit(request, env) {
   return done();
 }
 
+// ── Roni's SOS menu: a Telegram message every time she taps a number in it ──
+
+const SOS_TARGETS = {
+  alon: 'אלון',
+  '112': 'מוקד החירום האירופי (112)',
+  police: 'משטרה (133)',
+  ambulance: 'אמבולנס (144)',
+  fire: 'מכבי אש (122)',
+};
+const SOS_MAX_PER_HOUR = 30;
+let sosHourStart = 0;
+let sosHourCount = 0;
+
+function viennaTime() {
+  try {
+    return new Date().toLocaleTimeString('he-IL', { timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit' });
+  } catch (e) {
+    return new Date().toISOString().slice(11, 16) + ' UTC';
+  }
+}
+
+async function handleSos(request, env) {
+  const done = () => new Response(null, { status: 204, headers: corsHeaders() });
+  if (request.headers.get('Origin') !== ALLOWED_ORIGIN) return done();
+  let body = {};
+  try {
+    const raw = await request.text();
+    if (raw.length > 500) return done();
+    body = JSON.parse(raw);
+  } catch (e) {
+    return done();
+  }
+  const target = SOS_TARGETS[body.to];
+  if (!target) return done();
+
+  const now = Date.now();
+  if (now - sosHourStart > 60 * 60 * 1000) { sosHourStart = now; sosHourCount = 0; }
+  if (sosHourCount >= SOS_MAX_PER_HOUR) return done();
+  sosHourCount++;
+
+  const cf = request.cf || {};
+  const place = [cf.city, cf.country].filter(Boolean).join(', ') || 'לא ידוע';
+  await notify(env, [
+    '🆘 רוני לחצה על SOS',
+    `מתקשרת ל: ${target}`,
+    `השעה באוסטריה: ${viennaTime()}`,
+    `מיקום משוער (לפי האינטרנט): ${place}`,
+  ].join('\n'));
+  return done();
+}
+
+// ── Roni's German dictionary: the words she learned, kept in roni/words.json ──
+
+const WORDS_PATH = 'roni/words.json';
+const WORDS_MAX = 5000;
+const WORD_SAVES_PER_HOUR = 120;
+let wordsHourStart = 0;
+let wordsHourCount = 0;
+
+async function readWords(env) {
+  const file = await getFile(env, WORDS_PATH);
+  if (!file) return { sha: null, words: [] };
+  const data = JSON.parse(base64ToUtf8(file.contentBase64));
+  return { sha: file.sha, words: Array.isArray(data.words) ? data.words : [] };
+}
+
+function cleanWord(w) {
+  if (!w || typeof w !== 'object') return null;
+  const id = typeof w.id === 'string' && /^[a-z0-9]{4,30}$/.test(w.id) ? w.id : null;
+  const de = typeof w.de === 'string' ? w.de.trim().slice(0, 80) : '';
+  const he = typeof w.he === 'string' ? w.he.trim().slice(0, 200) : '';
+  if (!id || !de || !he) return null;
+  const at = typeof w.at === 'string' && !isNaN(Date.parse(w.at)) ? new Date(w.at).toISOString() : new Date().toISOString();
+  return { id, de, he, at };
+}
+
+async function handleWords(request, env) {
+  if (request.headers.get('Origin') !== ALLOWED_ORIGIN) return json({ ok: false, error: 'forbidden' }, 403);
+  try {
+    if (request.method === 'GET') {
+      const { words } = await readWords(env);
+      return json({ ok: true, words });
+    }
+
+    const now = Date.now();
+    if (now - wordsHourStart > 60 * 60 * 1000) { wordsHourStart = now; wordsHourCount = 0; }
+    if (wordsHourCount >= WORD_SAVES_PER_HOUR) return json({ ok: false, error: 'too many saves' }, 429);
+    wordsHourCount++;
+
+    const raw = await request.text();
+    if (raw.length > 50000) return json({ ok: false, error: 'too large' }, 413);
+    const body = JSON.parse(raw);
+    const ops = Array.isArray(body.ops) ? body.ops.slice(0, 50) : [];
+
+    // Adds carry their own id, so sending the same change twice is harmless.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { sha, words } = await readWords(env);
+      let list = words.slice();
+      for (const op of ops) {
+        if (op && op.op === 'add') {
+          const w = cleanWord(op.word);
+          if (w && !list.some((x) => x.id === w.id) && list.length < WORDS_MAX) list.push(w);
+        } else if (op && op.op === 'del' && typeof op.id === 'string') {
+          list = list.filter((x) => x.id !== op.id);
+        }
+      }
+      if (JSON.stringify(list) === JSON.stringify(words)) return json({ ok: true, words });
+      const added = list.length > words.length;
+      const res = await putFile(env, WORDS_PATH, utf8ToBase64(JSON.stringify({ words: list }, null, 2) + '\n'),
+        added ? 'Roni learned a new German word' : "Update Roni's German words", sha);
+      if (res.ok) return json({ ok: true, words: list });
+      if (res.status !== 409 && res.status !== 422) throw new Error(`save failed: ${res.status}`);
+    }
+    throw new Error('save failed after retries');
+  } catch (e) {
+    console.error('words:', e.message);
+    return json({ ok: false, error: 'server error' }, 500);
+  }
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
@@ -420,6 +540,12 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/visit') {
       return handleVisit(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/sos') {
+      return handleSos(request, env);
+    }
+    if ((request.method === 'GET' || request.method === 'POST') && url.pathname === '/words') {
+      return handleWords(request, env);
     }
     return json({ ok: false, error: 'not found' }, 404);
   },

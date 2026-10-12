@@ -2,6 +2,7 @@
 # The gift pages themselves stay crawlable so search engines can read their "noindex" tag.
 User-agent: *
 Disallow: /roni/content.json
+Disallow: /roni/words.json
 Disallow: /roni/media/
 Disallow: /roni/worker/
 Disallow: /galit/content.json
