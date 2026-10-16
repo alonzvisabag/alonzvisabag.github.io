@@ -792,9 +792,13 @@
     slidesBox.innerHTML = SLIDES.map(sl => sl.end
         ? `<div class="st-slide"><div class="big">🍐</div><h4>${sl.title}</h4><p>${sl.text}</p><a class="st-ig" href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener">לעמוד באינסטגרם ↗</a><a class="st-milon" href="milon.html">לכל המילים במילון ←</a></div>`
         : `<div class="st-slide"><img data-story="${sl.img}" alt="${sl.title}"><h4>${sl.title}</h4>${sl.text ? `<p>${sl.text}</p>` : ''}</div>`).join('');
-    let cur = 0;
+    let cur = 0, seenSlides = 0;
     function showSlide(i) {
         cur = i;
+        if (i + 1 > seenSlides) {
+            seenSlides = i + 1;
+            window.visitNote && visitNote(`ראו בסטוריז ${seenSlides} מתוך ${SLIDES.length} שקפים`, 'stories');
+        }
         stories.querySelectorAll('.st-slide').forEach((el, k) => el.classList.toggle('on', k === i));
         bars.querySelectorAll('span').forEach((b, k) => {
             b.classList.remove('now');

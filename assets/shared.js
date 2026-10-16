@@ -112,7 +112,11 @@
         cvBtn = document.querySelector('[data-cv]');
 
         const autoTimer = seen ? null : setTimeout(launch, 2000);
-        skipBtn.addEventListener('click', () => { clearTimeout(autoTimer); launch(); });
+        skipBtn.addEventListener('click', () => {
+            if (!sent) window.visitNote && visitNote('דילגו על הפתיחה של הקורות חיים');
+            clearTimeout(autoTimer);
+            launch();
+        });
 
         // tapping outside a reopened CV folds it up and flies it back
         overlay.addEventListener('click', (e) => {

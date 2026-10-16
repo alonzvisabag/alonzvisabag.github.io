@@ -318,7 +318,8 @@ async function handleContribute(request, env) {
   return json({ ok: true });
 }
 
-// ── Visit alerts: a Telegram message when someone opens the portfolio (sent by assets/visit.js) ──
+// ── Visit alerts: a Telegram message when someone opens the portfolio, and a summary of what they did
+// when they leave (both sent by assets/visit.js) ──
 
 const PAGE_NAMES = {
   '/': 'העמוד הראשי',
@@ -356,6 +357,24 @@ function sourceOf(ref, ua) {
   if (/(^|\.)bing\.com$/.test(host)) return 'בינג';
   if (host === 'alonzvisabag.github.io') return 'מתוך האתר';
   return host;
+}
+
+// The internet provider, or the company when it has its own network (big offices often do)
+function networkOf(cf) {
+  return typeof cf.asOrganization === 'string' && cf.asOrganization ? cf.asOrganization.slice(0, 80) : '';
+}
+
+function ago(ms) {
+  const min = Math.round((Date.now() - ms) / 60000);
+  if (min < 60) return min <= 1 ? 'לפני דקה' : `לפני ${min} דקות`;
+  const h = Math.round(min / 60);
+  if (h < 24) return h === 1 ? 'לפני שעה' : `לפני ${h} שעות`;
+  const d = Math.round(h / 24);
+  return d === 1 ? 'אתמול' : d === 2 ? 'לפני יומיים' : `לפני ${d} ימים`;
+}
+
+function visitCode(v) {
+  return typeof v === 'string' && /^[A-Z2-9]{4}$/.test(v) ? v : '';
 }
 
 function deviceOf(ua) {
@@ -397,15 +416,90 @@ async function handleVisit(request, env) {
 
   const cf = request.cf || {};
   const place = [cf.city, cf.country].filter(Boolean).join(', ') || 'לא ידוע';
+  const code = visitCode(body.id);
   const lines = [
-    '👀 מישהו נכנס לאתר',
+    code ? `👀 מישהו נכנס לאתר · ביקור ${code}` : '👀 מישהו נכנס לאתר',
     `עמוד: ${PAGE_NAMES[page] || page}`,
     `הגיע מ: ${sourceOf(ref, ua)}`,
     `מכשיר: ${deviceOf(ua)}`,
     `מיקום משוער: ${place}`,
   ];
+  if (networkOf(cf)) lines.push(`רשת: ${networkOf(cf)}`);
+  const times = Math.floor(Number(body.n) || 0);
+  const last = Number(body.last) || 0;
+  if (times === 1) lines.push('ביקור ראשון מהמכשיר הזה');
+  else if (times > 1 && times < 10000) lines.push(`ביקור מספר ${times} מהמכשיר הזה` + (last > 0 && last < Date.now() ? ` (הקודם ${ago(last)})` : ''));
   if (tag) lines.push(`תגית בקישור: ${tag}`);
+  if (code) lines.push('סיכום של מה שעשו יגיע כשייצאו מהאתר');
   await notify(env, lines.join('\n'));
+  return done();
+}
+
+const SUMMARY_MAX_PER_HOUR = 60;
+const SUMMARY_MAX_PER_VISIT = 6;
+const summariesSent = new Map();
+let summaryHourStart = 0;
+let summaryHourCount = 0;
+
+const clip = (v, n) => (typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, n) : '');
+
+function duration(sec) {
+  sec = Math.max(0, Math.round(Number(sec) || 0));
+  if (sec < 60) return `${sec} שניות`;
+  const m = Math.floor(sec / 60), s = sec % 60;
+  if (m >= 60) return `${Math.floor(m / 60)} שעות ו-${m % 60} דקות`;
+  return `${m}:${String(s).padStart(2, '0')} דקות`;
+}
+
+async function handleVisitSummary(request, env) {
+  const done = () => new Response(null, { status: 204, headers: corsHeaders() });
+  if (request.headers.get('Origin') !== ALLOWED_ORIGIN) return done();
+  const ua = request.headers.get('User-Agent') || '';
+  if (!ua || BOT_UA.test(ua)) return done();
+  let body = {};
+  try {
+    const raw = await request.text();
+    if (raw.length > 12000) return done();
+    body = JSON.parse(raw);
+  } catch (e) {
+    return done();
+  }
+  const code = visitCode(body.id);
+  if (!code) return done();
+
+  const now = Date.now();
+  if (now - summaryHourStart > 60 * 60 * 1000) { summaryHourStart = now; summaryHourCount = 0; }
+  if (summaryHourCount >= SUMMARY_MAX_PER_HOUR) return done();
+  const sentForVisit = summariesSent.get(code) || 0;
+  if (sentForVisit >= SUMMARY_MAX_PER_VISIT) return done();
+  summaryHourCount++;
+  summariesSent.set(code, sentForVisit + 1);
+  if (summariesSent.size > 500) summariesSent.clear();
+
+  const cf = request.cf || {};
+  const place = [cf.city, cf.country].filter(Boolean).join(', ') || 'לא ידוע';
+  const pages = (Array.isArray(body.pages) ? body.pages : []).slice(-30).map((p) => {
+    const path = clip(p && p.p, 200) || '/';
+    const depth = Math.max(0, Math.min(100, Math.round(Number(p && p.d) || 0)));
+    return `• ${PAGE_NAMES[path] || path} · ${duration(p && p.s)} · גללו ${depth >= 95 ? 'עד הסוף' : depth + '%'}`;
+  });
+  const notes = (Array.isArray(body.notes) ? body.notes : []).slice(0, 40).map((n) => clip(n, 320)).filter(Boolean);
+  const searches = (Array.isArray(body.q) ? body.q : []).slice(0, 15).map((q) => clip(q, 60)).filter(Boolean);
+  const tag = clip(body.from, 40).replace(/[^\w\u0590-\u05ff-]/g, '');
+
+  const lines = [
+    body.update ? `📋 עוד מהביקור ${code}` : `📋 סיכום ביקור ${code}`,
+    `הגיע מ: ${sourceOf(clip(body.ref, 500), ua)} · ${deviceOf(ua)} · ${place}`,
+  ];
+  if (networkOf(cf)) lines.push(`רשת: ${networkOf(cf)}`);
+  if (tag) lines.push(`תגית בקישור: ${tag}`);
+  lines.push(`זמן באתר: ${duration(body.total)}`);
+  if (pages.length) lines.push('', 'עמודים:', ...pages);
+  lines.push('', 'מה עשו:', ...(notes.length ? notes.map((n) => `• ${n}`) : ['• רק הסתכלו, בלי ללחוץ על כלום']));
+  if (searches.length) lines.push('', `חיפשו במילון: ${searches.join(', ')}`);
+  let text = lines.join('\n');
+  if (text.length > 3800) text = text.slice(0, 3800) + '…';
+  await notify(env, text);
   return done();
 }
 
@@ -540,6 +634,9 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/visit') {
       return handleVisit(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/visit-summary') {
+      return handleVisitSummary(request, env);
     }
     if (request.method === 'POST' && url.pathname === '/sos') {
       return handleSos(request, env);

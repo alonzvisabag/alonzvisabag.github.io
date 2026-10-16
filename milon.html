@@ -396,7 +396,7 @@
             verdict.innerHTML = `<b>״${safe}״</b> עוד לא באוסף. רוצים להציע אותה?<br><button class="btn" type="button" data-suggest>להציע את ״${safe}״ ✉️</button>`;
         }
     }
-    q.addEventListener('input', filter);
+    q.addEventListener('input', () => { filter(); window.visitSearch && visitSearch(q.value); });
     verdict.addEventListener('click', (e) => { if (e.target.closest('[data-suggest]')) suggest(q.value.trim()); });
 
     // a random word: clears the search, jumps to it and shows its card

@@ -68,7 +68,11 @@
         }
 
         function step() {
-            if (next >= CHAT.length) { allBtn.hidden = true; return; }
+            if (next >= CHAT.length) {
+                allBtn.hidden = true;
+                window.visitNote && visitNote('נשארו עד שהשיחה הגיעה להודעה האחרונה');
+                return;
+            }
             const [from, html] = CHAT[next];
             if (from === 'alon') {
                 setTyping(true);
@@ -91,6 +95,7 @@
         function start() {
             if (started) return;
             started = true;
+            window.visitNote && visitNote('גללו עד השיחה (מכתב הפנייה)');
             if (matchMedia('(prefers-reduced-motion: reduce)').matches) showAll();
             else step();
         }
@@ -115,6 +120,7 @@
             if (!text) { box.focus(); return; }
             if (!started || next < CHAT.length) { started = true; showAll(); }
             add('you', escape(text).replace(/\n/g, '<br>'));
+            window.visitNote && visitNote(`כתבו לך בצ׳אט: "${text.slice(0, 250)}"`, 'chat-msg');
             box.value = '';
             setTyping(true);
             setTimeout(() => {
