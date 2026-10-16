@@ -432,7 +432,57 @@ async function handleVisit(request, env) {
   if (tag) lines.push(`תגית בקישור: ${tag}`);
   if (code) lines.push('סיכום של מה שעשו יגיע כשייצאו מהאתר');
   await notify(env, lines.join('\n'));
+  await logVisit(env, {
+    type: 'arrive', code, page: PAGE_NAMES[page] || page, source: sourceOf(ref, ua), referrer: ref, device: deviceOf(ua),
+    place, network: networkOf(cf), tag, visitNo: times || null, lastVisit: last > 0 ? new Date(last).toISOString() : null,
+  });
   return done();
+}
+
+// ── Visit log: every arrival and summary is also kept as a line of JSON in a private repository
+// (one file a day), so Alon and Claude can look back later. Off until the VISITS_TOKEN secret is set:
+// a GitHub token for that repository only, with Contents read and write. No IP addresses are kept.
+const VISITS_REPO = 'alonzvisabag/site-visits';
+
+function israelDay() {
+  try { return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jerusalem' }); }
+  catch (e) { return new Date().toISOString().slice(0, 10); }
+}
+
+async function logVisit(env, entry) {
+  const token = (env.VISITS_TOKEN || '').trim();
+  if (!token) return;
+  const url = `https://api.github.com/repos/${VISITS_REPO}/contents/visits/${israelDay()}.jsonl`;
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/vnd.github+json',
+    'User-Agent': 'roni-contribute-worker',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  const line = JSON.stringify({ at: new Date().toISOString(), ...entry }) + '\n';
+  try {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const cur = await fetch(url, { headers });
+      let sha = null;
+      let text = '';
+      if (cur.ok) {
+        const data = await cur.json();
+        sha = data.sha;
+        text = base64ToUtf8(data.content || '');
+      } else if (cur.status !== 404) {
+        throw new Error(`read failed: ${cur.status}`);
+      }
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `${entry.type} ${entry.code || ''}`.trim(), content: utf8ToBase64(text + line), ...(sha ? { sha } : {}) }),
+      });
+      if (res.ok) return;
+      if (res.status !== 409 && res.status !== 422) throw new Error(`write failed: ${res.status}`);
+    }
+  } catch (e) {
+    console.error('visit log:', e.message);
+  }
 }
 
 const SUMMARY_MAX_PER_HOUR = 60;
@@ -500,6 +550,14 @@ async function handleVisitSummary(request, env) {
   let text = lines.join('\n');
   if (text.length > 3800) text = text.slice(0, 3800) + '…';
   await notify(env, text);
+  await logVisit(env, {
+    type: body.update ? 'more' : 'summary', code, source: sourceOf(clip(body.ref, 500), ua), device: deviceOf(ua), place,
+    network: networkOf(cf), tag, seconds: Math.round(Number(body.total) || 0),
+    pages: (Array.isArray(body.pages) ? body.pages : []).slice(-30).map((p) => ({
+      page: PAGE_NAMES[clip(p && p.p, 200)] || clip(p && p.p, 200), seconds: Math.round(Number(p && p.s) || 0), scrolled: Math.round(Number(p && p.d) || 0),
+    })),
+    did: notes, searched: searches,
+  });
   return done();
 }
 
