@@ -523,6 +523,21 @@
     font-weight:400;
   }
 
+  .capsule-body .text-link{
+    display:inline-block;
+    margin-top:4px;
+    padding:8px 16px;
+    border-radius:999px;
+    border:2px solid #ffd6c9;
+    background:#fff3ee;
+    color:var(--coral-dark);
+    font-weight:700;
+    font-size:0.95rem;
+    line-height:1.4;
+    text-decoration:none;
+  }
+  .capsule-body .text-link:active{ transform:scale(.96); }
+
   .capsule-body .item{
     display:flex;
     flex-direction:column;
@@ -1772,9 +1787,22 @@ function mediaTag(media){
   const ext = media.split('.').pop().toLowerCase();
   const src = escapeHTML('media/' + encodeURIComponent(media));
   if(AUDIO_EXT.includes(ext)) return `<audio controls src="${src}"></audio>`;
-  if(VIDEO_EXT.includes(ext)) return `<video controls src="${src}"></video>`;
+  // The #t makes iPhones show the first frame instead of a black box.
+  if(VIDEO_EXT.includes(ext)) return `<video controls playsinline preload="metadata" src="${src}#t=0.1"></video>`;
   if(IMG_EXT.includes(ext))   return `<img data-src="${src}" alt="">`;
   return `<a href="${src}" target="_blank" rel="noopener noreferrer">פתחי קובץ</a>`;
+}
+
+// A link a friend pasted (a playlist, a song) becomes a button she can tap; the rest stays plain text.
+function linkify(text){
+  return String(text).split(/(https?:\/\/[^\s]+)/g).map((part, i) => {
+    if(i % 2 === 0) return escapeHTML(part);
+    const url = part.replace(/[).,!?"'״]+$/, '');
+    const label = /spotify\.com/i.test(url) ? '🎧 פתחי בספוטיפיי'
+      : /youtu\.?be/i.test(url) ? '▶️ פתחי ביוטיוב'
+      : '🔗 פתחי את הקישור';
+    return `<a class="text-link" href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer">${label}</a>${escapeHTML(part.slice(url.length))}`;
+  }).join('');
 }
 
 const FAV_KEY = 'roni_favorites';
@@ -1798,7 +1826,7 @@ function itemHTML(item, key){
     parts.push(`<div class="item-from">מ${escapeHTML(item.from)}</div>`);
   }
   if(item.text){
-    parts.push(`<div class="letter-text">${escapeHTML(item.text)}</div>`);
+    parts.push(`<div class="letter-text">${linkify(item.text)}</div>`);
   }
   if(item.media){
     parts.push(mediaTag(item.media));
