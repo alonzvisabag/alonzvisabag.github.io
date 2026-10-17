@@ -1807,8 +1807,17 @@ function linkify(text){
 
 const FAV_KEY = 'roni_favorites';
 
+// The voice recordings that were .m4a are now .mp3 (iPhones showed "Error" on them); a heart saved on the old name still counts.
+const RENAMED_RECORDINGS = new Set(['a2-3-1787040232359', 'a2-4-1787218905535', 'a3-1-1787826836024', 'custom-1787040084018', 'custom-1787827023982',
+  'friend-1787827026983-6eyh-1790089553514', 'friend-1787827026983-6eyh-1790519034570', 'x-3-1790088668120', 'x-6-1787349490162']);
+
 function getFavorites(){
-  try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); }
+  try {
+    return JSON.parse(localStorage.getItem(FAV_KEY) || '[]').map(k => {
+      const m = /\|(.+)\.m4a$/.exec(k);
+      return m && RENAMED_RECORDINGS.has(m[1]) ? k.slice(0, -4) + '.mp3' : k;
+    });
+  }
   catch(e){ return []; }
 }
 function saveFavorites(list){
