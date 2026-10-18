@@ -7,6 +7,10 @@
 
     document.body.insertAdjacentHTML('afterbegin', `
         <div id="cv-overlay"${seen ? ' style="display:none"' : ''}>
+            <a id="cv-download" href="alon-zvi-sabag-cv.pdf" download="Alon-Zvi-Sabag-CV.pdf">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                קחו אותי הביתה (PDF)
+            </a>
             <div id="cv-paper">
                 <div id="cv-lens"></div>
                 <img src="cv.jpg.jpg" alt="קורות חיים - אלון צבי סבג" id="cv-img">
@@ -24,6 +28,7 @@
     const paper   = document.getElementById('cv-paper');
     const plane   = document.getElementById('paper-plane');
     const skipBtn = document.getElementById('cv-skip');
+    const download = document.getElementById('cv-download');
     let cvBtn = null;
 
     let sent = seen;      // the plane has landed once (or on an earlier visit)
@@ -41,6 +46,7 @@
         flying = true;
         if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
             overlay.style.display = 'none';
+            overlay.classList.remove('open');
             land();
             return;
         }
@@ -62,6 +68,7 @@
         const sx = pr.left + pr.width / 2, sy = pr.top + pr.height / 2;
         const ex = br.left + br.width / 2, ey = br.top + br.height / 2;
         overlay.style.display = 'none';
+        overlay.classList.remove('open');
 
         const c1x = sx - innerWidth * 0.3,  c1y = sy + innerHeight * 0.25;
         const c2x = ex - innerWidth * 0.15, c2y = ey + innerHeight * 0.5;
@@ -120,7 +127,7 @@
 
         // tapping outside a reopened CV folds it up and flies it back
         overlay.addEventListener('click', (e) => {
-            if (sent && !paper.contains(e.target) && e.target !== skipBtn) launch();
+            if (sent && !paper.contains(e.target) && e.target !== skipBtn && !download.contains(e.target)) launch();
         });
 
         document.querySelectorAll('[data-cv]').forEach(btn => btn.addEventListener('click', (e) => {
@@ -129,6 +136,7 @@
             paper.getAnimations().forEach(a => a.cancel());
             overlay.style.transition = 'none';
             overlay.style.backgroundColor = '';
+            overlay.classList.add('open');
             overlay.style.display = 'flex';
         }));
 

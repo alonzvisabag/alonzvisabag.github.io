@@ -90,6 +90,7 @@
 
     const CLICKS = [
         ['[data-cv]', 'פתחו את הקורות חיים'],
+        ['a[download]', 'הורידו את הקורות חיים (PDF) 📄'],
         ['[data-stories]', 'פתחו את הסטוריז של מילים של מבוגרים'],
         ['a[href^="mailto:"]', 'לחצו על המייל ✉️'],
         ['[data-email] button', 'העתיקו את כתובת המייל 📋'],
@@ -115,7 +116,7 @@
             window.visitNote('פתחו מילים: ' + wordsTapped.join(', '), 'words');
         }
         // moving to another page of the site isn't leaving; a new tab takes the visit code along
-        if (el.tagName === 'A' && el.href) {
+        if (el.tagName === 'A' && el.href && !el.hasAttribute('download')) {
             const url = new URL(el.href, location.href);
             if (url.origin === location.origin && url.pathname !== location.pathname) {
                 if (el.target === '_blank') { url.searchParams.set('v', st.id); el.href = url.href; }
