@@ -272,11 +272,11 @@
         .t-site .label p { font-size: 0.85rem; margin-top: 2px; }
 
         .t-veg { grid-column: span 2; background: #e6f0d8; border-color: #d3e3bf; }
-        .t-veg .marquee { position: absolute; bottom: 18px; left: 0; right: 0; overflow: hidden; direction: ltr; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
-        .t-veg .track { display: flex; gap: 12px; width: max-content; animation: slide 38s linear infinite; }
-        .t-veg:hover .track { animation-play-state: paused; }
-        .t-veg .track img { height: 104px; border-radius: 12px; background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
-        @keyframes slide { to { transform: translateX(-50%); } }
+        .t-veg .marquee { position: absolute; bottom: 4px; left: 0; right: 0; padding: 0 0 14px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; cursor: grab; direction: ltr; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+        .t-veg .marquee::-webkit-scrollbar { display: none; }
+        .t-veg .marquee.dragging { cursor: grabbing; }
+        .t-veg .track { display: flex; gap: 12px; width: max-content; }
+        .t-veg .track img { height: 104px; border-radius: 12px; background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.1); -webkit-user-drag: none; user-select: none; }
 
         .t-word { background: #ffe14d; border-color: #f2d23a; cursor: pointer; text-align: center; justify-content: center; align-items: center; }
         .t-word .k { color: #6b5d12; }
@@ -513,7 +513,7 @@
         @media (prefers-reduced-motion: reduce) {
             .hero h1 .line > span { translate: 0 0; transition: none; }
             .hero .ctas, .contact-line { opacity: 1; transition: none; }
-            .t-veg .track, .status i, .seal .ring, .wb-track, .t-words .watch i { animation: none; }
+            .status i, .seal .ring, .wb-track, .t-words .watch i { animation: none; }
             .sticker { transition: none; }
         }
     </style>
@@ -557,13 +557,13 @@
 </div>
 
 <section class="work" id="work">
-    <div class="sec-head" data-reveal><h2>עבודות נבחרות</h2></div>
+    <div class="sec-head" data-reveal><h2>דה בסט אוף דה בסט</h2></div>
     <div class="bento">
         <a class="tile t-words" href="https://www.instagram.com/milim_shel_mevugarim/" target="_blank" rel="noopener" data-cursor="לצפייה ▶" data-stories data-reveal>
             <div class="txt">
                 <div class="k">עמוד אינסטגרם</div>
                 <h3>מילים של מבוגרים</h3>
-                <p>מעל 100 מונחים שאספתי בפינצטה, והיד עוד נטויה.</p>
+                <p>מעל 300 מונחים שאספתי בפינצטה, והיד עוד נטויה.</p>
                 <span class="watch"><i></i>לצפייה בפוסטים</span>
             </div>
             <img class="logo" data-src="לוגו.png" alt="מילים של מבוגרים">
@@ -779,12 +779,12 @@
 
     // ── stories: the Instagram posts, one by one ──
     const SLIDES = [
-        { img: 'לוגו.png', title: 'מילים של מבוגרים', text: 'עמוד אינסטגרם הומוריסטי. מעל 100 מונחים שאספתי בפינצטה, והיד עוד נטויה.' },
+        { img: 'לוגו.png', title: 'מילים של מבוגרים', text: 'עמוד אינסטגרם הומוריסטי. מעל 300 מונחים שאספתי בפינצטה, והיד עוד נטויה.' },
         { img: 'שְׁלָּאַגֵר.png', title: 'שלאגר' },
         { img: 'לא אַיִּי אַיִּי אַיִּי.png', title: 'לא איי איי איי' },
         { img: "פְרִיגִ'ידֵר.png", title: 'פריג׳ידר' },
         { img: 'עֲרוּץ הַחַיִּים הַטּוֹבִים.png', title: 'ערוץ החיים הטובים' },
-        { end: true, title: 'רוצים עוד?', text: 'עוד המון מילים של מבוגרים מחכות בעמוד.' }
+        { end: true, title: 'רוצים עוד?', text: 'יש המון בעמוד.' }
     ];
     const stories = document.getElementById('stories');
     const bars = stories.querySelector('.st-bars');
@@ -844,9 +844,54 @@
     const ringChars = [...ring.dataset.text];
     ring.innerHTML = ringChars.map((c, i) => `<span style="transform: rotate(${-i * 360 / ringChars.length}deg)">${c}</span>`).join('');
 
-    // the vegetables run in an endless strip (the set is doubled so the loop is seamless)
+    // the vegetables drift by in an endless strip that can also be swiped (or dragged with a mouse);
+    // it picks up again a moment after letting go. The set is there three times so it can loop both ways.
     const track = document.getElementById('veg-track');
-    track.insertAdjacentHTML('beforeend', track.innerHTML.replace(/alt="[^"]*"/g, 'alt="" aria-hidden="true"'));
+    const copy = track.innerHTML.replace(/alt="[^"]*"/g, 'alt="" aria-hidden="true"');
+    track.insertAdjacentHTML('beforeend', copy + copy);
+    track.querySelectorAll('img').forEach(img => { img.draggable = false; });
+    (function () {
+        const strip = track.parentElement;
+        const canHover = matchMedia('(hover: hover)').matches;
+        let pos = 0, seen = 0, last = 0, holdUntil = 0, hovering = false, visible = true, swiped = false;
+        const hold = (ms) => { holdUntil = Math.max(holdUntil, performance.now() + ms); };
+        function frame(now) {
+            const dt = last ? Math.min(now - last, 100) : 0;
+            last = now;
+            const set = track.scrollWidth / 3;
+            const cur = strip.scrollLeft;
+            if (Math.abs(cur - seen) > 1) {            // moved by a finger, a wheel or a mouse
+                pos = cur;
+                hold(1800);
+                if (!swiped) { swiped = true; window.visitNote && visitNote('גללו בגלריה של פרי וירק'); }
+            }
+            if (set > 0 && now > holdUntil && !(canHover && hovering)) {
+                if (visible && !still) pos += dt * set / 38000;
+                if (pos >= 2 * set) pos -= set;
+                else if (pos < set) pos += set;
+                strip.scrollLeft = pos;
+            }
+            seen = strip.scrollLeft;
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+        strip.addEventListener('mouseenter', () => { hovering = true; });
+        strip.addEventListener('mouseleave', () => { hovering = false; });
+        strip.addEventListener('touchstart', () => hold(1800), { passive: true });
+        strip.addEventListener('pointerdown', (e) => {
+            if (e.pointerType !== 'mouse') return;
+            e.preventDefault();
+            const x0 = e.clientX, s0 = strip.scrollLeft;
+            strip.classList.add('dragging');
+            strip.setPointerCapture(e.pointerId);
+            const move = (ev) => { strip.scrollLeft = s0 - (ev.clientX - x0); hold(1800); };
+            const up = () => { strip.classList.remove('dragging'); strip.removeEventListener('pointermove', move); };
+            strip.addEventListener('pointermove', move);
+            strip.addEventListener('pointerup', up, { once: true });
+            strip.addEventListener('pointercancel', up, { once: true });
+        });
+        if ('IntersectionObserver' in window) new IntersectionObserver(([en]) => { visible = en.isIntersecting; }).observe(strip);
+    })();
 
     // a random "old people's word", and another one on every tap
     const wordEl = document.getElementById('word');
