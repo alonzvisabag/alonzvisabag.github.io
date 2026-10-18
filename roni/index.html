@@ -615,7 +615,7 @@
     margin-bottom:16px;
   }
 
-  #memory-open-btn, #nickname-open-btn, #bored-open-btn, #hungry-open-btn, #words-open-btn{
+  #memory-open-btn, #nickname-open-btn, #bored-open-btn, #hungry-open-btn, #words-open-btn, #countdown-open-btn{
     padding:12px 26px;
   }
 
@@ -981,6 +981,124 @@
   #words-status{ text-align:center; font-size:.78rem; color:var(--muted); margin-top:12px; }
   .view-enter #words-card{ animation:rise-in .6s cubic-bezier(.22,1,.36,1) .15s backwards; }
   .view-enter #words-shelf{ animation:rise-in .6s cubic-bezier(.22,1,.36,1) .25s backwards; }
+
+  /* ── countdowns: events she's waiting for, with a live timer ── */
+  #next-countdown{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:calc(100% - 40px);
+    max-width:600px;
+    margin:-14px auto 26px;
+    padding:12px 16px;
+    border:none;
+    border-radius:16px;
+    background:var(--card);
+    box-shadow:0 6px 20px rgba(0,0,0,0.06);
+    font-family:'Rubik', sans-serif;
+    color:var(--ink);
+    text-align:right;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #next-countdown[hidden]{ display:none; }
+  #next-countdown .nc-emoji{ font-size:1.8rem; flex:none; }
+  #next-countdown .nc-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  #next-countdown .nc-name{ font-size:.85rem; font-weight:700; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #next-countdown .nc-left{ font-size:1.15rem; font-weight:800; color:var(--coral-dark); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  #next-countdown .nc-more{ flex:none; font-size:1.1rem; font-weight:700; color:var(--muted); }
+  #site.site-enter #next-countdown{ animation:rise-in .8s cubic-bezier(.22,1,.36,1) 1.7s backwards; }
+
+  #countdown-view{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:60;
+    overflow-y:auto;
+    background:linear-gradient(120deg, var(--bg1), var(--bg2) 45%, var(--bg3) 100%);
+    padding:20px 20px calc(100px + env(safe-area-inset-bottom, 0px));
+  }
+  #countdown-view.show{ display:block; }
+  #countdown-card, #countdown-list{ max-width:460px; margin:0 auto; }
+  #countdown-card{
+    background:var(--card);
+    border-radius:20px;
+    padding:22px 18px;
+    box-shadow:0 12px 40px rgba(0,0,0,0.08);
+  }
+  #countdown-form label{ display:block; font-size:.9rem; font-weight:700; margin-bottom:12px; }
+  #countdown-form label small{ font-weight:500; color:var(--muted); }
+  #countdown-form input[type="text"], #countdown-form input[type="date"], #countdown-form input[type="time"]{
+    display:block;
+    width:100%;
+    min-height:48px;
+    margin-top:6px;
+    font:400 1.05rem 'Rubik', sans-serif;
+    padding:11px 14px;
+    border-radius:12px;
+    border:2px solid var(--border);
+    background:#fff;
+    color:var(--ink);
+    outline:none;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  #countdown-form input:focus{ border-color:var(--coral); }
+  .cd-when{ display:flex; gap:10px; }
+  .cd-when label{ flex:1; min-width:0; }
+  .cd-emojis{ display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 16px; }
+  .cd-emojis button{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    border:2px solid var(--border);
+    background:#fff;
+    font-size:1.3rem;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .cd-emojis button[aria-pressed="true"]{ border-color:var(--coral); background:#fff3ee; transform:scale(1.08); }
+  #countdown-form .btn{ display:block; width:100%; }
+  #countdown-msg{ text-align:center; font-size:.9rem; font-weight:700; min-height:1.3em; margin-top:12px; color:var(--mint-dark); }
+  #countdown-msg.err{ color:#c94a3a; }
+  .cd-item{
+    position:relative;
+    margin-top:14px;
+    padding:18px 16px 16px;
+    border-radius:20px;
+    background:var(--card);
+    box-shadow:0 8px 26px rgba(0,0,0,0.07);
+    text-align:center;
+  }
+  .cd-item.fresh{ animation:rise-in .5s cubic-bezier(.22,1,.36,1); }
+  .cd-item .cd-emoji{ font-size:2.2rem; line-height:1.1; }
+  .cd-item h3{ font-size:1.2rem; font-weight:800; margin-top:4px; overflow-wrap:anywhere; }
+  .cd-item .cd-date{ font-size:.85rem; color:var(--muted); margin-top:2px; }
+  .cd-timer{ display:flex; justify-content:center; gap:8px; margin-top:14px; direction:rtl; }
+  .cd-unit{ min-width:62px; padding:8px 4px; border-radius:14px; background:linear-gradient(135deg, var(--coral), var(--sun)); color:#fff; }
+  .cd-unit b{ display:block; font-size:1.6rem; font-weight:800; line-height:1.1; font-variant-numeric:tabular-nums; }
+  .cd-unit span{ font-size:.72rem; font-weight:700; opacity:.9; }
+  .cd-today{ margin-top:14px; font-size:1.3rem; font-weight:800; color:var(--coral-dark); }
+  .cd-del{
+    position:absolute;
+    top:10px;
+    left:10px;
+    width:34px;
+    height:34px;
+    border:none;
+    border-radius:50%;
+    background:none;
+    color:var(--muted);
+    font-size:1rem;
+    cursor:pointer;
+  }
+  .cd-item.past{ opacity:.6; padding:12px 16px; }
+  .cd-item.past .cd-emoji{ font-size:1.5rem; }
+  .cd-item.past h3{ font-size:1rem; }
+  #countdown-past-title{ text-align:center; font-size:.85rem; font-weight:700; color:var(--muted); margin:26px 0 0; }
+  #countdown-empty{ text-align:center; color:var(--muted); line-height:1.6; margin-top:22px; }
+  .view-enter #countdown-card{ animation:rise-in .6s cubic-bezier(.22,1,.36,1) .15s backwards; }
+  .view-enter #countdown-list{ animation:rise-in .6s cubic-bezier(.22,1,.36,1) .25s backwards; }
 
   #pace-view{
     display:none;
@@ -1354,6 +1472,10 @@
     .hungry-step.step-in,
     .view-enter #words-card,
     .view-enter #words-shelf,
+    .view-enter #countdown-card,
+    .view-enter #countdown-list,
+    .cd-item.fresh,
+    #site.site-enter #next-countdown,
     .word-item.fresh,
     #pace-view.show #pace-card{ animation-name:fade-in; }
     #reveal-photo.pop{ animation:fade-in .6s ease forwards; transform:none; }
@@ -1515,6 +1637,12 @@
     </div>
   </div>
 
+  <button id="next-countdown" type="button" aria-label="לכל הספירות לאחור" hidden>
+    <span class="nc-emoji"></span>
+    <span class="nc-txt"><span class="nc-name"></span><span class="nc-left"></span></span>
+    <span class="nc-more" aria-hidden="true">←</span>
+  </button>
+
   <div id="install-tip" hidden>
     <img src="app-icon-180.png" alt="">
     <div class="it-text">
@@ -1533,6 +1661,7 @@
       <button id="bored-open-btn" class="btn">משעמם לי<br>מה לעשות?</button>
       <button id="hungry-open-btn" class="btn">אני רעבה<br>מה לאכול?</button>
       <button id="words-open-btn" class="btn">למדתי מילה<br>חדשה בגרמנית</button>
+      <button id="countdown-open-btn" class="btn">ספירה<br>לאחור</button>
     </div>
     <button id="reset-link">נעלי הכל מחדש</button>
   </footer>
@@ -1615,6 +1744,32 @@
     <div id="hungry-match" class="hungry-step" hidden></div>
     <article id="hungry-recipe" class="hungry-step" hidden></article>
   </div>
+</div>
+
+<div id="countdown-view">
+  <div class="view-header">
+    <button id="countdown-back-btn" class="back-btn" type="button" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <h2>ספירה לאחור</h2>
+  </div>
+  <div id="countdown-card">
+    <form id="countdown-form" autocomplete="off" novalidate>
+      <label>מה מחכה לך?
+        <input type="text" id="cd-name" maxlength="60" placeholder="הטיסה הביתה" required>
+      </label>
+      <div class="cd-when">
+        <label>באיזה יום?
+          <input type="date" id="cd-date" required>
+        </label>
+        <label>באיזו שעה? <small>(לא חובה)</small>
+          <input type="time" id="cd-time">
+        </label>
+      </div>
+      <div class="cd-emojis" id="cd-emojis" role="group" aria-label="סמל לאירוע"></div>
+      <button class="btn" type="submit">להתחיל לספור</button>
+    </form>
+    <p id="countdown-msg" aria-live="polite"></p>
+  </div>
+  <div id="countdown-list"></div>
 </div>
 
 <div id="words-view">
@@ -3168,6 +3323,155 @@ document.getElementById('words-list').addEventListener('click', (e) => {
   }
 });
 if(wordsPending.length) syncWords();
+
+// ── Countdowns: events she's waiting for, with a live timer. Kept on her phone; the nearest one also
+// shows on the home screen. An event with no time counts down to the start of its day, and "is today" all day.
+const COUNTDOWN_KEY = 'roni-countdowns';
+const CD_EMOJIS = ['✈️', '🏠', '❤️', '🎂', '🎉', '📚', '🎓', '🎁', '🌍', '⭐'];
+let countdowns = readStore(COUNTDOWN_KEY).filter(ev => ev && ev.id && ev.name && /^\d{4}-\d{2}-\d{2}$/.test(ev.date));
+let cdEmoji = CD_EMOJIS[0];
+let freshCountdown = null;
+
+const pad2 = (n) => String(n).padStart(2, '0');
+const todayISO = () => { const t = new Date(); return `${t.getFullYear()}-${pad2(t.getMonth() + 1)}-${pad2(t.getDate())}`; };
+function cdTarget(ev){
+  const [y, m, d] = ev.date.split('-').map(Number);
+  const [hh, mm] = ev.time ? ev.time.split(':').map(Number) : [0, 0];
+  return new Date(y, m - 1, d, hh, mm).getTime();
+}
+function cdDayEnd(ev){
+  const [y, m, d] = ev.date.split('-').map(Number);
+  return new Date(y, m - 1, d + 1).getTime();
+}
+function cdState(ev, now){
+  if(now < cdTarget(ev)) return 'ahead';
+  return now < cdDayEnd(ev) ? 'now' : 'past';
+}
+function cdDateText(ev){
+  const d = new Date(cdTarget(ev));
+  const opts = { weekday: 'long', day: 'numeric', month: 'long' };
+  if(d.getFullYear() !== new Date().getFullYear()) opts.year = 'numeric';
+  return d.toLocaleDateString('he-IL', opts) + (ev.time ? ' · ' + ev.time : '');
+}
+function cdParts(ms){
+  const s = Math.max(0, Math.floor(ms / 1000));
+  return { d: Math.floor(s / 86400), h: Math.floor(s / 3600) % 24, m: Math.floor(s / 60) % 60, s: s % 60 };
+}
+const cdEmojiOf = (ev) => CD_EMOJIS.includes(ev.emoji) ? ev.emoji : CD_EMOJIS[0];
+const cdNowText = (ev) => ev.time ? 'זה קורה עכשיו! 🎉' : 'זה היום! 🎉';
+
+function renderCountdowns(){
+  const now = Date.now();
+  const sorted = countdowns.slice().sort((a, b) => cdTarget(a) - cdTarget(b));
+  const upcoming = sorted.filter(ev => cdState(ev, now) !== 'past');
+  const past = sorted.filter(ev => cdState(ev, now) === 'past').reverse();
+  const del = '<button class="cd-del" type="button" aria-label="למחוק">✕</button>';
+  document.getElementById('countdown-list').innerHTML =
+    upcoming.map(ev => `
+      <div class="cd-item${ev.id === freshCountdown ? ' fresh' : ''}" data-cd="${escapeHTML(ev.id)}" data-state="${cdState(ev, now)}">
+        ${del}
+        <div class="cd-emoji">${cdEmojiOf(ev)}</div>
+        <h3>${escapeHTML(ev.name)}</h3>
+        <div class="cd-date">${escapeHTML(cdDateText(ev))}</div>
+        <div class="cd-timer" data-timer></div>
+      </div>`).join('') +
+    (past.length ? '<p id="countdown-past-title">כבר היו</p>' + past.map(ev => `
+      <div class="cd-item past" data-cd="${escapeHTML(ev.id)}" data-state="past">
+        ${del}
+        <div class="cd-emoji">${cdEmojiOf(ev)}</div>
+        <h3>${escapeHTML(ev.name)}</h3>
+        <div class="cd-date">${escapeHTML(cdDateText(ev))}</div>
+      </div>`).join('') : '') +
+    (countdowns.length ? '' : '<p id="countdown-empty">עוד אין כאן ספירות.<br>מה הדבר הבא שאת מחכה לו? 🙂</p>');
+  freshCountdown = null;
+  tickCountdowns();
+}
+
+function tickCountdowns(){
+  const now = Date.now();
+  const byId = new Map(countdowns.map(ev => [ev.id, ev]));
+  for(const item of document.querySelectorAll('#countdown-list .cd-item[data-state]:not(.past)')){
+    const ev = byId.get(item.dataset.cd);
+    if(!ev) continue;
+    const state = cdState(ev, now);
+    if(state !== item.dataset.state){ renderCountdowns(); return; }
+    const box = item.querySelector('[data-timer]');
+    if(state === 'now'){ box.innerHTML = `<div class="cd-today">${cdNowText(ev)}</div>`; continue; }
+    const p = cdParts(cdTarget(ev) - now);
+    box.innerHTML = [[p.d, p.d === 1 ? 'יום' : 'ימים'], [p.h, p.h === 1 ? 'שעה' : 'שעות'], [p.m, p.m === 1 ? 'דקה' : 'דקות'], [p.s, p.s === 1 ? 'שנייה' : 'שניות']]
+      .map(([n, label]) => `<div class="cd-unit"><b>${n}</b><span>${label}</span></div>`).join('');
+  }
+  // the nearest one, on the home screen
+  const next = countdowns.filter(ev => cdState(ev, now) !== 'past').sort((a, b) => cdTarget(a) - cdTarget(b))[0];
+  const card = document.getElementById('next-countdown');
+  card.hidden = !next;
+  if(!next) return;
+  card.querySelector('.nc-emoji').textContent = cdEmojiOf(next);
+  card.querySelector('.nc-name').textContent = next.name;
+  const p = cdParts(cdTarget(next) - now);
+  card.querySelector('.nc-left').textContent = cdState(next, now) === 'now' ? cdNowText(next)
+    : (p.d ? `עוד ${p.d} ${p.d === 1 ? 'יום' : 'ימים'} · ` : 'עוד ') + `${pad2(p.h)}:${pad2(p.m)}:${pad2(p.s)}`;
+}
+
+function setCountdownMsg(text, isError){
+  const el = document.getElementById('countdown-msg');
+  el.textContent = text;
+  el.classList.toggle('err', !!isError);
+}
+
+document.getElementById('cd-emojis').innerHTML = CD_EMOJIS.map(e =>
+  `<button type="button" data-emoji="${e}" aria-pressed="${e === cdEmoji}">${e}</button>`).join('');
+document.getElementById('cd-emojis').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-emoji]');
+  if(!b) return;
+  cdEmoji = b.dataset.emoji;
+  document.querySelectorAll('#cd-emojis button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+});
+
+function openCountdown(pt, done){
+  document.getElementById('cd-date').min = todayISO();
+  setCountdownMsg('');
+  renderCountdowns();
+  openView(document.getElementById('countdown-view'), pt, done);
+}
+
+document.getElementById('countdown-open-btn').addEventListener('click', (e) => openCountdown(tapPoint(e)));
+document.getElementById('next-countdown').addEventListener('click', (e) => openCountdown(tapPoint(e)));
+document.getElementById('countdown-back-btn').addEventListener('click', () => closeView(document.getElementById('countdown-view')));
+document.getElementById('countdown-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const nameEl = document.getElementById('cd-name');
+  const dateEl = document.getElementById('cd-date');
+  const timeEl = document.getElementById('cd-time');
+  const name = nameEl.value.trim();
+  if(!name) return setCountdownMsg('איך נקרא לזה?', true);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(dateEl.value)) return setCountdownMsg('צריך לבחור יום', true);
+  const ev = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, date: dateEl.value, time: timeEl.value || '', emoji: cdEmoji };
+  const now = Date.now();
+  if(cdState(ev, now) === 'past' || (ev.time && cdTarget(ev) <= now)) return setCountdownMsg('הזמן הזה כבר עבר 🙂', true);
+  countdowns.push(ev);
+  writeStore(COUNTDOWN_KEY, countdowns);
+  freshCountdown = ev.id;
+  nameEl.value = '';
+  dateEl.value = '';
+  timeEl.value = '';
+  if(document.activeElement) document.activeElement.blur();
+  setCountdownMsg('יאללה, מתחילים לספור ⏳');
+  const r = e.submitter ? e.submitter.getBoundingClientRect() : null;
+  if(r) burstConfetti(r.left + r.width / 2, r.top + r.height / 2);
+  renderCountdowns();
+});
+document.getElementById('countdown-list').addEventListener('click', (e) => {
+  const item = e.target.closest('[data-cd]');
+  if(!item || !e.target.closest('.cd-del')) return;
+  const ev = countdowns.find(x => x.id === item.dataset.cd);
+  if(!ev || !confirm(`למחוק את "${ev.name}"?`)) return;
+  countdowns = countdowns.filter(x => x.id !== ev.id);
+  writeStore(COUNTDOWN_KEY, countdowns);
+  renderCountdowns();
+});
+tickCountdowns();
+setInterval(() => { if(!document.hidden) tickCountdowns(); }, 1000);
 
 function hidePace(){
   const pace = document.getElementById('pace-view');
