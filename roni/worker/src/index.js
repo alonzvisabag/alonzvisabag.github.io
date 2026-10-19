@@ -612,24 +612,19 @@ async function handleSos(request, env) {
   return done();
 }
 
-// ── Roni's German dictionary: the words she learned, kept in roni/words.json ──
+// ── Lists Roni keeps on her site, backed up here so every phone and every way of opening the site
+// (Safari, the home-screen icon, a link inside WhatsApp) shows the same: her German words and her
+// countdowns. The page sends a batch of changes: { ops: [{ op: 'add', <field>: {...} }, { op: 'del', id }] }.
+// Adds carry their own id, so sending the same change twice is harmless.
 
-const WORDS_PATH = 'roni/words.json';
-const WORDS_MAX = 5000;
-const WORD_SAVES_PER_HOUR = 120;
-let wordsHourStart = 0;
-let wordsHourCount = 0;
-
-async function readWords(env) {
-  const file = await getFile(env, WORDS_PATH);
-  if (!file) return { sha: null, words: [] };
-  const data = JSON.parse(base64ToUtf8(file.contentBase64));
-  return { sha: file.sha, words: Array.isArray(data.words) ? data.words : [] };
-}
+const LIST_SAVES_PER_HOUR = 120;
+let listHourStart = 0;
+let listHourCount = 0;
+const cleanId = (v) => (typeof v === 'string' && /^[a-z0-9]{4,30}$/.test(v) ? v : null);
 
 function cleanWord(w) {
   if (!w || typeof w !== 'object') return null;
-  const id = typeof w.id === 'string' && /^[a-z0-9]{4,30}$/.test(w.id) ? w.id : null;
+  const id = cleanId(w.id);
   const de = typeof w.de === 'string' ? w.de.trim().slice(0, 80) : '';
   const he = typeof w.he === 'string' ? w.he.trim().slice(0, 200) : '';
   if (!id || !de || !he) return null;
@@ -637,46 +632,69 @@ function cleanWord(w) {
   return { id, de, he, at };
 }
 
-async function handleWords(request, env) {
+function cleanCountdown(c) {
+  if (!c || typeof c !== 'object') return null;
+  const id = cleanId(c.id);
+  const name = typeof c.name === 'string' ? c.name.trim().slice(0, 60) : '';
+  const date = typeof c.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(c.date) ? c.date : '';
+  const time = typeof c.time === 'string' && /^\d{2}:\d{2}$/.test(c.time) ? c.time : '';
+  const emoji = typeof c.emoji === 'string' ? c.emoji.slice(0, 8) : '';
+  if (!id || !name || !date) return null;
+  return { id, name, date, time, emoji };
+}
+
+const LISTS = {
+  '/words': { path: 'roni/words.json', key: 'words', field: 'word', max: 5000, clean: cleanWord,
+    added: 'Roni learned a new German word', changed: "Update Roni's German words" },
+  '/countdowns': { path: 'roni/countdowns.json', key: 'countdowns', field: 'item', max: 300, clean: cleanCountdown,
+    added: 'Roni added a countdown', changed: "Update Roni's countdowns" },
+};
+
+async function readList(env, list) {
+  const file = await getFile(env, list.path);
+  if (!file) return { sha: null, items: [] };
+  const data = JSON.parse(base64ToUtf8(file.contentBase64));
+  return { sha: file.sha, items: Array.isArray(data[list.key]) ? data[list.key] : [] };
+}
+
+async function handleList(request, env, list) {
   if (request.headers.get('Origin') !== ALLOWED_ORIGIN) return json({ ok: false, error: 'forbidden' }, 403);
   try {
     if (request.method === 'GET') {
-      const { words } = await readWords(env);
-      return json({ ok: true, words });
+      const { items } = await readList(env, list);
+      return json({ ok: true, [list.key]: items });
     }
 
     const now = Date.now();
-    if (now - wordsHourStart > 60 * 60 * 1000) { wordsHourStart = now; wordsHourCount = 0; }
-    if (wordsHourCount >= WORD_SAVES_PER_HOUR) return json({ ok: false, error: 'too many saves' }, 429);
-    wordsHourCount++;
+    if (now - listHourStart > 60 * 60 * 1000) { listHourStart = now; listHourCount = 0; }
+    if (listHourCount >= LIST_SAVES_PER_HOUR) return json({ ok: false, error: 'too many saves' }, 429);
+    listHourCount++;
 
     const raw = await request.text();
     if (raw.length > 50000) return json({ ok: false, error: 'too large' }, 413);
     const body = JSON.parse(raw);
     const ops = Array.isArray(body.ops) ? body.ops.slice(0, 50) : [];
 
-    // Adds carry their own id, so sending the same change twice is harmless.
     for (let attempt = 0; attempt < 3; attempt++) {
-      const { sha, words } = await readWords(env);
-      let list = words.slice();
+      const { sha, items } = await readList(env, list);
+      let next = items.slice();
       for (const op of ops) {
         if (op && op.op === 'add') {
-          const w = cleanWord(op.word);
-          if (w && !list.some((x) => x.id === w.id) && list.length < WORDS_MAX) list.push(w);
+          const item = list.clean(op[list.field]);
+          if (item && !next.some((x) => x.id === item.id) && next.length < list.max) next.push(item);
         } else if (op && op.op === 'del' && typeof op.id === 'string') {
-          list = list.filter((x) => x.id !== op.id);
+          next = next.filter((x) => x.id !== op.id);
         }
       }
-      if (JSON.stringify(list) === JSON.stringify(words)) return json({ ok: true, words });
-      const added = list.length > words.length;
-      const res = await putFile(env, WORDS_PATH, utf8ToBase64(JSON.stringify({ words: list }, null, 2) + '\n'),
-        added ? 'Roni learned a new German word' : "Update Roni's German words", sha);
-      if (res.ok) return json({ ok: true, words: list });
+      if (JSON.stringify(next) === JSON.stringify(items)) return json({ ok: true, [list.key]: items });
+      const res = await putFile(env, list.path, utf8ToBase64(JSON.stringify({ [list.key]: next }, null, 2) + '\n'),
+        next.length > items.length ? list.added : list.changed, sha);
+      if (res.ok) return json({ ok: true, [list.key]: next });
       if (res.status !== 409 && res.status !== 422) throw new Error(`save failed: ${res.status}`);
     }
     throw new Error('save failed after retries');
   } catch (e) {
-    console.error('words:', e.message);
+    console.error(`${list.key}:`, e.message);
     return json({ ok: false, error: 'server error' }, 500);
   }
 }
@@ -699,8 +717,8 @@ export default {
     if (request.method === 'POST' && url.pathname === '/sos') {
       return handleSos(request, env);
     }
-    if ((request.method === 'GET' || request.method === 'POST') && url.pathname === '/words') {
-      return handleWords(request, env);
+    if ((request.method === 'GET' || request.method === 'POST') && LISTS[url.pathname]) {
+      return handleList(request, env, LISTS[url.pathname]);
     }
     return json({ ok: false, error: 'not found' }, 404);
   },

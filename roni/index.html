@@ -1097,6 +1097,7 @@
   .cd-item.past h3{ font-size:1rem; }
   #countdown-past-title{ text-align:center; font-size:.85rem; font-weight:700; color:var(--muted); margin:26px 0 0; }
   #countdown-empty{ text-align:center; color:var(--muted); line-height:1.6; margin-top:22px; }
+  #countdown-status{ text-align:center; font-size:.78rem; color:var(--muted); margin-top:16px; }
   .view-enter #countdown-card{ animation:rise-in .6s cubic-bezier(.22,1,.36,1) .15s backwards; }
   .view-enter #countdown-list{ animation:rise-in .6s cubic-bezier(.22,1,.36,1) .25s backwards; }
 
@@ -3324,13 +3325,73 @@ document.getElementById('words-list').addEventListener('click', (e) => {
 });
 if(wordsPending.length) syncWords();
 
-// ── Countdowns: events she's waiting for, with a live timer. Kept on her phone; the nearest one also
-// shows on the home screen. An event with no time counts down to the start of its day, and "is today" all day.
-const COUNTDOWN_KEY = 'roni-countdowns';
+// ── Countdowns: events she's waiting for, with a live timer; the nearest one also shows on the home screen.
+// An event with no time counts down to the start of its day, and "is today" all day.
+// Saved on her phone right away and backed up through the worker (roni/countdowns.json): on an iPhone, Safari,
+// the home-screen icon and a link opened inside WhatsApp each keep their own storage, so without the backup a
+// countdown made in one of them looked deleted in the others. Same scheme as the German words above.
+const COUNTDOWN_API = 'https://roni-contribute.alonzvisabag.workers.dev/countdowns';
+const CD_SAVED_KEY = 'roni-countdowns-saved';
+const CD_PENDING_KEY = 'roni-countdowns-pending';
 const CD_EMOJIS = ['✈️', '🏠', '❤️', '🎂', '🎉', '📚', '🎓', '🎁', '🌍', '⭐'];
-let countdowns = readStore(COUNTDOWN_KEY).filter(ev => ev && ev.id && ev.name && /^\d{4}-\d{2}-\d{2}$/.test(ev.date));
+const validCountdown = (ev) => !!(ev && ev.id && ev.name && /^\d{4}-\d{2}-\d{2}$/.test(ev.date));
+let cdSaved = readStore(CD_SAVED_KEY);
+let cdPending = readStore(CD_PENDING_KEY);
+// countdowns made before the backup existed lived only in this browser; send them up once
+try {
+  const before = readStore('roni-countdowns').filter(validCountdown);
+  if(before.length){
+    before.forEach(ev => cdPending.push({ op: 'add', item: ev }));
+    writeStore(CD_PENDING_KEY, cdPending);
+  }
+  localStorage.removeItem('roni-countdowns');
+} catch(e){}
+let countdowns = [];
+let cdSyncing = false;
 let cdEmoji = CD_EMOJIS[0];
 let freshCountdown = null;
+
+function mergeCountdowns(){
+  let list = cdSaved.filter(validCountdown);
+  for(const op of cdPending){
+    if(op.op === 'add' && validCountdown(op.item) && !list.some(x => x.id === op.item.id)) list.push(op.item);
+    if(op.op === 'del') list = list.filter(x => x.id !== op.id);
+  }
+  countdowns = list;
+}
+mergeCountdowns();
+
+async function syncCountdowns(){
+  if(cdSyncing) return;
+  cdSyncing = true;
+  const sending = cdPending.slice();
+  let ok = false;
+  try {
+    const res = sending.length
+      ? await fetch(COUNTDOWN_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ops: sending }) })
+      : await fetch(COUNTDOWN_API);
+    const data = await res.json();
+    if(res.ok && Array.isArray(data.countdowns)){
+      cdSaved = data.countdowns;
+      cdPending = cdPending.filter(op => !sending.includes(op));
+      writeStore(CD_SAVED_KEY, cdSaved);
+      writeStore(CD_PENDING_KEY, cdPending);
+      ok = true;
+    }
+  } catch(e){}
+  cdSyncing = false;
+  mergeCountdowns();
+  if(document.getElementById('countdown-view').classList.contains('show')) renderCountdowns();
+  else tickCountdowns();
+  if(ok && cdPending.length) syncCountdowns();
+}
+
+function changeCountdowns(op){
+  cdPending.push(op);
+  writeStore(CD_PENDING_KEY, cdPending);
+  mergeCountdowns();
+  syncCountdowns();
+}
 
 const pad2 = (n) => String(n).padStart(2, '0');
 const todayISO = () => { const t = new Date(); return `${t.getFullYear()}-${pad2(t.getMonth() + 1)}-${pad2(t.getDate())}`; };
@@ -3382,7 +3443,8 @@ function renderCountdowns(){
         <h3>${escapeHTML(ev.name)}</h3>
         <div class="cd-date">${escapeHTML(cdDateText(ev))}</div>
       </div>`).join('') : '') +
-    (countdowns.length ? '' : '<p id="countdown-empty">עוד אין כאן ספירות.<br>מה הדבר הבא שאת מחכה לו? 🙂</p>');
+    (countdowns.length ? '' : '<p id="countdown-empty">עוד אין כאן ספירות.<br>מה הדבר הבא שאת מחכה לו? 🙂</p>') +
+    (countdowns.length ? `<p id="countdown-status">${!cdPending.length ? '✓ הכל מגובה' : cdSyncing ? 'בשמירה…' : 'נשמר בטלפון. יגובה ברגע שיהיה אינטרנט'}</p>` : '');
   freshCountdown = null;
   tickCountdowns();
 }
@@ -3433,6 +3495,7 @@ function openCountdown(pt, done){
   setCountdownMsg('');
   renderCountdowns();
   openView(document.getElementById('countdown-view'), pt, done);
+  syncCountdowns();
 }
 
 document.getElementById('countdown-open-btn').addEventListener('click', (e) => openCountdown(tapPoint(e)));
@@ -3449,9 +3512,8 @@ document.getElementById('countdown-form').addEventListener('submit', (e) => {
   const ev = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, date: dateEl.value, time: timeEl.value || '', emoji: cdEmoji };
   const now = Date.now();
   if(cdState(ev, now) === 'past' || (ev.time && cdTarget(ev) <= now)) return setCountdownMsg('הזמן הזה כבר עבר 🙂', true);
-  countdowns.push(ev);
-  writeStore(COUNTDOWN_KEY, countdowns);
   freshCountdown = ev.id;
+  changeCountdowns({ op: 'add', item: ev });
   nameEl.value = '';
   dateEl.value = '';
   timeEl.value = '';
@@ -3466,11 +3528,11 @@ document.getElementById('countdown-list').addEventListener('click', (e) => {
   if(!item || !e.target.closest('.cd-del')) return;
   const ev = countdowns.find(x => x.id === item.dataset.cd);
   if(!ev || !confirm(`למחוק את "${ev.name}"?`)) return;
-  countdowns = countdowns.filter(x => x.id !== ev.id);
-  writeStore(COUNTDOWN_KEY, countdowns);
+  changeCountdowns({ op: 'del', id: ev.id });
   renderCountdowns();
 });
 tickCountdowns();
+syncCountdowns();
 setInterval(() => { if(!document.hidden) tickCountdowns(); }, 1000);
 
 function hidePace(){
