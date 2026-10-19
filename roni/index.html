@@ -10,6 +10,7 @@
 <link rel="apple-touch-icon" href="app-icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#fff3da">
+<script>try{var tv=JSON.parse(localStorage.getItem('roni-theme-vars')||'null');if(tv)for(var k in tv)document.documentElement.style.setProperty(k,tv[k]);}catch(e){}</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="לרונני">
@@ -36,13 +37,21 @@
     --sky:#3fa9dd;
     --sky-dark:#2a8bc0;
     --border:#f0e2d4;
+    /* the palette Roni picks (🎨) overrides these; text colors follow so everything stays readable */
+    --ink-on-bg:#332b2b;
+    --muted-on-bg:#8d7f8a;
+    --accent-on-bg:#e8512f;
+    --field:#fff;
+    --tint:color-mix(in srgb, var(--coral) 9%, var(--card));
+    --soft:color-mix(in srgb, var(--ink) 7%, var(--card));
+    --soft-edge:color-mix(in srgb, var(--ink) 14%, var(--card));
   }
 
   html{ background:var(--bg1); }
 
   body{
     font-family:'Rubik', sans-serif;
-    color:var(--ink);
+    color:var(--ink-on-bg);
     min-height:100vh;
     -webkit-font-smoothing:antialiased;
     background:linear-gradient(120deg, var(--bg1), var(--bg2) 45%, var(--bg3) 100%);
@@ -140,7 +149,7 @@
     border-radius:14px;
     border:2px solid var(--border);
     text-align:center;
-    background:#fff;
+    background:var(--field);
     outline:none;
     transition:border-color .15s;
   }
@@ -483,7 +492,7 @@
     padding:12px;
     border-radius:12px;
     border:none;
-    background:var(--locked-bg, #fdeee0);
+    background:var(--locked-bg, var(--tint));
     color:var(--ink);
     cursor:pointer;
     transition:transform .15s cubic-bezier(.34,1.56,.64,1), background .15s;
@@ -528,8 +537,8 @@
     margin-top:4px;
     padding:8px 16px;
     border-radius:999px;
-    border:2px solid #ffd6c9;
-    background:#fff3ee;
+    border:2px solid color-mix(in srgb, var(--coral) 30%, var(--card));
+    background:var(--tint);
     color:var(--coral-dark);
     font-weight:700;
     font-size:0.95rem;
@@ -830,7 +839,7 @@
     width:100%;
     border-radius:16px;
     border:2px solid var(--border);
-    background:#fff;
+    background:var(--field);
     color:var(--ink);
     font-family:'Rubik', sans-serif;
     text-align:right;
@@ -882,13 +891,13 @@
     display:grid;
     place-items:center;
   }
-  .rc-tip{ background:#fff4dc; border-radius:14px; padding:12px 14px; font-size:.92rem; line-height:1.5; margin-top:6px; }
+  .rc-tip{ background:color-mix(in srgb, var(--sun) 16%, var(--card)); border-radius:14px; padding:12px 14px; font-size:.92rem; line-height:1.5; margin-top:6px; }
   .rc-actions{ display:flex; gap:10px; margin-top:22px; }
   .rc-actions .btn{ flex:1; padding:13px 10px; }
-  .rc-actions .btn.soft{ background:#f3ece4; color:var(--ink); box-shadow:0 6px 0 #e3d6c8; }
+  .rc-actions .btn.soft{ background:var(--soft); color:var(--ink); box-shadow:0 6px 0 var(--soft-edge); }
   .hungry-or{ text-align:center; font-size:.85rem; font-weight:700; color:var(--muted); margin:4px 0 12px; }
-  .pantry-btn{ border-style:dashed; border-color:var(--mint); box-shadow:0 4px 0 #bfeee0; }
-  .pantry-btn:active{ box-shadow:0 1px 0 #bfeee0; }
+  .pantry-btn{ border-style:dashed; border-color:var(--mint); box-shadow:0 4px 0 color-mix(in srgb, var(--mint) 30%, var(--card)); }
+  .pantry-btn:active{ box-shadow:0 1px 0 color-mix(in srgb, var(--mint) 30%, var(--card)); }
   .pantry-group h4{ font-size:.95rem; font-weight:800; color:var(--coral-dark); margin:18px 0 10px; }
   .pantry-chips{ display:flex; flex-wrap:wrap; gap:8px; }
   .chip{
@@ -898,7 +907,7 @@
     padding:9px 14px;
     border-radius:999px;
     border:2px solid var(--border);
-    background:#fff;
+    background:var(--field);
     color:var(--ink);
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
@@ -945,7 +954,7 @@
     padding:12px 14px;
     border-radius:12px;
     border:2px solid var(--border);
-    background:#fff;
+    background:var(--field);
     color:var(--ink);
     outline:none;
     transition:border-color .15s;
@@ -974,7 +983,7 @@
     font-size:1rem;
     -webkit-tap-highlight-color:transparent;
   }
-  .word-item .w-say{ background:#e8f6ff; }
+  .word-item .w-say{ background:color-mix(in srgb, var(--sky) 14%, var(--card)); }
   .word-item .w-del{ background:none; color:var(--muted); }
   .word-item.fresh{ animation:rise-in .5s cubic-bezier(.22,1,.36,1); }
   #words-empty{ text-align:center; color:var(--muted); line-height:1.6; padding:6px 0; }
@@ -1037,7 +1046,7 @@
     padding:11px 14px;
     border-radius:12px;
     border:2px solid var(--border);
-    background:#fff;
+    background:var(--field);
     color:var(--ink);
     outline:none;
     -webkit-appearance:none;
@@ -1052,12 +1061,12 @@
     height:42px;
     border-radius:12px;
     border:2px solid var(--border);
-    background:#fff;
+    background:var(--field);
     font-size:1.3rem;
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
   }
-  .cd-emojis button[aria-pressed="true"]{ border-color:var(--coral); background:#fff3ee; transform:scale(1.08); }
+  .cd-emojis button[aria-pressed="true"]{ border-color:var(--coral); background:var(--tint); transform:scale(1.08); }
   #countdown-form .btn{ display:block; width:100%; }
   #countdown-msg{ text-align:center; font-size:.9rem; font-weight:700; min-height:1.3em; margin-top:12px; color:var(--mint-dark); }
   #countdown-msg.err{ color:#c94a3a; }
@@ -1212,7 +1221,7 @@
     gap:4px;
     padding:4px;
     margin-bottom:18px;
-    background:rgba(255,255,255,0.55);
+    background:color-mix(in srgb, var(--card) 55%, transparent);
     border-radius:16px;
   }
   .vt{
@@ -1243,12 +1252,12 @@
     background:var(--card);
     border-radius:20px;
     padding:18px 20px 10px;
-    box-shadow:0 6px 0 #ffd8cc, 0 10px 24px rgba(0,0,0,0.06);
+    box-shadow:0 6px 0 color-mix(in srgb, var(--coral) 22%, var(--card)), 0 10px 24px rgba(0,0,0,0.06);
   }
   .fav-card .capsule-body{ display:block; padding:0; border-top:none; }
   .fav-context{ font-size:0.78rem; font-weight:700; color:var(--coral-dark); margin-bottom:10px; }
   .fav-empty{ text-align:center; color:var(--muted); padding:36px 20px; font-weight:500; line-height:1.7; }
-  .fav-empty svg{ width:36px; height:36px; fill:#ffc9b8; margin-bottom:6px; }
+  .fav-empty svg{ width:36px; height:36px; fill:color-mix(in srgb, var(--coral) 35%, var(--card)); margin-bottom:6px; }
 
   /* ── PHOTO VIEWER ── */
   #hero-photos .polaroid{ position:relative; cursor:pointer; -webkit-tap-highlight-color:transparent; }
@@ -1485,6 +1494,78 @@
     .shake{ animation:none; }
   }
 
+  /* ── the palette: a tab on the side opens her colors ── */
+  #theme-tab{
+    position:fixed;
+    right:0;
+    top:42%;
+    z-index:50;
+    width:42px;
+    height:50px;
+    border:none;
+    border-radius:16px 0 0 16px;
+    background:var(--card);
+    box-shadow:-4px 6px 18px rgba(0,0,0,0.12);
+    font-size:1.35rem;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:width .2s;
+  }
+  #theme-tab:active{ width:48px; }
+  #theme-panel{
+    position:fixed;
+    inset:0;
+    z-index:56;
+    background:rgba(20,15,20,.32);
+    animation:sos-fade .2s ease;
+  }
+  #theme-panel[hidden]{ display:none; }
+  #theme-panel .tp-inner{
+    position:absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    width:min(310px, 86vw);
+    overflow-y:auto;
+    background:var(--card);
+    color:var(--ink);
+    padding:18px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+    box-shadow:-10px 0 40px rgba(0,0,0,.2);
+    animation:tp-in .32s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes tp-in{ from{ transform:translateX(100%); } }
+  .tp-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .tp-head h2{ font-size:1.3rem; font-weight:800; }
+  .tp-close{ width:36px; height:36px; border:none; border-radius:50%; background:var(--soft); color:var(--ink); font-size:1rem; cursor:pointer; }
+  .tp-label{ font-size:.85rem; font-weight:700; color:var(--muted); margin:16px 0 10px; }
+  .tp-presets{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .tp-preset{
+    padding:0 0 8px;
+    border:2px solid var(--border);
+    border-radius:14px;
+    background:var(--field);
+    color:var(--ink);
+    font:700 .85rem 'Rubik', sans-serif;
+    cursor:pointer;
+    overflow:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tp-preset[aria-pressed="true"]{ border-color:var(--coral); box-shadow:0 0 0 2px var(--coral); }
+  .tp-swatch{ position:relative; display:block; height:58px; margin-bottom:6px; }
+  .tp-swatch i{ position:absolute; left:14px; right:14px; bottom:10px; height:22px; border-radius:7px; box-shadow:0 2px 6px rgba(0,0,0,.15); }
+  .tp-swatch b{ position:absolute; top:10px; right:12px; width:16px; height:16px; border-radius:50%; }
+  .tp-pick{ display:flex; align-items:center; justify-content:space-between; padding:10px 2px; border-bottom:1px dashed var(--border); font-weight:700; }
+  .tp-pick input{ width:54px; height:36px; padding:0; border:2px solid var(--border); border-radius:10px; background:none; cursor:pointer; }
+  .tp-pick input::-webkit-color-swatch-wrapper{ padding:3px; }
+  .tp-pick input::-webkit-color-swatch{ border:none; border-radius:6px; }
+  .tp-reset{ display:block; margin:18px auto 0; border:none; background:none; color:var(--muted); font:600 .85rem 'Rubik', sans-serif; text-decoration:underline; cursor:pointer; }
+
+  /* text inside panels follows the panel color; text right on the background follows the background */
+  #gate-card, .home-card, .capsule, #nickname-card, #bored-card, #hungry-card, #words-card, #words-shelf,
+  #countdown-card, .cd-item, #pace-card, #install-tip, .fav-card, .sos-panel{ color:var(--ink); }
+  header.hero p, #reset-link, #countdown-past-title, #countdown-empty, #countdown-status, .vt, .fav-empty{ color:var(--muted-on-bg); }
+  .love-counter .label{ color:var(--accent-on-bg); }
+
   /* ── SOS: one tap away from the people and numbers that matter, on every screen ── */
   #sos-btn{
     position:fixed;
@@ -1543,16 +1624,16 @@
   @keyframes sos-up{ from{ transform:translateY(40px); opacity:.4; } }
   .sos-grab{ width:44px; height:5px; border-radius:5px; background:var(--border); margin:2px auto 12px; }
   .sos-panel h2{ font-size:1.5rem; font-weight:800; text-align:center; }
-  .sos-sub{ text-align:center; color:var(--muted); font-size:.9rem; margin:2px 0 16px; }
-  .sos-label{ font-size:.85rem; font-weight:700; color:#c1121f; margin:18px 4px 8px; }
+  .sos-sub{ text-align:center; color:var(--muted); font-size:.9rem; margin:2px 0 12px; }
+  .sos-label{ font-size:.85rem; font-weight:700; color:#c1121f; margin:12px 4px 8px; }
   .sos-call{
     display:flex;
     align-items:center;
     gap:12px;
-    padding:13px 14px;
-    margin-bottom:9px;
+    padding:10px 14px;
+    margin-bottom:8px;
     border-radius:16px;
-    background:#fff;
+    background:var(--field);
     border:2px solid var(--border);
     color:var(--ink);
     text-decoration:none;
@@ -1565,9 +1646,18 @@
   .sos-call .who small{ font-weight:400; font-size:.78rem; color:var(--muted); }
   .sos-call .num{ direction:ltr; font-weight:700; font-size:1.05rem; color:var(--muted); }
   .sos-call .dial{ flex:none; width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:var(--mint); color:#fff; font-size:1.05rem; }
-  .sos-call.red{ background:#fff3f2; border-color:#ffc9c5; }
+  .sos-call.red{ background:color-mix(in srgb, #e5383b 9%, var(--field)); border-color:color-mix(in srgb, #e5383b 32%, var(--card)); }
   .sos-call.red .num{ color:#c1121f; font-size:1.25rem; }
   .sos-call.red .dial{ background:#e5383b; }
+  .sos-call .dial.wa{ background:#25d366; }
+  .sos-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+  .sos-call.tile{ flex-direction:column; gap:2px; margin:0; padding:10px 4px; text-align:center; }
+  .sos-call.tile .ic{ width:auto; font-size:1.5rem; }
+  .sos-call.tile .who{ align-items:center; font-size:.95rem; }
+  .sos-call.tile .num{ font-size:1.2rem; }
+  .sos-call .dial.wa svg{ width:22px; height:22px; }
+  .sos-plain{ text-align:center; font-size:.82rem; color:var(--muted); margin:2px 0 4px; }
+  .sos-plain a{ color:var(--ink); font-weight:700; text-decoration:underline; padding:4px 2px; }
   .sos-close{
     display:block;
     width:100%;
@@ -1575,7 +1665,7 @@
     padding:13px;
     border:none;
     border-radius:14px;
-    background:#f3ece4;
+    background:var(--soft);
     color:var(--ink);
     font:700 1rem 'Rubik', sans-serif;
     cursor:pointer;
@@ -1614,6 +1704,23 @@
 </div>
 
 <div id="site">
+  <button id="theme-tab" type="button" aria-label="הצבעים שלי" aria-controls="theme-panel" aria-expanded="false">🎨</button>
+  <div id="theme-panel" hidden>
+    <div class="tp-inner" role="dialog" aria-modal="true" aria-labelledby="tp-title">
+      <div class="tp-head">
+        <h2 id="tp-title">הצבעים שלי</h2>
+        <button class="tp-close" type="button" aria-label="סגירה">✕</button>
+      </div>
+      <p class="tp-label">ערכות מוכנות</p>
+      <div class="tp-presets" id="tp-presets"></div>
+      <p class="tp-label">או לבחור לבד</p>
+      <label class="tp-pick"><span>רקע</span><input type="color" id="tp-bg"></label>
+      <label class="tp-pick"><span>חלונות</span><input type="color" id="tp-card"></label>
+      <label class="tp-pick"><span>כפתורים</span><input type="color" id="tp-accent"></label>
+      <button class="tp-reset" type="button">לחזור לצבעים המקוריים</button>
+    </div>
+  </div>
+
   <header class="hero">
     <div id="hero-photos"></div>
     <h1 id="site-title">לרונני</h1>
@@ -1817,12 +1924,15 @@
     <div class="sos-grab"></div>
     <h2 id="sos-title">צריכה עזרה?</h2>
     <p class="sos-sub">לוחצים ומתקשרים ישר</p>
-    <a class="sos-call" data-sos="alon" href="tel:+972538322416"><span class="ic">❤️</span><span class="who">אלון</span><span class="num">053-8322416</span><span class="dial">📞</span></a>
+    <div id="sos-people"></div>
+    <p class="sos-plain" id="sos-plain"></p>
     <div class="sos-label">חירום באוסטריה</div>
     <a class="sos-call red" data-sos="112" href="tel:112"><span class="ic">🆘</span><span class="who">מוקד חירום אירופי<small>עובד בכל אירופה, גם מקו ישראלי</small></span><span class="num">112</span><span class="dial">📞</span></a>
-    <a class="sos-call red" data-sos="police" href="tel:133"><span class="ic">🚓</span><span class="who">משטרה</span><span class="num">133</span><span class="dial">📞</span></a>
-    <a class="sos-call red" data-sos="ambulance" href="tel:144"><span class="ic">🚑</span><span class="who">אמבולנס</span><span class="num">144</span><span class="dial">📞</span></a>
-    <a class="sos-call red" data-sos="fire" href="tel:122"><span class="ic">🚒</span><span class="who">מכבי אש</span><span class="num">122</span><span class="dial">📞</span></a>
+    <div class="sos-grid">
+      <a class="sos-call red tile" data-sos="police" href="tel:133"><span class="ic">🚓</span><span class="who">משטרה</span><span class="num">133</span></a>
+      <a class="sos-call red tile" data-sos="ambulance" href="tel:144"><span class="ic">🚑</span><span class="who">אמבולנס</span><span class="num">144</span></a>
+      <a class="sos-call red tile" data-sos="fire" href="tel:122"><span class="ic">🚒</span><span class="who">מכבי אש</span><span class="num">122</span></a>
+    </div>
     <button class="sos-close" type="button">סגירה</button>
   </div>
 </div>
@@ -1836,6 +1946,21 @@
   sheet.querySelector('.sos-close').addEventListener('click', close);
   sheet.addEventListener('click', (e) => { if (e.target === sheet) close(); });
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden) close(); });
+
+  // The people closest to her open a WhatsApp chat (one more tap starts the call); with no internet,
+  // the line under them dials a regular call. Numbers are put together here so they don't sit in the page as text.
+  const WA_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 3.2a8.8 8.8 0 0 0-7.6 13.2L3.2 20.8l4.5-1.2A8.8 8.8 0 1 0 12 3.2zm4.4 12.2c-.2.5-1.1 1-1.6 1.1-.4.1-.9.1-1.5-.1-.4-.1-.8-.3-1.4-.5-2.4-1-4-3.5-4.1-3.6-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.2.4-.3.6-.3h.4c.1 0 .3 0 .5.4l.7 1.7c.1.1.1.3 0 .4l-.3.5-.3.4c-.1.1-.2.3-.1.5.2.3.7 1.1 1.4 1.8 1 .9 1.8 1.1 2.1 1.3.2.1.4.1.5-.1l.7-.8c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3.1.1.1.6-.1 1.1z"/></svg>';
+  const PEOPLE = [
+    { key: 'alon', name: 'אלון', ic: '❤️', num: ['053', '832', '2416'] },
+    { key: 'mom', name: 'אמא', ic: '👩', num: ['054', '662', '0759'] },
+    { key: 'dad', name: 'אבא', ic: '👨', num: ['052', '921', '3568'] },
+  ];
+  const intl = (num) => '972' + num.join('').slice(1);
+  document.getElementById('sos-people').innerHTML = PEOPLE.map(p =>
+    `<a class="sos-call" data-sos="${p.key}" href="https://wa.me/${intl(p.num)}" target="_blank" rel="noopener"><span class="ic">${p.ic}</span><span class="who">${p.name}<small>בוואטסאפ</small></span><span class="num">${p.num[0]}-${p.num[1]}${p.num[2]}</span><span class="dial wa">${WA_ICON}</span></a>`
+  ).join('');
+  document.getElementById('sos-plain').innerHTML = 'בלי אינטרנט? שיחה רגילה: ' + PEOPLE.map(p =>
+    `<a data-sos="${p.key}-tel" href="tel:+${intl(p.num)}">${p.name}</a>`).join(' · ');
 
   // Tell Alon on Telegram who she's calling. The call itself never waits for this.
   const ALERT_URL = 'https://roni-contribute.alonzvisabag.workers.dev/sos';
@@ -1862,10 +1987,10 @@ const TYPE_META = {
 };
 
 const ACT_COLORS = [
-  { badge:'var(--coral)', shadow:'#ffd8cc' },
-  { badge:'var(--sky)',   shadow:'#cdeeff' },
-  { badge:'var(--mint)',  shadow:'#c8f3e6' },
-  { badge:'var(--sun)',   shadow:'#ffe9b8' }
+  { badge:'var(--coral)', shadow:'color-mix(in srgb, var(--coral) 26%, var(--card))' },
+  { badge:'var(--sky)',   shadow:'color-mix(in srgb, var(--sky) 26%, var(--card))' },
+  { badge:'var(--mint)',  shadow:'color-mix(in srgb, var(--mint) 24%, var(--card))' },
+  { badge:'var(--sun)',   shadow:'color-mix(in srgb, var(--sun) 30%, var(--card))' }
 ];
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -3534,6 +3659,174 @@ document.getElementById('countdown-list').addEventListener('click', (e) => {
 tickCountdowns();
 syncCountdowns();
 setInterval(() => { if(!document.hidden) tickCountdowns(); }, 1000);
+
+// ── Her colors (🎨): a ready-made set, or her own background, panel and button colors. Text colors are worked
+// out from them so everything stays readable, light text on dark colors and dark text on light ones.
+// Saved on her phone (the little script in <head> paints them before anything shows) and backed up through
+// the worker, so every way of opening the site looks the same.
+const PREFS_API = 'https://roni-contribute.alonzvisabag.workers.dev/prefs';
+const THEME_KEY = 'roni-theme';
+const THEME_VARS_KEY = 'roni-theme-vars';
+const THEMES = {
+  sunset:   { name: 'שקיעה', bg: ['#fff3da', '#ffdff0', '#dff4ff'], card: '#fffefc', accent: '#ff6b4a', accent2: '#ffb703' },
+  sea:      { name: 'ים',     bg: ['#dff4ff', '#e3f8f5', '#ecefff'], card: '#ffffff', accent: '#2a8bc0', accent2: '#3fc1c9' },
+  forest:   { name: 'יער',    bg: ['#ecf5e3', '#f6f2df', '#e2f2e8'], card: '#fffffb', accent: '#3a8d5c', accent2: '#c2b33a' },
+  lavender: { name: 'לבנדר',  bg: ['#f0e8ff', '#ffe8f3', '#e7edff'], card: '#fffdff', accent: '#8a5cd6', accent2: '#e57ab5' },
+  gum:      { name: 'מסטיק',  bg: ['#ffe3ee', '#ffd9ea', '#fff1f7'], card: '#fffafc', accent: '#f0447f', accent2: '#ff9ec4' },
+  vanilla:  { name: 'וניל',   bg: ['#fbf5ea', '#f4eadb', '#fffaf1'], card: '#fffdf8', accent: '#b5793f', accent2: '#dca63e' },
+  night:    { name: 'לילה',   bg: ['#1d1b2e', '#2b2142', '#172238'], card: '#2a2839', accent: '#ff7a59', accent2: '#ffc145' },
+  midnight: { name: 'חצות',   bg: ['#0f1c2e', '#14283f', '#0b1524'], card: '#1b2b42', accent: '#4fc3f7', accent2: '#9b8cff' },
+};
+const THEME_VARS = ['--bg1', '--bg2', '--bg3', '--card', '--ink', '--muted', '--ink-on-bg', '--muted-on-bg', '--accent-on-bg', '--field',
+  '--border', '--coral', '--coral-dark', '--sun', '--sun-dark', '--mint-dark', '--sky-dark'];
+
+const hexRgb = (h) => { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+const rgbHex = (rgb) => '#' + rgb.map(x => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, '0')).join('');
+const mixHex = (a, b, t) => { const A = hexRgb(a), B = hexRgb(b); return rgbHex(A.map((v, i) => v + (B[i] - v) * t)); };
+const luminance = (h) => {
+  const [r, g, b] = hexRgb(h).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+function shiftHue(hex, deg, lightBy = 0){
+  let [r, g, b] = hexRgb(hex).map(v => v / 255);
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2;
+  let h = 0, s = 0;
+  if(max !== min){
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    h /= 6;
+  }
+  h = (h + deg / 360 + 1) % 1;
+  const L = Math.max(0, Math.min(1, l + lightBy));
+  const q = L < 0.5 ? L * (1 + s) : L + s - L * s, p = 2 * L - q;
+  const f = (t) => { t = (t + 1) % 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < 1 / 2 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; };
+  return rgbHex([f(h + 1 / 3), f(h), f(h - 1 / 3)].map(v => v * 255));
+}
+
+const contrast = (a, b) => { const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m); return (x + 0.05) / (y + 0.05); };
+// push a text color toward black or white until it reads clearly on every one of the given backgrounds
+function readable(color, backgrounds, min = 4.5){
+  const worst = (c) => Math.min(...backgrounds.map(bg => contrast(c, bg)));
+  const towardDark = backgrounds.reduce((s, bg) => s + luminance(bg), 0) / backgrounds.length > 0.18;
+  let c = color;
+  for(let t = 0.05; worst(c) < min && t <= 1; t += 0.05) c = mixHex(color, towardDark ? '#000000' : '#ffffff', t);
+  return c;
+}
+
+// the full set of colors for a theme: a preset, or her own three picks
+function themeColors(theme){
+  if(theme.preset !== 'custom') return THEMES[theme.preset] || THEMES.sunset;
+  const base = THEMES.sunset;
+  const bg = theme.bg || base.bg[0], card = theme.card || base.card, accent = theme.accent || base.accent;
+  const dark = luminance(bg) < 0.18;
+  return { bg: [bg, shiftHue(bg, 24, dark ? 0.03 : 0.01), shiftHue(bg, -28, dark ? -0.02 : 0.02)], card, accent, accent2: shiftHue(accent, 38, 0.06) };
+}
+
+function themeVars(theme){
+  if(theme.preset === 'sunset') return null;          // the stylesheet's own colors
+  const t = themeColors(theme);
+  const cardDark = luminance(t.card) < 0.18;
+  const bgDark = luminance(mixHex(mixHex(t.bg[0], t.bg[1], 0.5), t.bg[2], 0.33)) < 0.18;
+  const lighter = (c, a) => mixHex(c, '#ffffff', a), darker = (c, a) => mixHex(c, '#000000', a);
+  const field = cardDark ? lighter(t.card, 0.07) : '#ffffff';
+  const onCard = [t.card, field];
+  return {
+    '--bg1': t.bg[0], '--bg2': t.bg[1], '--bg3': t.bg[2], '--card': t.card,
+    '--ink': readable(cardDark ? '#f4eff3' : '#332b2b', onCard, 7),
+    '--muted': readable(cardDark ? '#b9aeb9' : '#8d7f8a', onCard),
+    '--ink-on-bg': readable(bgDark ? '#f4eff3' : '#332b2b', t.bg, 7),
+    '--muted-on-bg': readable(bgDark ? '#c2b8c2' : '#8d7f8a', t.bg),
+    '--accent-on-bg': readable(bgDark ? lighter(t.accent, 0.2) : darker(t.accent, 0.12), t.bg),
+    '--field': field,
+    '--border': cardDark ? lighter(t.card, 0.14) : mixHex(t.card, t.accent2, 0.16),
+    '--coral': t.accent,
+    '--coral-dark': readable(cardDark ? lighter(t.accent, 0.18) : darker(t.accent, 0.12), onCard),
+    '--sun': t.accent2,
+    '--sun-dark': darker(t.accent2, 0.12),
+    '--mint-dark': readable(cardDark ? '#4fd8b2' : '#049470', onCard, 3.5),
+    '--sky-dark': readable(cardDark ? '#6cc4f0' : '#2a8bc0', onCard, 3.5),
+  };
+}
+
+let theme = (() => { try { return JSON.parse(localStorage.getItem(THEME_KEY)) || { preset: 'sunset', at: 0 }; } catch(e){ return { preset: 'sunset', at: 0 }; } })();
+
+function paintTheme(){
+  const vars = themeVars(theme);
+  const root = document.documentElement.style;
+  THEME_VARS.forEach(k => root.removeProperty(k));
+  if(vars) Object.entries(vars).forEach(([k, v]) => root.setProperty(k, v));
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', vars ? vars['--bg1'] : '#fff3da');
+  try {
+    if(vars) localStorage.setItem(THEME_VARS_KEY, JSON.stringify(vars));
+    else localStorage.removeItem(THEME_VARS_KEY);
+  } catch(e){}
+  const t = themeColors(theme);
+  document.getElementById('tp-bg').value = t.bg[0];
+  document.getElementById('tp-card').value = t.card;
+  document.getElementById('tp-accent').value = t.accent;
+  document.querySelectorAll('.tp-preset').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.preset === theme.preset)));
+}
+
+let themeSaveTimer = 0;
+function setTheme(next, save = true){
+  theme = { ...next, at: Date.now() };
+  try { localStorage.setItem(THEME_KEY, JSON.stringify(theme)); } catch(e){}
+  paintTheme();
+  if(save){ clearTimeout(themeSaveTimer); themeSaveTimer = setTimeout(pushTheme, 1500); }
+}
+function pushTheme(){
+  fetch(PREFS_API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ops: [{ op: 'del', id: 'theme' }, { op: 'add', item: { id: 'theme', ...theme } }] }) }).catch(() => {});
+}
+// the newest choice wins, whether it was made here or in another browser
+async function pullTheme(){
+  try {
+    const res = await fetch(PREFS_API);
+    const data = await res.json();
+    if(!res.ok || !Array.isArray(data.prefs)) return;
+    const saved = data.prefs.find(p => p.id === 'theme');
+    if(saved && (saved.at || 0) > (theme.at || 0)){
+      theme = saved;
+      try { localStorage.setItem(THEME_KEY, JSON.stringify(theme)); } catch(e){}
+      paintTheme();
+    } else if(theme.at && (!saved || theme.at > (saved.at || 0))){
+      pushTheme();
+    }
+  } catch(e){}
+}
+
+document.getElementById('tp-presets').innerHTML = Object.entries(THEMES).map(([key, t]) => `
+  <button type="button" class="tp-preset" data-preset="${key}" aria-pressed="false">
+    <span class="tp-swatch" style="background:linear-gradient(120deg, ${t.bg[0]}, ${t.bg[1]} 50%, ${t.bg[2]})"><i style="background:${t.card}"></i><b style="background:${t.accent}"></b></span>
+    ${t.name}
+  </button>`).join('');
+document.getElementById('tp-presets').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-preset]');
+  if(b) setTheme({ preset: b.dataset.preset });
+});
+const customFrom = (field, value) => {
+  const t = themeColors(theme);
+  return { preset: 'custom', bg: t.bg[0], card: t.card, accent: t.accent, [field]: value };
+};
+[['tp-bg', 'bg'], ['tp-card', 'card'], ['tp-accent', 'accent']].forEach(([id, field]) => {
+  const input = document.getElementById(id);
+  input.addEventListener('input', () => setTheme(customFrom(field, input.value), false));    // live while choosing
+  input.addEventListener('change', () => setTheme(customFrom(field, input.value)));          // saved once chosen
+});
+document.querySelector('.tp-reset').addEventListener('click', () => setTheme({ preset: 'sunset' }));
+
+const themeTab = document.getElementById('theme-tab');
+const themePanel = document.getElementById('theme-panel');
+const openThemes = () => { themePanel.hidden = false; themeTab.setAttribute('aria-expanded', 'true'); };
+const closeThemes = () => { themePanel.hidden = true; themeTab.setAttribute('aria-expanded', 'false'); };
+themeTab.addEventListener('click', openThemes);
+themePanel.querySelector('.tp-close').addEventListener('click', closeThemes);
+themePanel.addEventListener('click', (e) => { if(e.target === themePanel) closeThemes(); });
+addEventListener('keydown', (e) => { if(e.key === 'Escape' && !themePanel.hidden) closeThemes(); });
+
+paintTheme();
+pullTheme();
 
 function hidePace(){
   const pace = document.getElementById('pace-view');

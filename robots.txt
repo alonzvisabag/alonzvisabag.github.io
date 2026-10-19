@@ -4,6 +4,7 @@ User-agent: *
 Disallow: /roni/content.json
 Disallow: /roni/words.json
 Disallow: /roni/countdowns.json
+Disallow: /roni/prefs.json
 Disallow: /roni/media/
 Disallow: /roni/worker/
 Disallow: /galit/content.json

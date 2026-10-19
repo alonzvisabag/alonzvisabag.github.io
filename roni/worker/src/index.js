@@ -564,7 +564,12 @@ async function handleVisitSummary(request, env) {
 // ── Roni's SOS menu: a Telegram message every time she taps a number in it ──
 
 const SOS_TARGETS = {
-  alon: 'אלון',
+  alon: 'אלון (בוואטסאפ)',
+  mom: 'אמא (בוואטסאפ)',
+  dad: 'אבא (בוואטסאפ)',
+  'alon-tel': 'אלון (שיחה רגילה)',
+  'mom-tel': 'אמא (שיחה רגילה)',
+  'dad-tel': 'אבא (שיחה רגילה)',
   '112': 'מוקד החירום האירופי (112)',
   police: 'משטרה (133)',
   ambulance: 'אמבולנס (144)',
@@ -643,11 +648,23 @@ function cleanCountdown(c) {
   return { id, name, date, time, emoji };
 }
 
+// Her settings (for now, the site colors she picked); one item per setting, the newest wins.
+const HEX = /^#[0-9a-f]{6}$/i;
+function cleanPref(p) {
+  if (!p || typeof p !== 'object' || p.id !== 'theme') return null;
+  const preset = typeof p.preset === 'string' && /^[a-z]{1,20}$/.test(p.preset) ? p.preset : 'sunset';
+  const out = { id: 'theme', preset, at: Number.isFinite(p.at) ? Math.round(p.at) : Date.now() };
+  for (const k of ['bg', 'card', 'accent']) if (typeof p[k] === 'string' && HEX.test(p[k])) out[k] = p[k].toLowerCase();
+  return out;
+}
+
 const LISTS = {
   '/words': { path: 'roni/words.json', key: 'words', field: 'word', max: 5000, clean: cleanWord,
     added: 'Roni learned a new German word', changed: "Update Roni's German words" },
   '/countdowns': { path: 'roni/countdowns.json', key: 'countdowns', field: 'item', max: 300, clean: cleanCountdown,
     added: 'Roni added a countdown', changed: "Update Roni's countdowns" },
+  '/prefs': { path: 'roni/prefs.json', key: 'prefs', field: 'item', max: 10, clean: cleanPref,
+    added: "Save Roni's site colors", changed: "Save Roni's site colors" },
 };
 
 async function readList(env, list) {
