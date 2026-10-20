@@ -1,3 +1,11 @@
 {
-  "countdowns": []
+  "countdowns": [
+    {
+      "id": "mvf87v9nmy19",
+      "name": "הטיסה הביתה",
+      "date": "2027-01-29",
+      "time": "",
+      "emoji": "🏠"
+    }
+  ]
 }
