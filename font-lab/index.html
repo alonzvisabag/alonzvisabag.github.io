@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="בונים פונט עברי מחלקים: סליידר לכל חלק של האות, ושינוי של אות אחת בתוך מילה.">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<title>בית היציקה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&display=swap">
+<style>
+    /* page basics */
+    :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+    body { margin: 0; }
+    [hidden] { display: none !important; }
+
+    /* Layout: a drafting sheet on graph paper with printer's proof marks (magenta, cyan); the word sits on the sheet, the font's parts are dialed in beside it */
+    :root {
+        --paper: #edf0f3;
+        --grid: #dfe4ea;
+        --grid-strong: #d0d7e0;
+        --card: #fbfcfd;
+        --ink: #13161b;
+        --muted: #5a6472;
+        --line: #d2d9e1;
+        --mag: #c4136b;
+        --cyan: #0a7fbd;
+        --mag-soft: rgba(196, 19, 107, 0.1);
+        --cyan-soft: rgba(10, 127, 189, 0.13);
+        --sans: 'IBM Plex Sans Hebrew', 'Arial Hebrew', 'Segoe UI', sans-serif;
+        --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+            --paper: #111418; --grid: #1b2026; --grid-strong: #242a32; --card: #171b20; --ink: #eef2f6; --muted: #98a3b0; --line: #2a313a;
+            --mag: #ff5aa5; --cyan: #45b6ee; --mag-soft: rgba(255, 90, 165, 0.14); --cyan-soft: rgba(69, 182, 238, 0.16); color-scheme: dark;
+        }
+    }
+    :root[data-theme="dark"] {
+        --paper: #111418; --grid: #1b2026; --grid-strong: #242a32; --card: #171b20; --ink: #eef2f6; --muted: #98a3b0; --line: #2a313a;
+        --mag: #ff5aa5; --cyan: #45b6ee; --mag-soft: rgba(255, 90, 165, 0.14); --cyan-soft: rgba(69, 182, 238, 0.16); color-scheme: dark;
+    }
+
+    html { direction: rtl; }
+    body {
+        background: var(--paper);
+        color: var(--ink);
+        font: 400 15px/1.5 var(--sans);
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        padding-block: 18px 40px;
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; }
+
+    header.top { display: grid; gap: 6px; padding-block: 6px 18px; }
+    #logo { height: 74px; width: auto; max-width: 100%; display: block; }
+    #logo path { fill: var(--ink); }
+    header.top p { margin: 0; max-width: 62ch; color: var(--muted); }
+
+    /* the bench: word bar, the sheet and the alphabet on one side, the controls on the other */
+    .bench {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 368px;
+        grid-template-areas: "word panel" "sheet panel" "abc panel";
+        grid-template-rows: auto auto 1fr;
+        gap: 14px 22px;
+        align-items: start;
+    }
+    .wordbar { grid-area: word; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .wordbar label { font-weight: 600; }
+    .wordbar input {
+        flex: 1 1 180px; min-width: 0; font: 600 1.15rem var(--sans); padding: 9px 14px; border-radius: 10px;
+        border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    }
+    .btn {
+        font: 600 0.9rem var(--sans); padding: 9px 14px; border-radius: 10px; border: 1px solid var(--line);
+        background: var(--card); color: var(--ink); cursor: pointer;
+    }
+    .btn:hover { border-color: var(--ink); }
+    .btn:focus-visible, .wordbar input:focus-visible, .chip:focus-visible, .tab:focus-visible, .term:focus-visible, .abc button:focus-visible { outline: 2px solid var(--mag); outline-offset: 2px; }
+
+    .sheet {
+        grid-area: sheet;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background-color: var(--card);
+        background-image:
+            linear-gradient(var(--grid-strong) 1px, transparent 1px),
+            linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px),
+            linear-gradient(var(--grid) 1px, transparent 1px),
+            linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+        padding: 10px;
+        position: relative;
+    }
+    #stage { width: 100%; height: auto; display: block; max-height: 62vh; touch-action: manipulation; }
+    #stage .ink { fill: var(--ink); }
+    #stage .hl { fill: var(--mag); }
+    #stage .hl-c { fill: var(--cyan); }
+    #stage .guide { stroke: var(--cyan); stroke-width: 2; opacity: 0.55; }
+    #stage .guide.dash { stroke-dasharray: 10 8; }
+    #stage .guide.on { stroke: var(--mag); opacity: 1; stroke-width: 4; }
+    #stage .glabel { fill: var(--cyan); font-family: var(--sans); font-weight: 600; }
+    #stage .glabel.on { fill: var(--mag); }
+    #stage .gap { fill: var(--cyan-soft); }
+    #stage .box { fill: none; stroke: var(--cyan); stroke-width: 2; stroke-dasharray: 6 6; }
+    #stage .sel { fill: var(--mag-soft); stroke: var(--mag); stroke-width: 3; stroke-dasharray: 12 8; }
+    #stage .seltag { fill: var(--mag); }
+    #stage .seltxt { fill: #fff; font-family: var(--sans); font-weight: 700; }
+    #stage .hit { fill: transparent; cursor: pointer; }
+    .sheet .hint { position: absolute; left: 14px; bottom: 10px; margin: 0; font-size: 0.78rem; color: var(--muted); background: var(--card); padding: 2px 8px; border-radius: 6px; }
+
+    .abc-wrap { grid-area: abc; }
+    .abc-wrap h2, .panel h2 { font-size: 0.78rem; letter-spacing: 0.08em; font-weight: 700; color: var(--muted); margin: 6px 0 8px; }
+    .abc { display: grid; grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)); gap: 6px; }
+    .abc button { border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 4px; cursor: pointer; aspect-ratio: 1 / 1.25; max-width: 100%; }
+    .abc button:hover { border-color: var(--mag); }
+    .abc svg { width: 100%; height: 100%; display: block; }
+    .abc svg .ink { fill: var(--ink); }
+    .abc svg line { stroke: var(--cyan); stroke-width: 6; opacity: 0.4; }
+
+    /* controls */
+    .panel {
+        grid-area: panel;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        position: sticky;
+        top: max(12px, env(safe-area-inset-top, 0px));
+        max-height: calc(100vh - 24px);
+        overflow: auto;
+        overscroll-behavior: contain;
+    }
+    .tabs { display: flex; gap: 4px; padding: 8px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--card); z-index: 2; }
+    .tab { flex: 1; font: 600 0.88rem var(--sans); padding: 8px 6px; border-radius: 8px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
+    .tab[aria-selected="true"] { background: var(--ink); color: var(--card); }
+    .pane { padding: 12px 16px 18px; display: grid; gap: 4px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+    .chip { font: 600 0.8rem var(--sans); padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; }
+    .chip:hover { border-color: var(--mag); color: var(--mag); }
+    .chip.on { background: var(--mag); border-color: var(--mag); color: #fff; }
+
+    .ctl { padding: 8px 0 6px; border-top: 1px dashed var(--line); }
+    .ctl:first-of-type { border-top: 0; }
+    .ctl .row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+    .ctl label { font-weight: 600; }
+    .ctl .num { display: inline-flex; align-items: center; gap: 5px; direction: ltr; flex: none; }
+    .ctl .num input {
+        width: 78px; font: 500 16px var(--mono); padding: 3px 7px; border-radius: 7px; border: 1px solid var(--line);
+        background: var(--paper); color: var(--ink); text-align: right; font-variant-numeric: tabular-nums;
+    }
+    .ctl .num input:focus-visible { outline: 2px solid var(--mag); outline-offset: 1px; }
+    .ctl .num i { font-style: normal; font-size: 0.85rem; color: var(--muted); min-width: 0.8em; }
+    .ctl.live label, .ctl.live .num input { color: var(--mag); }
+    .ctl small { display: block; color: var(--muted); font-size: 0.78rem; line-height: 1.4; }
+    input[type="range"] { width: 100%; margin: 6px 0 2px; accent-color: var(--mag); height: 26px; }
+
+    .letter-head { display: flex; align-items: center; gap: 12px; padding-bottom: 8px; }
+    .letter-head svg { width: 64px; height: 76px; flex: none; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+    .letter-head svg .ink { fill: var(--ink); }
+    .letter-head b { display: block; font-size: 1.05rem; }
+    .letter-head span { color: var(--muted); font-size: 0.85rem; }
+    .pick { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 6px; }
+    .pick button { font: 700 1.1rem var(--sans); min-width: 40px; padding: 4px 10px; border-radius: 9px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; }
+    .pick button.on { background: var(--mag); border-color: var(--mag); color: #fff; }
+    .empty { color: var(--muted); padding: 10px 0; }
+
+    .term { display: grid; gap: 2px; text-align: right; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--ink); cursor: pointer; font: inherit; }
+    .term b { font-size: 0.98rem; }
+    .term span { color: var(--muted); font-size: 0.84rem; line-height: 1.45; }
+    .term i { font-style: normal; font-size: 0.8rem; color: var(--cyan); font-weight: 600; }
+    .term.on { border-color: var(--mag); box-shadow: inset -4px 0 0 var(--mag); }
+    .term.on b { color: var(--mag); }
+    .terms { display: grid; gap: 8px; }
+
+    .toast { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom, 0px)); translate: -50% 0; background: var(--ink); color: var(--card); padding: 9px 16px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 30; }
+    .toast.on { opacity: 1; }
+    #copybox { width: 100%; height: 90px; font: 0.75rem var(--mono); direction: ltr; margin-top: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
+
+    @media (max-width: 900px) {
+        .bench { grid-template-columns: minmax(0, 1fr); grid-template-areas: "word" "sheet" "panel" "abc"; grid-template-rows: none; }
+        .sheet { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; padding: 6px; box-shadow: 0 10px 20px -16px rgba(0,0,0,0.5); }
+        #stage { max-height: 34vh; }
+        .panel { position: static; max-height: none; overflow: visible; }
+        .tabs { top: 0; }
+        #logo { height: 52px; }
+        .sheet .hint { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+    <header class="top">
+        <svg id="logo" role="img" aria-label="בית היציקה"></svg>
+        <p>פונט בנוי מחלקים שחוזרים בכל האותיות: גג, רגל, בסיס, יורד, קוץ, עוקץ. כל סליידר מגדיל או מקטין חלק אחד בכל האותיות בבת אחת. לחיצה על אות בתוך המילה מאפשרת לשנות רק אותה.</p>
+    </header>
+
+    <main class="bench">
+        <div class="wordbar">
+            <label for="word">מילה</label>
+            <input id="word" type="text" value="בבקשה" maxlength="24" autocomplete="off" spellcheck="false">
+            <button class="btn" id="copy-svg" type="button">העתקת SVG</button>
+            <button class="btn" id="reset-all" type="button">התחלה מחדש</button>
+        </div>
+
+        <div class="sheet">
+            <svg id="stage" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="המילה בפונט"></svg>
+            <p class="hint">לחצו על אות כדי לשנות רק אותה</p>
+        </div>
+
+        <aside class="panel" aria-label="שליטה">
+            <div class="tabs" role="tablist">
+                <button class="tab" role="tab" id="t-font" aria-selected="true" aria-controls="p-font">הפונט כולו</button>
+                <button class="tab" role="tab" id="t-letter" aria-selected="false" aria-controls="p-letter">אות במילה</button>
+                <button class="tab" role="tab" id="t-terms" aria-selected="false" aria-controls="p-terms">מה זה מה</button>
+            </div>
+            <div class="pane" id="p-font" role="tabpanel" aria-labelledby="t-font">
+                <div class="chips" id="presets"></div>
+                <div id="font-ctls"></div>
+            </div>
+            <div class="pane" id="p-letter" role="tabpanel" aria-labelledby="t-letter" hidden></div>
+            <div class="pane" id="p-terms" role="tabpanel" aria-labelledby="t-terms" hidden>
+                <div class="terms" id="terms"></div>
+            </div>
+        </aside>
+
+        <section class="abc-wrap">
+            <h2>כל האותיות בפונט · לחיצה מוסיפה אות למילה</h2>
+            <div class="abc" id="abc"></div>
+        </section>
+    </main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+    // ═════════ the letters ═════════
+    // Every letter is a skeleton of strokes in its own box: u runs 0 (left) to 1 (right), v runs 0 (baseline) to 1 (letter height).
+    // Points sit on the middle of the stroke; each segment is named after the part of the letter it is (roof, stem, base...),
+    // which is how the sliders and the "מה זה מה" list find it. w is the letter's width as a share of the letter height.
+    function S() { const a = [...arguments]; return { pts: a.filter(x => Array.isArray(x)), roles: a.filter(x => typeof x === 'string') }; }
+    function C() { const s = S.apply(null, arguments); s.closed = true; return s; }
+    const LETTERS = {
+        'א': { w: 0.92, draw: ({ P }) => [S(P(0, 1), 'diag', P(1, 0)), S(P(1, 1), 'stem', P(1, 0.58), 'diag', P(0.6, 0.4)), S(P(0.3, 0.7), 'leg', P(0.06, 0))] },
+        'ב': { w: 0.84, spur: 1, draw: ({ P, ov }) => [S(P(0, 1), 'roof', P(1, 1), 'stem', P(1, 0)), S(P(0, 0), 'base', P(1, 0), 'spur', P(1, 0, ov))] },
+        'ג': { w: 0.6, draw: ({ P }) => [S(P(0, 1), 'roof', P(1, 1), 'stem', P(1, 0)), S(P(1, 0.46), 'leg', P(0, 0))] },
+        'ד': { w: 0.8, spur: 1, draw: ({ P, ov }) => [S(P(0, 1), 'roof', P(1, 1), 'spur', P(1, 1, ov)), S(P(1, 1), 'stem', P(1, 0))] },
+        'ה': { w: 0.84, draw: ({ P, x, legTop }) => [S(P(0, 1), 'roof', P(1, 1), 'stem', P(1, 0)), S([x(0), legTop], 'leg', P(0, 0))] },
+        'ו': { w: 0.3, draw: ({ P }) => [S(P(0, 1), 'head', P(1, 1), 'stem', P(1, 0))] },
+        'ז': { w: 0.5, draw: ({ P }) => [S(P(0, 1), 'head', P(1, 1)), S(P(0.55, 1), 'stem', P(0.55, 0))] },
+        'ח': { w: 0.84, draw: ({ P }) => [S(P(0, 0), 'stem', P(0, 1), 'roof', P(1, 1), 'stem', P(1, 0))] },
+        'ט': { w: 0.84, rk: 1.5, draw: ({ P }) => [S(P(0, 1), 'stem', P(0, 0), 'base', P(1, 0), 'stem', P(1, 1), 'hook', P(0.52, 1), 'hook', P(0.52, 0.6))] },
+        'י': { w: 0.3, draw: ({ P }) => [S(P(0, 1), 'head', P(1, 1), 'stem', P(1, 0.5))] },
+        'ך': { w: 0.78, rk: 1.4, draw: ({ P, x, yD }) => [S(P(0, 1), 'roof', P(1, 1), 'desc', [x(1), yD])] },
+        'כ': { w: 0.74, rk: 1.6, draw: ({ P }) => [S(P(0, 1), 'roof', P(1, 1), 'stem', P(1, 0), 'base', P(0, 0))] },
+        'ל': { w: 0.74, asc: 1, draw: ({ P, x, yA }) => [S([x(0), yA], 'asc', P(0, 1), 'roof', P(1, 1), 'stem', P(1, 0.42), 'leg', P(0.4, 0))] },
+        'ם': { w: 0.84, draw: ({ P }) => [C(P(0, 0), 'stem', P(0, 1), 'roof', P(1, 1), 'stem', P(1, 0), 'base')] },
+        'מ': { w: 0.88, draw: ({ P }) => [S(P(0.3, 1), 'diag', P(0, 0.6), 'stem', P(0, 0), 'base', P(1, 0), 'stem', P(1, 1), 'roof', P(0.5, 1))] },
+        'ן': { w: 0.3, draw: ({ P, x, yD }) => [S(P(0, 1), 'head', P(1, 1), 'desc', [x(1), yD])] },
+        'נ': { w: 0.54, rk: 1.2, draw: ({ P }) => [S(P(0, 1), 'head', P(1, 1), 'stem', P(1, 0), 'base', P(0, 0))] },
+        'ס': { w: 0.84, rk: 2.4, draw: ({ P }) => [C(P(0, 1), 'roof', P(1, 1), 'stem', P(1, 0), 'base', P(0, 0), 'stem')] },
+        'ע': { w: 0.84, draw: ({ P }) => [S(P(1, 1), 'stem', P(1, 0), 'base', P(0, 0)), S(P(0.04, 1), 'diag', P(0.66, 0))] },
+        'פ': { w: 0.84, rk: 1.4, draw: ({ P }) => [S(P(0, 0.56), 'hook', P(0, 1), 'roof', P(1, 1), 'stem', P(1, 0), 'base', P(0, 0))] },
+        'ף': { w: 0.8, rk: 1.2, draw: ({ P, x, yD }) => [S(P(0, 0.56), 'hook', P(0, 1), 'roof', P(1, 1), 'desc', [x(1), yD])] },
+        'צ': { w: 0.82, draw: ({ P }) => [S(P(0, 1), 'diag', P(0.32, 0), 'base', P(1, 0)), S(P(1, 1), 'stem', P(1, 0.64), 'diag', P(0.22, 0.32))] },
+        'ץ': { w: 0.8, draw: ({ P, x, yD }) => [S(P(1, 1), 'stem', P(1, 0.62), 'diag', P(0.6, 0.38), 'desc', [x(0.6), yD]), S(P(0, 1), 'diag', P(0.6, 0.38))] },
+        'ק': { w: 0.84, draw: ({ P, x, yD, legTop }) => [S(P(0, 1), 'roof', P(1, 1), 'stem', P(1, 0)), S([x(0), legTop], 'desc', [x(0), yD])] },
+        'ר': { w: 0.78, rk: 1.7, draw: ({ P }) => [S(P(0, 1), 'roof', P(1, 1), 'stem', P(1, 0))] },
+        'ש': { w: 0.96, draw: ({ P }) => [S(P(0, 1), 'stem', P(0, 0), 'base', P(1, 0), 'stem', P(1, 1)), S(P(0.5, 1), 'stem', P(0.5, 0))] },
+        'ת': { w: 0.9, draw: ({ P }) => [S(P(0.14, 1), 'roof', P(1, 1), 'stem', P(1, 0)), S(P(0.14, 1), 'leg', P(0.14, 0), 'base', P(0, 0))] },
+    };
+    const ABC = 'אבגדהוזחטיכלמנסעפצקרשתךםןףץ';
+
+    // ═════════ from skeleton to outline ═════════
+    const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+    const len = (a) => Math.hypot(a[0], a[1]);
+    const unit = (a) => { const l = len(a) || 1; return [a[0] / l, a[1] / l]; };
+    const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
+    const area = (ring) => ring.reduce((s, p, i) => s + cross(p, ring[(i + 1) % ring.length]), 0) / 2;
+    function meet(p, d, q, e) {
+        const den = cross(d, e);
+        if (Math.abs(den) < 1e-9) return null;
+        const t = cross(sub(q, p), e) / den;
+        return [p[0] + d[0] * t, p[1] + d[1] * t];
+    }
+
+    // one stroke → filled rings (an outer one, plus an inner one for a closed loop) and the pieces each part covers
+    function outline(s, th, tv) {
+        const pts = s.pts, n = pts.length, closed = !!s.closed;
+        const segs = [];
+        for (let i = 0; i < (closed ? n : n - 1); i++) {
+            const a = pts[i], b = pts[(i + 1) % n], d = unit(sub(b, a));
+            // horizontal strokes take the horizontal weight, vertical ones the vertical weight, slanted ones a mix
+            segs.push({ a, b, d, w: th * d[0] * d[0] + tv * d[1] * d[1], role: s.roles[i] || s.roles[s.roles.length - 1], horiz: Math.abs(d[0]) > Math.abs(d[1]) });
+        }
+        const left = (d) => [-d[1], d[0]];
+        const off = (p, d, w, side) => { const nn = left(d); return [p[0] + nn[0] * w / 2 * side, p[1] + nn[1] * w / 2 * side]; };
+        function joint(prev, next, at, side) {
+            const pa = off(at, prev.d, prev.w, side), pb = off(at, next.d, next.w, side);
+            const m = meet(pa, prev.d, pb, next.d);
+            if (!m || len(sub(m, at)) > 2.2 * Math.max(prev.w, next.w)) return pb;
+            return m;
+        }
+        // a free end reaches the outer edge of the strokes it lines up with
+        const reach = (sg) => (th / 2) * Math.abs(sg.d[1]) + (tv / 2) * Math.abs(sg.d[0]);
+        const L = [], R = [], W = [];
+        if (closed) {
+            for (let k = 0; k < n; k++) {
+                const prev = segs[(k - 1 + n) % n], next = segs[k];
+                L.push(joint(prev, next, pts[k], 1)); R.push(joint(prev, next, pts[k], -1)); W.push(Math.max(prev.w, next.w));
+            }
+        } else {
+            const s0 = segs[0], sl = segs[segs.length - 1];
+            const p0 = [pts[0][0] - s0.d[0] * reach(s0), pts[0][1] - s0.d[1] * reach(s0)];
+            const pn = [pts[n - 1][0] + sl.d[0] * reach(sl), pts[n - 1][1] + sl.d[1] * reach(sl)];
+            L.push(off(p0, s0.d, s0.w, 1)); R.push(off(p0, s0.d, s0.w, -1)); W.push(s0.w);
+            for (let k = 1; k < n - 1; k++) {
+                L.push(joint(segs[k - 1], segs[k], pts[k], 1)); R.push(joint(segs[k - 1], segs[k], pts[k], -1)); W.push(Math.max(segs[k - 1].w, segs[k].w));
+            }
+            L.push(off(pn, sl.d, sl.w, 1)); R.push(off(pn, sl.d, sl.w, -1)); W.push(sl.w);
+        }
+        const pieces = segs.map((sg, k) => ({
+            role: sg.role, horiz: sg.horiz, end: !closed && (k === 0 || k === segs.length - 1),
+            quad: [L[k], L[(k + 1) % L.length], R[(k + 1) % R.length], R[k]],
+        }));
+        let rings;
+        if (closed) {
+            let outer = L, inner = R;
+            if (Math.abs(area(R)) > Math.abs(area(L))) { outer = R; inner = L; }
+            const o = { pts: outer.slice(), kind: outer.map(() => 'joint'), w: W.slice() };
+            const h = { pts: inner.slice(), kind: inner.map(() => 'joint'), w: W.slice() };
+            if (area(o.pts) < 0) { o.pts.reverse(); o.w.reverse(); }
+            if (area(h.pts) > 0) { h.pts.reverse(); h.w.reverse(); }
+            rings = [o, h];
+        } else {
+            const ring = { pts: L.concat(R.slice().reverse()), kind: [], w: W.concat(W.slice().reverse()) };
+            ring.kind = ring.pts.map((_, i) => (i === 0 || i === n - 1 || i === n || i === 2 * n - 1) ? 'cap' : 'joint');
+            if (area(ring.pts) < 0) { ring.pts.reverse(); ring.kind.reverse(); ring.w.reverse(); }
+            rings = [ring];
+        }
+        return { rings, pieces };
+    }
+
+    // round each corner of a ring: outer corners by the corner radius, inner ones by what is left of it after the stroke,
+    // the ends of strokes by the terminal setting
+    const f1 = (v) => Math.round(v * 10) / 10;
+    function ringPath(ring, ro, terminal) {
+        const p = ring.pts, n = p.length, parts = [];
+        for (let i = 0; i < n; i++) {
+            const a = p[(i - 1 + n) % n], v = p[i], b = p[(i + 1) % n];
+            const l1 = len(sub(v, a)), l2 = len(sub(b, v));
+            const d1 = unit(sub(v, a)), d2 = unit(sub(b, v));
+            const turn = Math.acos(Math.max(-1, Math.min(1, d1[0] * d2[0] + d1[1] * d2[1])));
+            let r = ring.kind[i] === 'cap' ? terminal * ring.w[i] : (cross(d1, d2) > 0 ? ro : Math.max(0, ro - ring.w[i]));
+            if (r > 0.5 && turn > 0.03 && turn < 3.1 && l1 > 0.5 && l2 > 0.5) {
+                const t = Math.min(r * Math.tan(turn / 2), l1 * 0.5, l2 * 0.5);
+                parts.push({ A: [v[0] - d1[0] * t, v[1] - d1[1] * t], C: v, B: [v[0] + d2[0] * t, v[1] + d2[1] * t] });
+            } else parts.push({ A: v, C: null, B: v });
+        }
+        const P = (q) => f1(q[0]) + ' ' + f1(q[1]);
+        let d = 'M' + P(parts[0].B);
+        for (let i = 1; i <= n; i++) {
+            const c = parts[i % n];
+            d += 'L' + P(c.A);
+            if (c.C) d += 'Q' + P(c.C) + ' ' + P(c.B);
+        }
+        return d + 'Z';
+    }
+
+    // ═════════ a glyph from the font settings (F) and this letter's own settings (L) ═════════
+    function glyph(ch, F, L) {
+        const def = LETTERS[ch];
+        if (!def) return null;
+        L = L || {};
+        const drop = F.height * (L.hd || 0);            // how far this letter reaches below the baseline
+        const H = F.height * ((L.h || 1) + (L.hd || 0));
+        const wt = F.weight * (L.wt || 1);
+        const th = Math.max(4, wt * (1 + F.contrast)), tv = Math.max(4, wt * (1 - F.contrast));
+        const W = Math.max(tv * 1.8, def.w * F.height * F.width * (L.w || 1));
+        const ov = def.spur ? F.spur * F.height : 0;
+        const x = (u) => tv / 2 + u * (W - tv);
+        const y = (v) => -drop + th / 2 + v * (H - th);
+        const P = (u, v, dx) => [x(u) + (dx || 0), y(v)];
+        const yD = -drop - F.desc + th / 2, yA = H - drop + F.asc - th / 2;
+        // the free leg of ה and ק always keeps a clear gap under the roof, however heavy the strokes get (or it reads as ח)
+        const legTop = Math.min(y(0.64), y(1) - th - Math.max(0.16 * H, 0.6 * th));
+        // a part that is switched off (a spur at zero) leaves no zero-length piece behind
+        const strokes = def.draw({ P, x, y, yD, yA, ov, legTop }).map(s => {
+            const pts = [s.pts[0]], roles = [];
+            for (let i = 1; i < s.pts.length; i++) {
+                if (len(sub(s.pts[i], pts[pts.length - 1])) < 0.5) continue;
+                pts.push(s.pts[i]); roles.push(s.roles[i - 1]);
+            }
+            if (s.closed) roles.push(s.roles[s.roles.length - 1]);
+            return { pts, roles, closed: s.closed };
+        }).filter(s => s.pts.length > 1);
+        // the serif: a short tick down from the left end of a roof
+        if (F.serif > 0.01) strokes.slice().forEach(s => {
+            const [a, b] = s.pts;
+            if (!s.closed && (s.roles[0] === 'roof' || s.roles[0] === 'head') && b[0] > a[0] && Math.abs(b[1] - a[1]) < 0.5)
+                strokes.push({ pts: [a, [a[0], a[1] - F.serif * 0.3 * Math.min(H, 700)]], roles: ['serif'] });
+        });
+        const slant = Math.tan(F.slant * Math.PI / 180);
+        const lean = (q) => [q[0] + q[1] * slant, q[1]];
+        const ro = F.round * 0.42 * Math.min(H, W) * (def.rk || 1);
+        const paths = [], pieces = [];
+        strokes.forEach(s => {
+            const o = outline(s, th, tv);
+            o.rings.forEach(r => { r.pts = r.pts.map(lean); paths.push(ringPath(r, ro, F.terminal)); });
+            o.pieces.forEach(pc => pieces.push({ role: pc.role, horiz: pc.horiz, end: pc.end, d: 'M' + pc.quad.map(lean).map(q => f1(q[0]) + ' ' + f1(q[1])).join('L') + 'Z' }));
+        });
+        const sb = 0.06 * F.height;
+        return { ch, W, H, top: H - drop, bot: -drop, ov, sb, adv: W + ov + 2 * sb, d: paths.join(''), pieces, asc: !!def.asc, desc: /[קךןףץ]/.test(ch) };
+    }
+
+    // a line of letters, right to left
+    function setLine(text, F, overrides) {
+        const items = [...text].map((ch, i) => {
+            const L = (overrides && overrides[i]) || {};
+            const g = glyph(ch, F, L);
+            return { ch, i, L, g, adv: g ? g.adv : F.height * 0.34 };
+        });
+        let cursor = 0;
+        items.forEach((it, k) => {
+            it.x0 = cursor - it.adv;
+            cursor = it.x0 - (k < items.length - 1 ? F.track + (it.L.sp || 0) : 0);
+        });
+        const total = -cursor;
+        items.forEach(it => { it.x0 += total; });
+        return { items, total };
+    }
+
+    // ═════════ settings ═════════
+    const DEF = { height: 620, width: 1, desc: 230, asc: 210, weight: 84, contrast: 0.22, round: 0.3, terminal: 0, spur: 0.1, serif: 0, slant: 0, track: 30 };
+    const PRESETS = [
+        { name: 'יסוד', v: {} },
+        { name: 'שמן', v: { weight: 158, contrast: 0.12, round: 0.3, width: 1.08, track: 24 } },
+        { name: 'דק וגבוה', v: { weight: 30, contrast: 0.1, height: 760, width: 0.74, round: 0.12, track: 50 } },
+        { name: 'עגול', v: { weight: 104, contrast: 0, round: 1, terminal: 1, spur: 0.04 } },
+        { name: 'קלאסי', v: { weight: 76, contrast: 0.6, serif: 0.75, round: 0.1, spur: 0.16, track: 26 } },
+        { name: 'רחב', v: { width: 1.5, height: 520, weight: 96, track: 40 } },
+        { name: 'נטוי', v: { slant: 12, weight: 92, round: 0.35 } },
+    ];
+    const FONT_CTLS = [
+        ['גובה ופרופורציות'],
+        { k: 'height', label: 'גובה האות', min: 420, max: 820, step: 5, hl: 'g-height', tip: 'המרחק מקו הבסיס עד ראש האות' },
+        { k: 'width', pct: 1, label: 'רוחב', min: 0.55, max: 1.6, step: 0.01, hl: 'box', tip: 'כמה רחבה כל אות ביחס לגובה שלה' },
+        { k: 'desc', label: 'יורדים', min: 0, max: 420, step: 5, hl: 'desc', tip: 'כמה ק, ך, ן, ף ו־ץ יורדות מתחת לקו' },
+        { k: 'asc', label: 'עולה', min: 0, max: 380, step: 5, hl: 'asc', tip: 'כמה הל׳ מתנשאת מעל כולן' },
+        ['קווים'],
+        { k: 'weight', label: 'משקל', min: 16, max: 190, step: 1, hl: 'all', tip: 'עובי הקווים, מדק מאוד לשמן מאוד' },
+        { k: 'contrast', pct: 1, label: 'ניגודיות', min: -0.7, max: 0.7, step: 0.01, hl: 'contrast', tip: 'ימינה: קווים אופקיים עבים יותר (כמו בעברית הקלאסית). שמאלה: האנכיים' },
+        ['צורה'],
+        { k: 'round', pct: 1, label: 'עיגול פינות', min: 0, max: 1, step: 0.01, hl: null, tip: 'מפינה חדה ועד קשת מלאה' },
+        { k: 'terminal', pct: 1, label: 'קצוות', min: 0, max: 1, step: 0.01, hl: 'term', tip: 'סוף הקו: חתוך ישר או מעוגל' },
+        { k: 'spur', pct: 1, label: 'קוץ', min: 0, max: 0.32, step: 0.005, hl: 'spur', tip: 'הבליטה שמבדילה ד מ־ר ו־ב מ־כ' },
+        { k: 'serif', pct: 1, label: 'עוקץ', min: 0, max: 1, step: 0.01, hl: 'serif', tip: 'הזנב הקטן בתחילת הגג, כמו בפונטים של ספרים' },
+        { k: 'slant', unit: '°', label: 'נטייה', min: -18, max: 18, step: 0.5, hl: null, tip: 'הטיה של כל האותיות, במעלות' },
+        ['ריווח'],
+        { k: 'track', label: 'ריווח בין אותיות', min: -80, max: 320, step: 2, hl: 'gaps', tip: 'האוויר בין אות לאות' },
+    ];
+    const LETTER_CTLS = [
+        { k: 'w', pct: 1, label: 'רוחב', min: 0.5, max: 2.6, step: 0.01, def: 1, tip: 'רק האות הזאת. הקווים נשארים באותו עובי' },
+        { k: 'h', pct: 1, label: 'גובה למעלה', min: 0.5, max: 2.2, step: 0.01, def: 1, tip: 'כמה היא מתנשאת מעל קו הבסיס. 100% זה הגובה של שאר האותיות' },
+        { k: 'hd', pct: 1, label: 'גובה למטה', min: 0, max: 1.2, step: 0.01, def: 0, tip: 'כמה היא נמתחת מתחת לקו הבסיס. 0% זה עומדת על הקו כמו כולן' },
+        { k: 'wt', pct: 1, label: 'עובי', min: 0.3, max: 2.6, step: 0.01, def: 1, tip: 'שמנה או דקה יותר משאר המילה' },
+        { k: 'dy', label: 'הזזה למעלה ולמטה', min: -320, max: 320, step: 2, def: 0, tip: 'קופצת מעל הקו או צונחת מתחתיו' },
+        { k: 'rot', unit: '°', label: 'סיבוב', min: -45, max: 45, step: 0.5, def: 0, tip: 'במעלות, סביב מרכז האות' },
+        { k: 'sp', label: 'מרווח אחריה', min: -160, max: 400, step: 2, def: 0, tip: 'אוויר נוסף בינה לבין האות הבאה' },
+    ];
+    const TERMS = [
+        { hl: 'g-base', name: 'קו בסיס', text: 'הקו הדמיוני שכל האותיות עומדות עליו.' },
+        { hl: 'g-height', name: 'גובה האות', text: 'מקו הבסיס עד הראש. בעברית כמעט כל האותיות באותו גובה, אין אותיות גדולות וקטנות כמו באנגלית.' },
+        { hl: 'roof', name: 'גג', text: 'הקו האופקי העליון. העין קוראת עברית בעיקר לפי הגגות.', ex: 'ב ד ה ר ת' },
+        { hl: 'stem', name: 'רגל', text: 'קו אנכי שמחזיק את האות.', ex: 'ה ח ו' },
+        { hl: 'base', name: 'בסיס', text: 'הקו האופקי התחתון.', ex: 'ב כ מ נ ש' },
+        { hl: 'leg', name: 'רגל צד', text: 'קו שעומד לבד ולא נוגע בגג. הרווח הקטן מעליו הוא מה שהופך ח ל־ה.', ex: 'ה ק א ג' },
+        { hl: 'desc', name: 'יורד', text: 'חלק שיורד מתחת לקו הבסיס.', ex: 'ק ך ן ף ץ' },
+        { hl: 'asc', name: 'עולה', text: 'חלק שעולה מעל גובה האות. בעברית יש רק אחד כזה.', ex: 'ל' },
+        { hl: 'spur', name: 'קוץ', text: 'בליטה קטנה שמבדילה בין אותיות דומות: הגג של ד ממשיך אחרי הרגל, והבסיס של ב בולט החוצה.', ex: 'ד ב' },
+        { hl: 'serif', name: 'עוקץ', text: 'זנב קטן בתחילת הגג. בפונטים קלאסיים של ספרים ועיתונים הוא בולט. מפעילים אותו בסליידר "עוקץ".' },
+        { hl: 'head', name: 'ראש', text: 'הגג הקטן של האותיות הצרות.', ex: 'ו ז י ן נ' },
+        { hl: 'diag', name: 'אלכסון', text: 'קו נטוי. באותיות האלה הוא נושא את רוב האות.', ex: 'א ע צ ץ' },
+        { hl: 'hook', name: 'וו', text: 'קצה שמתכופף פנימה לתוך האות.', ex: 'פ ף ט' },
+        { hl: 'all', name: 'משקל', text: 'כמה עבים הקווים. פונט אחד יכול לבוא בכמה משקלים, מדק ועד שחור.' },
+        { hl: 'contrast', name: 'ניגודיות', text: 'ההבדל בין הקווים האופקיים (כאן בורוד) לאנכיים (בתכלת). בכתב עברי מסורתי האופקיים עבים יותר, הפוך מלטינית.' },
+        { hl: 'term', name: 'קצה', text: 'המקום שבו קו נגמר. ישר, מעוגל או משופע, והוא משנה את כל האופי.' },
+        { hl: 'gaps', name: 'ריווח', text: 'האוויר בין אות לאות. מעט ריווח נראה צפוף ודחוף, הרבה ריווח נראה אוורירי ויוקרתי.' },
+        { hl: 'box', name: 'רוחב', text: 'הקופסה שכל אות תופסת, כולל האוויר משני צדדיה.' },
+    ];
+
+    const KEY = 'beit-hayetzika-1';
+    const fresh = () => ({ font: { ...DEF }, word: 'בבקשה', letters: { 1: { w: 1.6, h: 1.3 } }, sel: 1, term: null });
+    let state = fresh();
+    try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved && saved.font) state = { ...fresh(), ...saved, font: { ...DEF, ...saved.font } }; } catch (e) {}
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+
+    // ═════════ drawing ═════════
+    const $ = (id) => document.getElementById(id);
+    let flash = null, flashTimer = 0;
+    const activeHl = () => flash || state.term;
+
+    function drawStage() {
+        const F = state.font, hl = activeHl();
+        const { items, total } = setLine(state.word, F, state.letters);
+        // labels are sized to the drawing, so they read the same at any word length
+        const fs = Math.max(30, (total + 300) * 0.02);
+        const high = (it) => it.g ? it.g.top + (it.g.asc ? F.asc : 0) + (it.L.dy || 0) : 0;
+        const low = (it) => it.g ? -(it.g.bot + (it.L.dy || 0)) + (it.g.desc ? F.desc : 0) : 0;
+        const top = Math.max(F.height + F.asc, ...items.map(high)) + 40 + fs * 1.8;
+        const bottom = Math.max(F.desc, ...items.map(low)) + 60;
+        const padL = 50, padR = fs * 6.2 + 40, vbW = total + padL + padR, vbH = top + bottom;
+        const Y = (y) => f1(top - y);
+        let s = '';
+        // guides
+        const guide = (y, name, key, dash) => {
+            const on = hl === key;
+            s += `<line class="guide${dash ? ' dash' : ''}${on ? ' on' : ''}" x1="${-padL}" x2="${f1(total + 30)}" y1="${Y(y)}" y2="${Y(y)}"/>`;
+            s += `<text class="glabel${on ? ' on' : ''}" x="${f1(total + 50)}" y="${f1(Y(y) + fs * 0.35)}" font-size="${f1(fs)}">${name}</text>`;
+        };
+        guide(F.height + F.asc, 'עולה', 'asc', true);
+        guide(F.height, 'גובה האות', 'g-height');
+        guide(0, 'קו בסיס', 'g-base');
+        guide(-F.desc, 'יורד', 'desc', true);
+        // air between letters
+        if (hl === 'gaps') items.forEach((it, k) => {
+            const nx = items[k + 1];
+            if (!nx) return;
+            const a = nx.x0 + nx.adv, b = it.x0;
+            if (b > a) s += `<rect class="gap" x="${f1(a)}" y="${Y(F.height)}" width="${f1(b - a)}" height="${f1(F.height)}"/>`;
+        });
+        items.forEach((it, k) => {
+            if (hl === 'box' && it.g) s += `<rect class="box" x="${f1(it.x0)}" y="${Y(it.g.top + (it.L.dy || 0))}" width="${f1(it.adv)}" height="${f1(it.g.top - it.g.bot)}"/>`;
+            if (state.sel === it.i && it.g) {
+                const hTop = Math.max(F.height, high(it)) + 20;
+                const hBot = Math.max(F.desc, low(it)) + 10;
+                s += `<rect class="sel" x="${f1(it.x0)}" y="${Y(hTop)}" width="${f1(it.adv)}" height="${f1(hTop + hBot)}" rx="12"/>`;
+            }
+            if (!it.g) return;
+            const g = it.g, cx = g.sb + (g.W + g.ov) / 2, cy = (g.top + g.bot) / 2;
+            const tr = `translate(${f1(it.x0 + g.sb)} ${Y(it.L.dy || 0)})` + (it.L.rot ? ` rotate(${-it.L.rot} ${f1(cx - g.sb)} ${f1(-cy)})` : '') + ' scale(1 -1)';
+            s += `<g transform="${tr}">`;
+            s += `<path class="${hl === 'all' ? 'hl' : 'ink'}" d="${g.d}"/>`;
+            const show = hl === 'contrast' ? g.pieces : g.pieces.filter(p => hl === 'term' ? p.end : p.role === hl);
+            if (show.length && hl !== 'all') {
+                s += `<clipPath id="cl${k}"><path d="${g.d}"/></clipPath><g clip-path="url(#cl${k})">`;
+                show.forEach(p => { s += `<path class="${hl === 'contrast' && !p.horiz ? 'hl-c' : 'hl'}" d="${p.d}"/>`; });
+                s += '</g>';
+            }
+            s += '</g>';
+        });
+        // the chosen letter's tag, and a hit area for every letter
+        items.forEach(it => {
+            if (state.sel === it.i && it.g) {
+                const hTop = Math.max(F.height, high(it)) + 20;
+                const tw = fs * 3.4, tx = it.x0 + it.adv / 2 - tw / 2;
+                s += `<rect class="seltag" x="${f1(tx)}" y="${f1(Y(hTop) - fs * 1.5)}" width="${f1(tw)}" height="${f1(fs * 1.35)}" rx="${f1(fs * 0.3)}"/>`;
+                s += `<text class="seltxt" direction="rtl" unicode-bidi="embed" x="${f1(tx + tw / 2)}" y="${f1(Y(hTop) - fs * 0.5)}" font-size="${f1(fs * 0.85)}" text-anchor="middle">${it.ch} · אות ${it.i + 1}</text>`;
+            }
+            if (it.g) s += `<rect class="hit" data-i="${it.i}" x="${f1(it.x0)}" y="0" width="${f1(it.adv)}" height="${f1(vbH)}"/>`;
+        });
+        const svg = $('stage');
+        svg.setAttribute('viewBox', `${-padL} 0 ${f1(vbW)} ${f1(vbH)}`);
+        svg.style.direction = 'ltr';
+        svg.innerHTML = s;
+    }
+
+    // a word with no guides, for the title and for copying out
+    function plainSVG(text, F, overrides, fill) {
+        const { items, total } = setLine(text, F, overrides);
+        const top = Math.max(F.height, ...items.map(it => it.g ? it.g.top + (it.g.asc ? F.asc : 0) + (it.L.dy || 0) : 0)) + 10;
+        const bottom = Math.max(0, ...items.map(it => it.g ? -(it.g.bot + (it.L.dy || 0)) + (it.g.desc ? F.desc : 0) : 0)) + 10;
+        let s = '';
+        items.forEach(it => {
+            if (!it.g) return;
+            const g = it.g, cx = g.sb + (g.W + g.ov) / 2, cy = (g.top + g.bot) / 2;
+            const tr = `translate(${f1(it.x0 + g.sb)} ${f1(top - (it.L.dy || 0))})` + (it.L.rot ? ` rotate(${-it.L.rot} ${f1(cx - g.sb)} ${f1(-cy)})` : '') + ' scale(1 -1)';
+            s += `<g transform="${tr}"><path${fill ? ` fill="${fill}"` : ''} d="${g.d}"/></g>`;
+        });
+        return { viewBox: `-10 0 ${f1(total + 20)} ${f1(top + bottom)}`, body: s };
+    }
+
+    function drawLogo() {
+        const p = plainSVG('בית היציקה', state.font, null);
+        const svg = $('logo');
+        svg.setAttribute('viewBox', p.viewBox);
+        svg.innerHTML = p.body;
+    }
+
+    function letterSVG(ch, F, L, pad) {
+        const g = glyph(ch, F, L);
+        const top = Math.max(F.height + F.asc, g.top + (g.asc ? F.asc : 0)) + pad;
+        const bottom = Math.max(F.desc, -g.bot + (g.desc ? F.desc : 0)) + pad;
+        const w = Math.max(g.adv, F.height * 0.9);
+        const x = (w - g.adv) / 2 + g.sb;
+        return `<svg viewBox="0 0 ${f1(w)} ${f1(top + bottom)}" aria-hidden="true"><line x1="0" x2="${f1(w)}" y1="${f1(top)}" y2="${f1(top)}"/><g transform="translate(${f1(x)} ${f1(top)}) scale(1 -1)"><path class="ink" d="${g.d}"/></g></svg>`;
+    }
+
+    function drawAbc() {
+        $('abc').innerHTML = [...ABC].map(ch => `<button type="button" data-ch="${ch}" aria-label="הוספת ${ch}">${letterSVG(ch, state.font, null, 40)}</button>`).join('');
+    }
+
+    // ═════════ controls ═════════
+    // every setting is a slider and a number box that stay in step; shares are typed in %
+    const shown = (c, v) => c.pct ? Math.round(v * 100) : (c.step >= 1 ? Math.round(v) : Math.round(v * 10) / 10);
+    function slider(c, value, id) {
+        const unit = c.pct ? '%' : (c.unit || '');
+        return `<div class="ctl" data-k="${c.k}"><div class="row"><label for="${id}-n">${c.label}</label>
+            <span class="num"><input type="number" id="${id}-n" inputmode="decimal" step="${c.pct ? 1 : c.step}" min="${shown(c, c.min)}" max="${shown(c, c.max)}" value="${shown(c, value)}"><i>${unit}</i></span></div>
+            <input type="range" id="${id}" min="${c.min}" max="${c.max}" step="${c.step}" value="${value}" aria-label="${c.label}"><small>${c.tip}</small></div>`;
+    }
+    // listen to both the sliders and the number boxes of a pane; apply(c, value) gets the value in the setting's own terms
+    function wire(pane, prefix, list, apply) {
+        const find = (el) => {
+            const id = (el.id || '').replace(/-n$/, '');
+            const c = id.startsWith(prefix) && list.find(c => !Array.isArray(c) && prefix + c.k === id);
+            return c ? { c, id } : null;
+        };
+        pane.addEventListener('input', (e) => {
+            const m = find(e.target);
+            if (!m) return;
+            let v;
+            if (e.target.type === 'range') {
+                v = parseFloat(e.target.value);
+                $(m.id + '-n').value = shown(m.c, v);
+            } else {
+                const n = parseFloat(e.target.value);
+                if (!isFinite(n)) return;                       // still typing
+                v = Math.min(m.c.max, Math.max(m.c.min, m.c.pct ? n / 100 : n));
+                $(m.id).value = v;
+            }
+            apply(m.c, v);
+        });
+        // leaving a number box shows the value that was actually used (a number past the edge is held at the edge)
+        pane.addEventListener('change', (e) => {
+            const m = find(e.target);
+            if (m && e.target.type === 'number') e.target.value = shown(m.c, parseFloat($(m.id).value));
+        });
+    }
+    function buildFontPane() {
+        $('presets').innerHTML = PRESETS.map((p, i) => `<button type="button" class="chip" data-p="${i}">${p.name}</button>`).join('');
+        $('font-ctls').innerHTML = FONT_CTLS.map(c => Array.isArray(c) ? `<h2>${c[0]}</h2>` : slider(c, state.font[c.k], 'f-' + c.k)).join('');
+    }
+    function syncFontPane() {
+        FONT_CTLS.forEach(c => { if (Array.isArray(c)) return; $('f-' + c.k).value = state.font[c.k]; $('f-' + c.k + '-n').value = shown(c, state.font[c.k]); });
+    }
+    function buildLetterPane() {
+        const chars = [...state.word];
+        const pick = chars.map((ch, i) => LETTERS[ch] ? `<button type="button" data-sel="${i}" class="${state.sel === i ? 'on' : ''}" aria-label="אות ${i + 1}: ${ch}">${ch}</button>` : '').join('');
+        const it = LETTERS[chars[state.sel]] ? state.sel : null;
+        let html = `<h2>איזו אות?</h2><div class="pick">${pick}</div>`;
+        if (it === null) {
+            html += `<p class="empty">בחרו אות כאן או לחצו עליה במילה.</p>`;
+        } else {
+            const L = state.letters[it] || {};
+            const ch = chars[it];
+            const same = chars.filter(c => c === ch).length;
+            html += `<div class="letter-head">${letterSVG(ch, state.font, L, 30)}<div><b>${ch}, האות ה־${it + 1} במילה</b><span>השינויים כאן חלים רק עליה</span></div></div>`;
+            html += LETTER_CTLS.map(c => slider(c, L[c.k] ?? c.def, 'l-' + c.k)).join('');
+            html += `<div class="chips" style="margin-top:10px"><button type="button" class="chip" id="l-reset">איפוס האות</button>${same > 1 ? `<button type="button" class="chip" id="l-all">אותו דבר לכל ה־${ch}</button>` : ''}</div>`;
+        }
+        $('p-letter').innerHTML = html;
+    }
+    function buildTerms() {
+        $('terms').innerHTML = TERMS.map((t, i) => `<button type="button" class="term${state.term === t.hl ? ' on' : ''}" data-t="${i}"><b>${t.name}</b><span>${t.text}</span>${t.ex ? `<i>${t.ex}</i>` : ''}</button>`).join('');
+    }
+
+    function render(all) {
+        drawStage();
+        if (all !== false) { drawLogo(); drawAbc(); }
+        save();
+    }
+    function refreshLetterHead() {
+        const head = document.querySelector('#p-letter .letter-head svg');
+        if (!head) return;
+        const ch = [...state.word][state.sel];
+        head.outerHTML = letterSVG(ch, state.font, state.letters[state.sel] || {}, 30);
+    }
+
+    // font sliders
+    wire($('font-ctls'), 'f-', FONT_CTLS, (c, v) => {
+        state.font[c.k] = v;
+        document.querySelectorAll('#font-ctls .ctl').forEach(el => el.classList.toggle('live', el.dataset.k === c.k));
+        flash = c.hl;
+        clearTimeout(flashTimer);
+        flashTimer = setTimeout(() => { flash = null; document.querySelectorAll('#font-ctls .ctl.live').forEach(el => el.classList.remove('live')); drawStage(); }, 1100);
+        render();
+        refreshLetterHead();
+    });
+    $('presets').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-p]');
+        if (!b) return;
+        state.font = { ...DEF, ...PRESETS[+b.dataset.p].v };
+        syncFontPane();
+        document.querySelectorAll('#presets .chip').forEach(c => c.classList.toggle('on', c === b));
+        render();
+    });
+
+    // letter sliders
+    wire($('p-letter'), 'l-', LETTER_CTLS, (c, v) => {
+        const L = state.letters[state.sel] = state.letters[state.sel] || {};
+        L[c.k] = v;
+        render(false);
+        refreshLetterHead();
+    });
+    $('p-letter').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-sel]');
+        if (b) { select(+b.dataset.sel); return; }
+        if (e.target.id === 'l-reset') { delete state.letters[state.sel]; buildLetterPane(); render(false); }
+        if (e.target.id === 'l-all') {
+            const chars = [...state.word], ch = chars[state.sel], L = state.letters[state.sel] || {};
+            chars.forEach((c, i) => { if (c === ch) state.letters[i] = { ...L }; });
+            render(false);
+            toast(`כל ה־${ch} במילה קיבלו את אותם שינויים`);
+        }
+    });
+
+    function select(i) {
+        state.sel = i;
+        buildLetterPane();
+        openTab('letter');
+        render(false);
+    }
+    $('stage').addEventListener('click', (e) => {
+        const r = e.target.closest('.hit');
+        if (r) select(+r.dataset.i);
+    });
+
+    // terms
+    $('terms').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-t]');
+        if (!b) return;
+        const t = TERMS[+b.dataset.t];
+        state.term = state.term === t.hl ? null : t.hl;
+        buildTerms();
+        render(false);
+    });
+
+    // tabs
+    function openTab(name) {
+        ['font', 'letter', 'terms'].forEach(n => {
+            $('t-' + n).setAttribute('aria-selected', String(n === name));
+            $('p-' + n).hidden = n !== name;
+        });
+    }
+    ['font', 'letter', 'terms'].forEach(n => $('t-' + n).addEventListener('click', () => { if (n === 'letter') buildLetterPane(); openTab(n); }));
+
+    // the word
+    $('word').addEventListener('input', (e) => {
+        const before = [...state.word], after = [...e.target.value];
+        // keep each letter's own settings only while it is still the same letter in the same place
+        Object.keys(state.letters).forEach(i => { if (before[i] !== after[i]) delete state.letters[i]; });
+        state.word = e.target.value;
+        if (state.sel >= after.length) state.sel = null;
+        buildLetterPane();
+        render(false);
+    });
+    $('abc').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-ch]');
+        if (!b) return;
+        if ([...state.word].length >= 24) return;
+        state.word += b.dataset.ch;
+        $('word').value = state.word;
+        buildLetterPane();
+        render(false);
+    });
+
+    // copy the word as an SVG drawing
+    let toastTimer;
+    function toast(msg) {
+        const t = $('toast');
+        t.textContent = msg;
+        t.classList.add('on');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('on'), 2200);
+    }
+    $('copy-svg').addEventListener('click', () => {
+        const p = plainSVG(state.word, state.font, state.letters, '#111');
+        const text = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${p.viewBox}">${p.body}</svg>`;
+        const fallback = () => {
+            let box = $('copybox');
+            if (!box) { box = document.createElement('textarea'); box.id = 'copybox'; box.readOnly = true; box.setAttribute('aria-label', 'קוד SVG להעתקה'); document.querySelector('.wordbar').appendChild(box); }
+            box.value = text; box.focus(); box.select();
+            toast('לא הצלחתי להעתיק לבד. הקוד מסומן, העתיקו אותו');
+        };
+        try {
+            navigator.clipboard.writeText(text).then(() => toast('המילה הועתקה כ־SVG. אפשר להדביק בפיגמה או באילוסטרייטור'), fallback);
+        } catch (e) { fallback(); }
+    });
+    $('reset-all').addEventListener('click', () => {
+        state = fresh();
+        $('word').value = state.word;
+        syncFontPane();
+        document.querySelectorAll('#presets .chip').forEach(c => c.classList.remove('on'));
+        buildLetterPane(); buildTerms();
+        render();
+    });
+
+    // start
+    $('word').value = state.word;
+    buildFontPane();
+    buildLetterPane();
+    buildTerms();
+    if (state.sel !== null && LETTERS[[...state.word][state.sel]]) openTab('letter');
+    render();
+})();
+</script>
+</body>
+</html>

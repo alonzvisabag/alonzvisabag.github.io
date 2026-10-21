@@ -10,6 +10,7 @@ Plain HTML/CSS portfolio site hosted on GitHub Pages at https://alonzvisabag.git
 - `portfolio/` — project pages (`far.html`, `sixty.html`, shared `case.css`), phone videos and stills in `portfolio/media/`
 - `demo/` — demos of the two gift sites with invented names and blurred photos (noindex)
 - `roni/`, `galit/` — the real gift sites (private, noindex)
+- `font-lab/` — "בית היציקה", a Hebrew font builder (sliders for each part of the letters, per-letter tweaks in a word); a public copy of a Claude artifact, noindex
 - `image-1-nobg.png` … `image-10-nobg.png` and the Hebrew-named Instagram post images — artwork in the root folder (not a subfolder)
 
 ## Owner
