@@ -13,12 +13,13 @@ const MAX_TEXT = 20000;
 const FLOOD_WINDOW_MS = 10 * 60 * 1000;
 const FLOOD_MAX = 30;
 
+// Sends a Telegram message to Alon; returns its id (so it can be edited later), or null.
 async function notify(env, text) {
   const token = (env.TELEGRAM_BOT_TOKEN || '').trim();
   const chatId = (env.TELEGRAM_CHAT_ID || '').trim();
   if (!token || !chatId) {
     console.log('notify: telegram not configured, skipping');
-    return;
+    return null;
   }
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -28,11 +29,33 @@ async function notify(env, text) {
     });
     if (!res.ok) {
       console.error('notify: telegram send failed', res.status, await res.text());
-    } else {
-      console.log('notify: telegram send ok');
+      return null;
     }
+    console.log('notify: telegram send ok');
+    const data = await res.json().catch(() => ({}));
+    return data && data.result ? data.result.message_id : null;
   } catch (e) {
     console.error('notify: telegram send threw', e.message);
+    return null;
+  }
+}
+
+// Replaces the text of a message sent earlier (no new notification). True if it worked.
+async function editMessage(env, messageId, text) {
+  const token = (env.TELEGRAM_BOT_TOKEN || '').trim();
+  const chatId = (env.TELEGRAM_CHAT_ID || '').trim();
+  if (!token || !chatId || !messageId) return false;
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/editMessageText`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, message_id: messageId, text }),
+    });
+    if (res.ok) return true;
+    const err = await res.text();
+    return /not modified/i.test(err);
+  } catch (e) {
+    return false;
   }
 }
 
@@ -430,8 +453,7 @@ async function handleVisit(request, env) {
   if (times === 1) lines.push('ביקור ראשון מהמכשיר הזה');
   else if (times > 1 && times < 10000) lines.push(`ביקור מספר ${times} מהמכשיר הזה` + (last > 0 && last < Date.now() ? ` (הקודם ${ago(last)})` : ''));
   if (tag) lines.push(`תגית בקישור: ${tag}`);
-  if (code) lines.push('סיכום של מה שעשו יגיע כשייצאו מהאתר');
-  await notify(env, lines.join('\n'));
+  // No Telegram message here any more: each visit gets one message, its summary (handleVisitSummary).
   await logVisit(env, {
     type: 'arrive', code, page: PAGE_NAMES[page] || page, source: sourceOf(ref, ua), referrer: ref, device: deviceOf(ua),
     place, network: networkOf(cf), tag, visitNo: times || null, lastVisit: last > 0 ? new Date(last).toISOString() : null,
@@ -486,8 +508,9 @@ async function logVisit(env, entry) {
 }
 
 const SUMMARY_MAX_PER_HOUR = 60;
-const SUMMARY_MAX_PER_VISIT = 6;
+const SUMMARY_MAX_PER_VISIT = 12;
 const summariesSent = new Map();
+const summaryMessages = new Map();   // visit code → the Telegram message that later updates edit
 let summaryHourStart = 0;
 let summaryHourCount = 0;
 
@@ -538,10 +561,14 @@ async function handleVisitSummary(request, env) {
   const tag = clip(body.from, 40).replace(/[^\w\u0590-\u05ff-]/g, '');
 
   const lines = [
-    body.update ? `📋 עוד מהביקור ${code}` : `📋 סיכום ביקור ${code}`,
+    `👀 ביקור באתר · ${code}`,
     `הגיע מ: ${sourceOf(clip(body.ref, 500), ua)} · ${deviceOf(ua)} · ${place}`,
   ];
   if (networkOf(cf)) lines.push(`רשת: ${networkOf(cf)}`);
+  const times = Math.floor(Number(body.n) || 0);
+  const last = Number(body.last) || 0;
+  if (times === 1) lines.push('ביקור ראשון מהמכשיר הזה');
+  else if (times > 1 && times < 10000) lines.push(`ביקור מספר ${times} מהמכשיר הזה` + (last > 0 && last < Date.now() ? ` (הקודם ${ago(last)})` : ''));
   if (tag) lines.push(`תגית בקישור: ${tag}`);
   lines.push(`זמן באתר: ${duration(body.total)}`);
   if (pages.length) lines.push('', 'עמודים:', ...pages);
@@ -549,7 +576,19 @@ async function handleVisitSummary(request, env) {
   if (searches.length) lines.push('', `חיפשו במילון: ${searches.join(', ')}`);
   let text = lines.join('\n');
   if (text.length > 3800) text = text.slice(0, 3800) + '…';
-  await notify(env, text);
+  // one message per visit: if they came back and did more, the same message is updated
+  const earlier = summaryMessages.get(code);
+  if (earlier) {
+    const at = new Date().toLocaleTimeString('he-IL', { timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit' });
+    if (!(await editMessage(env, earlier.id, `${text}\n\n🔄 עודכן ב-${at}`))) {
+      const id = await notify(env, text);
+      if (id) summaryMessages.set(code, { id, at: now });
+    }
+  } else {
+    const id = await notify(env, text);
+    if (id) summaryMessages.set(code, { id, at: now });
+  }
+  for (const [k, v] of summaryMessages) if (now - v.at > 6 * 60 * 60 * 1000) summaryMessages.delete(k);
   await logVisit(env, {
     type: body.update ? 'more' : 'summary', code, source: sourceOf(clip(body.ref, 500), ua), device: deviceOf(ua), place,
     network: networkOf(cf), tag, seconds: Math.round(Number(body.total) || 0),

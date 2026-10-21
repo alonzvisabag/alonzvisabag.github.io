@@ -1,5 +1,6 @@
-// Tells Alon on Telegram when someone opens the site, and when they leave, what they did there:
-// which pages, for how long and how far down, what they clicked and what they searched.
+// Tells Alon on Telegram about each visit, once: when the visitor leaves or switches away, a summary of
+// which pages they saw, for how long and how far down, what they clicked and what they searched.
+// If they come back and do more, the same message is updated rather than a new one sent.
 // Never for Alon himself: open any page with ?me once on each of your own browsers (?notme undoes it).
 // Other scripts add to the summary with window.visitNote(text, key) and window.visitSearch(term).
 (function () {
@@ -25,25 +26,27 @@
         fetch(ENDPOINT + path, { method: 'POST', body, keepalive: true, mode: 'no-cors', headers: { 'Content-Type': 'text/plain' } }).catch(beacon);
     }
 
-    // a new visit gets a short code, so its arrival alert and its summary can be matched in Telegram;
-    // a page opened in a new tab from the site carries the code along (?v=) and continues the same visit
+    // a new visit gets a short code, which keeps its summary to one message in Telegram. A demo opened
+    // in a new tab from the site carries the code along (?v=) and stays quiet: the visit's own summary
+    // already says they opened it.
     if (!st) {
         const carried = /^[A-Z2-9]{4}$/.test(params.get('v') || '') ? params.get('v') : '';
         const code = carried || Array.from({ length: 4 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
         // the link in Alon's CV ends with #about, so those visits are tagged as coming from the CV
         const tag = params.get('from') || (location.hash === '#about' ? 'הקורות-חיים' : '');
-        st = { id: code, ref: document.referrer || '', from: tag, start: Date.now(), pages: [], notes: [], q: [], sig: carried ? 'carried' : '', nav: 0 };
-        save();
+        st = { id: code, ref: document.referrer || '', from: tag, start: Date.now(), pages: [], notes: [], q: [], sig: '', nav: 0, quiet: !!carried, n: 0, last: 0 };
         if (!carried) {
             // how many times this browser has come before, and when it last did
-            let before = null;
             try {
-                before = JSON.parse(localStorage.getItem('visit-history') || 'null');
-                localStorage.setItem('visit-history', JSON.stringify({ n: (before ? before.n : 0) + 1, last: Date.now() }));
+                const before = JSON.parse(localStorage.getItem('visit-history') || 'null');
+                st.n = (before ? before.n : 0) + 1;
+                st.last = before ? before.last : 0;
+                localStorage.setItem('visit-history', JSON.stringify({ n: st.n, last: Date.now() }));
             } catch (e) {}
-            send('/visit', { page: location.pathname, ref: st.ref, from: tag, id: code, n: before ? before.n + 1 : 1, last: before ? before.last : 0 });
         }
+        save();
     }
+    if (st.quiet) return;
 
     const page = { p: location.pathname, ms: 0, d: 0 };
     st.pages.push(page);
@@ -128,7 +131,8 @@
         if (e.target.closest && e.target.closest('.sticker')) window.visitNote('שיחקו עם הסטיקרים');
     }, true);
 
-    // the summary goes out when the visitor leaves or switches away, and again later only if they did more
+    // the summary goes out when the visitor leaves or switches away, and again only if they did something
+    // new (another page, a click, a search), not just because more time passed
     function summary() {
         keepSearch();
         tick();
@@ -136,13 +140,13 @@
         save();
         if (Date.now() - st.nav < 4000) return;
         const total = st.pages.reduce((s, p) => s + p.ms, 0);
-        const sig = JSON.stringify([st.pages.length, Math.floor(total / 60000), st.pages.map(p => Math.floor(p.d / 25)), st.notes.map(n => [n.k, n.t, n.n]), st.q]);
+        const sig = JSON.stringify([st.pages.map(p => p.p), st.notes.map(n => [n.k, n.t, n.n]), st.q]);
         if (sig === st.sig) return;
         const update = !!st.sig;
         st.sig = sig;
         save();
         send('/visit-summary', {
-            id: st.id, update, ref: st.ref, from: st.from, total: Math.round(total / 1000),
+            id: st.id, update, ref: st.ref, from: st.from, total: Math.round(total / 1000), n: st.n, last: st.last,
             pages: st.pages.map(p => ({ p: p.p, s: Math.round(p.ms / 1000), d: p.d })),
             notes: st.notes.map(n => n.n > 1 ? `${n.t} (×${n.n})` : n.t),
             q: st.q,
