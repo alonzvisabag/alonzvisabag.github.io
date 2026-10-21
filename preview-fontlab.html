@@ -306,9 +306,10 @@
         .t-font .sheet { position: relative; flex: 1; min-width: 0; }
         .t-font svg { position: absolute; inset: 12px 18px 30px; width: calc(100% - 36px); height: calc(100% - 42px); overflow: visible; }
         .t-font svg .ink { fill: #13161b; }
+        .t-font svg .hot { fill: #c4136b; }
         .t-font svg .base { stroke: #c4136b; stroke-width: 4; }
         .t-font svg .cap { stroke: #0a7fbd; stroke-width: 3; stroke-dasharray: 10 8; opacity: 0.6; }
-        .t-font .readout { position: absolute; left: 18px; bottom: 10px; font: 500 0.72rem ui-monospace, Menlo, monospace; color: #6d6a64; direction: rtl; }
+        .t-font .readout { position: absolute; left: 18px; bottom: 10px; font: 500 0.78rem ui-monospace, Menlo, monospace; color: #6d6a64; direction: rtl; }
         .t-font .readout b { color: #c4136b; font-weight: 600; }
 
         /* ── word stickers around the headline (drag them) ── */
@@ -803,87 +804,150 @@
         stickerTimer = setTimeout(() => { if (hero.classList.contains('go')) { STICKERS.forEach(st => { st.dx = 0; st.dy = 0; }); placeStickers(); } }, 200);
     });
 
-    // ── בית היציקה: the tile draws "הצלחה" with the tool's own letter engine and never lets it sit still: a wave runs
-    // through the letters (wider, taller, reaching under the line, tilting), while the whole font drifts between thin and
-    // bold, sharp and round, upright and slanted. On a computer the mouse is a lens: the letters under it swell.
-    // The engine is loaded only when the tile is close to the screen.
+    // ── בית היציקה: the tile draws "הצלחה" with the tool's own letter engine, and a little machine keeps re-tuning it:
+    // one command at a time (a letter wider, the whole font bolder, a letter tilted), each a quick straight move and a
+    // stop, the letter being changed lit in magenta and the command printed in the corner. Every few commands it resets.
+    // On a computer the commands go to the letter under the mouse. The engine is loaded only when the tile is close.
     (function () {
         const tile = document.querySelector('.t-font');
         if (!tile) return;
         const svg = tile.querySelector('svg'), readout = tile.querySelector('.readout');
-        const WORD = 'הצלחה';
-        let F0, box, lens = null, running = false, seen = false;
+        const WORD = 'הצלחה', CHARS = [...WORD], N = CHARS.length;
+        const TICK = 720, MOVE = 150, RESET_EVERY = 7, LENGTH = 42;
+        // what the machine can set, and to which values
+        const FONT_OPS = {
+            weight: { name: 'משקל', values: [56, 92, 130, 168], show: (v) => Math.round(v) },
+            slant: { name: 'נטייה', values: [-10, 0, 10], show: (v) => Math.round(v) + '°' },
+            round: { name: 'עיגול', values: [0, 0.5, 1], show: (v) => Math.round(v * 100) + '%' },
+            contrast: { name: 'ניגודיות', values: [-0.3, 0, 0.35], show: (v) => Math.round(v * 100) + '%' },
+        };
+        const LETTER_OPS = {
+            w: { name: 'רוחב', values: [0.75, 1, 1.3, 1.6], show: (v) => Math.round(v * 100) + '%' },
+            h: { name: 'גובה', values: [0.8, 1, 1.32], show: (v) => Math.round(v * 100) + '%' },
+            hd: { name: 'למטה', values: [0, 0.24], show: (v) => Math.round(v * 100) + '%' },
+            rot: { name: 'סיבוב', values: [-9, 0, 9], show: (v) => Math.round(v) + '°' },
+        };
+        const NEUTRAL_FONT = { weight: 92, slant: 0, round: 0.3, contrast: 0.2 };
+        const NEUTRAL_LETTER = { w: 1, h: 1, hd: 0, rot: 0 };
+        let F0, box, program, cur, moving = null, step = 0, nextAt = 0, lensAt = null, hot = -1, running = false, seen = false;
 
-        // the font and each letter at time t (seconds); lens is where the mouse is across the sheet (0 right … 1 left)
-        function shape(t, lensAt) {
-            const F = {
-                ...F0,
-                weight: 108 + 46 * Math.sin(t * 0.9),
-                slant: 9 * Math.sin(t * 0.55),
-                round: 0.5 + 0.5 * Math.sin(t * 0.7 + 1),
-                contrast: 0.25 * Math.sin(t * 0.45),
-            };
-            const n = [...WORD].length, L = {};
-            for (let i = 0; i < n; i++) {
-                const p = t * 1.6 - i * 0.9;
-                const near = lensAt == null ? 0 : Math.exp(-Math.pow(((i + 0.5) / n - lensAt) / 0.2, 2));
-                L[i] = {
-                    w: 1 + 0.35 * Math.sin(p) + 0.6 * near,
-                    h: 1 + 0.26 * Math.sin(p * 1.2 + 1.3) + 0.35 * near,
-                    hd: Math.max(0, 0.18 * Math.sin(p * 0.8 + 2.4)),
-                    wt: (1 + 0.25 * Math.sin(p + 2)) * (1 + 0.4 * near),
-                    rot: 5 * Math.sin(p * 0.7),
-                };
+        const neutral = () => ({ font: { ...NEUTRAL_FONT }, L: CHARS.map(() => ({ ...NEUTRAL_LETTER })) });
+        const clone = (st) => ({ font: { ...st.font }, L: st.L.map(l => ({ ...l })) });
+        // a fixed run of commands (the same every visit), so the frame can be measured once and the word never jumps in it
+        function makeProgram() {
+            let seed = 7;
+            const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+            const pick = (a) => a[Math.floor(rnd() * a.length)];
+            const out = [];
+            let st = neutral();
+            for (let k = 0; k < LENGTH; k++) {
+                if (k % RESET_EVERY === RESET_EVERY - 1) { out.push({ reset: true }); st = neutral(); continue; }
+                let op;
+                do {
+                    if (rnd() < 0.3) { const key = pick(Object.keys(FONT_OPS)); op = { key, to: pick(FONT_OPS[key].values) }; if (st.font[key] === op.to) op = null; }
+                    else { const key = pick(Object.keys(LETTER_OPS)), i = Math.floor(rnd() * N); op = { key, i, to: pick(LETTER_OPS[key].values) }; if (st.L[i][key] === op.to) op = null; }
+                } while (!op);
+                out.push(op);
+                st = apply(st, op);
             }
-            return { F, L };
+            return out;
         }
-        // a frame big enough for every moment of the wave, so the word never jumps around in it
+        function apply(st, op, i) {
+            const next = clone(st);
+            if (op.reset) return neutral();
+            if (op.i == null) next.font[op.key] = op.to;
+            else next.L[i == null ? op.i : i][op.key] = op.to;
+            return next;
+        }
+        function layout(st) {
+            const F = { ...F0, ...st.font };
+            const L = {};
+            st.L.forEach((l, i) => { L[i] = l; });
+            return { F, ...Foundry.setLine(WORD, F, L) };
+        }
         function measure() {
-            let w = 0, top = 0, bottom = 0;
-            for (let t = 0; t < 24; t += 0.4) {
-                const { F, L } = shape(t, null);
-                const { items, total } = Foundry.setLine(WORD, F, L);
+            let st = neutral(), w = 0, top = 0, bottom = 0;
+            const look = (s) => {
+                const { F, items, total } = layout(s);
                 w = Math.max(w, total);
                 items.forEach(it => { if (it.g) { top = Math.max(top, it.g.top + (it.g.asc ? F.asc : 0)); bottom = Math.max(bottom, -it.g.bot); } });
-            }
-            return { w: w * 1.18 + 60, top: top * 1.12 + 40, bottom: bottom + 40 };   // plus room for the lens
+            };
+            look(st);
+            program.forEach(op => { st = apply(st, op); look(st); });
+            return { w: w * 1.1 + 60, top: top * 1.08 + 40, bottom: bottom + 50 };   // a little extra for the mouse's choices
         }
-        function draw(t) {
-            const { F, L } = shape(t, lens);
-            const { items, total } = Foundry.setLine(WORD, F, L);
+        // between two states, part of the way (0…1)
+        function mix(a, b, p) {
+            const m = clone(a);
+            Object.keys(m.font).forEach(k => { m.font[k] = a.font[k] + (b.font[k] - a.font[k]) * p; });
+            m.L.forEach((l, i) => Object.keys(l).forEach(k => { l[k] = a.L[i][k] + (b.L[i][k] - a.L[i][k]) * p; }));
+            return m;
+        }
+        function draw(st) {
+            const { F, items, total } = layout(st);
             const f1 = Foundry.f1, top = box.top, dx = (box.w - total) / 2;
             let s = `<line class="cap" x1="-40" x2="${f1(box.w + 40)}" y1="${f1(top - F0.height)}" y2="${f1(top - F0.height)}"/>`;
             s += `<line class="base" x1="-40" x2="${f1(box.w + 40)}" y1="${f1(top)}" y2="${f1(top)}"/>`;
-            items.forEach(it => {
+            items.forEach((it, k) => {
                 if (!it.g) return;
                 const g = it.g, cx = (g.W + g.ov) / 2, cy = (g.top + g.bot) / 2;
-                s += `<g transform="translate(${f1(dx + it.x0 + g.sb)} ${f1(top)}) rotate(${f1(-it.L.rot)} ${f1(cx)} ${f1(-cy)}) scale(1 -1)"><path class="ink" d="${g.d}"/></g>`;
+                s += `<g transform="translate(${f1(dx + it.x0 + g.sb)} ${f1(top)}) rotate(${f1(-(it.L.rot || 0))} ${f1(cx)} ${f1(-cy)}) scale(1 -1)"><path class="${k === hot ? 'hot' : 'ink'}" d="${g.d}"/></g>`;
             });
             svg.innerHTML = s;
-            readout.innerHTML = `משקל <b>${Math.round(F.weight)}</b> · נטייה <b dir="ltr">${Math.round(F.slant)}°</b> · עיגול <b>${Math.round(F.round * 100)}%</b>`;
+        }
+        function say(op, i) {
+            if (op.reset) { readout.innerHTML = '› <b>איפוס</b>'; return; }
+            const o = op.i == null ? FONT_OPS[op.key] : LETTER_OPS[op.key];
+            readout.innerHTML = `› ${op.i == null ? '' : CHARS[i] + ' · '}${o.name} ← <b dir="ltr">${o.show(op.to)}</b>`;
+        }
+        // the letter under the mouse, if the mouse is over the word
+        function letterAt() {
+            if (lensAt == null) return null;
+            return Math.min(N - 1, Math.max(0, Math.floor(lensAt * N)));
         }
         function frame(now) {
             if (!running) return;
-            draw(now / 1000);
+            if (now >= nextAt) {
+                const op = program[step % program.length];
+                const i = op.i == null ? null : (letterAt() ?? op.i);
+                moving = { from: cur, to: apply(cur, op, i), t0: now };
+                hot = i == null ? -1 : i;
+                say(op, i);
+                step++;
+                nextAt = now + TICK;
+            }
+            if (moving) {
+                const p = Math.min(1, (now - moving.t0) / MOVE);
+                cur = p < 1 ? mix(moving.from, moving.to, p) : moving.to;
+                if (p >= 1) { cur = moving.to; moving = null; }
+                draw(cur);
+            } else if (hot >= 0 && now > nextAt - TICK + MOVE + 260) { hot = -1; draw(cur); }
             requestAnimationFrame(frame);
         }
         function start() {
             F0 = Foundry.DEF;
+            program = makeProgram();
             box = measure();
+            cur = neutral();
             svg.setAttribute('viewBox', `0 0 ${Foundry.f1(box.w)} ${Foundry.f1(box.top + box.bottom)}`);
-            if (still) { draw(2.2); return; }
+            draw(cur);
+            readout.innerHTML = '› <b>מוכן</b>';
+            if (still) return;
             new IntersectionObserver(([en]) => {
                 const was = running;
                 running = en.isIntersecting;
-                if (running && !was) requestAnimationFrame(frame);
+                if (running && !was) { nextAt = performance.now() + 400; requestAnimationFrame(frame); }
             }).observe(tile);
             if (mouse) {
                 const sheet = tile.querySelector('.sheet');
                 sheet.addEventListener('mousemove', (e) => {
-                    const r = sheet.getBoundingClientRect();
-                    lens = Math.min(1, Math.max(0, (r.right - e.clientX) / r.width));
+                    const r = svg.getBoundingClientRect();
+                    // the word is centred in the frame; across it, right to left, 0…1
+                    const span = r.width * ((box.w - 60) / 1.1) / box.w, right = r.left + (r.width + span) / 2;
+                    const at = (right - e.clientX) / span;
+                    lensAt = at >= 0 && at <= 1 ? at : null;
                 });
-                sheet.addEventListener('mouseleave', () => { lens = null; });
+                sheet.addEventListener('mouseleave', () => { lensAt = null; });
             }
         }
         // load the engine when the tile is near
