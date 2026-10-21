@@ -105,6 +105,7 @@
         ['[data-suggest], #suggest-any', 'לחצו להציע מילה ✉️'],
         ['[data-veggies]', 'לחצו על השם (וקיבלו פירות וירקות)'],
         ['a[href*="demo/"]', 'פתחו הדגמה של אתר'],
+        ['a[href^="font-lab"]', 'פתחו את בית היציקה 🔤'],
     ];
     const wordsTapped = [];
     document.addEventListener('click', (e) => {

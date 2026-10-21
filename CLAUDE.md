@@ -4,13 +4,13 @@
 Plain HTML/CSS portfolio site hosted on GitHub Pages at https://alonzvisabag.github.io
 
 ## Structure
-- `index.html` — the main page: hero with draggable word stickers, a running band of "מילים של מבוגרים", a bento grid of work (the Instagram card opens the posts as stories), and the cover letter as an ICQ-style chat
+- `index.html` — the main page: hero with draggable word stickers, a running band of "מילים של מבוגרים", a bento grid of work (the Instagram card opens the posts as stories; the last card draws "הצלחה" live with the font-lab engine), and the cover letter as an ICQ-style chat
 - `assets/` — pieces the main page loads: `shared.js`/`shared.css` (the opening CV that folds into a paper plane, once per browser), `icq.js`/`icq.css` (the chat), `words.js` (the word list)
 - `old-site.html` — the previous main page, kept for reference (noindex)
 - `portfolio/` — project pages (`far.html`, `sixty.html`, shared `case.css`), phone videos and stills in `portfolio/media/`
 - `demo/` — demos of the two gift sites with invented names and blurred photos (noindex)
 - `roni/`, `galit/` — the real gift sites (private, noindex)
-- `font-lab/` — "בית היציקה", a Hebrew font builder (sliders for each part of the letters, per-letter tweaks in a word); a public copy of a Claude artifact, noindex
+- `font-lab/` — "בית היציקה", a Hebrew font builder (sliders for each part of the letters, per-letter tweaks in a word), linked from the main page; `engine.js` is the letter engine both pages use. A copy of it also lives as a Claude artifact. noindex
 - `image-1-nobg.png` … `image-10-nobg.png` and the Hebrew-named Instagram post images — artwork in the root folder (not a subfolder)
 
 ## Owner

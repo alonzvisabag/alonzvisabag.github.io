@@ -290,6 +290,27 @@
         .t-rescue:hover img { transform: rotate(4deg) translateY(-10px); }
         .t-rescue .txt { max-width: 60%; }
 
+        /* בית היציקה: a sheet of graph paper with a word whose weight keeps changing (the mouse takes over on a computer) */
+        .t-font {
+            grid-column: span 4;
+            padding: 0;
+            flex-direction: row;
+            background-color: #fbfcfd;
+            background-image: linear-gradient(#e6ebf0 1px, transparent 1px), linear-gradient(90deg, #e6ebf0 1px, transparent 1px);
+            background-size: 14px 14px;
+            border-color: #d6dde5;
+        }
+        .t-font .txt { position: relative; z-index: 2; flex: 0 0 34%; min-width: 0; padding: 22px; display: flex; flex-direction: column; }
+        .t-font .go { color: #c4136b; }
+        .t-font .sheet { position: relative; flex: 1; min-width: 0; }
+        .t-font svg { position: absolute; inset: 12px 18px 30px; width: calc(100% - 36px); height: calc(100% - 42px); overflow: visible; }
+        .t-font svg .ink { fill: #13161b; }
+        .t-font svg .hot { fill: #c4136b; }
+        .t-font svg .base { stroke: #c4136b; stroke-width: 4; }
+        .t-font svg .cap { stroke: #0a7fbd; stroke-width: 3; stroke-dasharray: 10 8; opacity: 0.6; }
+        .t-font .readout { position: absolute; left: 18px; bottom: 10px; font: 500 0.78rem ui-monospace, Menlo, monospace; color: #6d6a64; direction: rtl; }
+        .t-font .readout b { color: #c4136b; font-weight: 600; }
+
         /* ── word stickers around the headline (drag them) ── */
         .sticker {
             position: absolute;
@@ -490,6 +511,8 @@
             .tile h3 { font-size: 1.2rem; }
             .t-words .logo { width: 38%; }
             .t-words .fan { height: 150px; }
+            .t-font { grid-column: span 2; grid-row: span 2; flex-direction: column; }
+            .t-font .txt { flex: none; padding: 18px 18px 0; }
         }
         @media (max-width: 600px) {
             .st-frame { width: 100vw; border-radius: 0; height: 100vh; height: 100dvh; }
@@ -597,6 +620,15 @@
         <a class="tile t-rescue" href="rescue-banner.html" target="_blank" rel="noopener" data-cursor="לפתוח ↗" data-reveal>
             <div class="txt"><div class="k">(יעני) תיק עבודות</div><h3>רסקיו</h3></div>
             <img src="rescue-bottle-nobg.png" alt="בקבוק רסקיו">
+        </a>
+        <a class="tile t-font" href="font-lab/" data-cursor="לבנות פונט ←" data-reveal>
+            <div class="txt">
+                <div class="k">כלי שבניתי</div>
+                <h3>בית היציקה</h3>
+                <p>בונים פונט עברי חלק אחרי חלק: גג, רגל, קוץ, עוקץ. ואפשר למתוח אות אחת בתוך מילה.</p>
+                <span class="go">לבנות פונט ←</span>
+            </div>
+            <div class="sheet"><svg aria-hidden="true"></svg><span class="readout"></span></div>
         </a>
     </div>
 </section>
@@ -768,6 +800,207 @@
         clearTimeout(stickerTimer);
         stickerTimer = setTimeout(() => { if (hero.classList.contains('go')) { STICKERS.forEach(st => { st.dx = 0; st.dy = 0; }); placeStickers(); } }, 200);
     });
+
+    // ── בית היציקה: the tile draws "הצלחה" with the tool's own letter engine and takes turns between two moods.
+    // The machine: one command at a time (a letter wider, the whole font bolder, a letter tilted), each a quick straight
+    // move and a stop, the letter being changed lit in magenta and the command printed in the corner, then a reset.
+    // The wave: a soft wave runs through the letters while the font drifts between thin and bold, sharp and round.
+    // Each mood starts and ends at the word's plain shape, so the hand-over never jumps. On a computer the mouse steers:
+    // the machine's commands go to the letter under it, and in the wave that letter swells.
+    // The engine is loaded only when the tile is close.
+    (function () {
+        const tile = document.querySelector('.t-font');
+        if (!tile) return;
+        const svg = tile.querySelector('svg'), readout = tile.querySelector('.readout');
+        const WORD = 'הצלחה', CHARS = [...WORD], N = CHARS.length;
+        const TICK = 720, MOVE = 150, RESET_EVERY = 7, LENGTH = 42, WAVE = 6000, EASE = 900;
+        // what the machine can set, and to which values
+        const FONT_OPS = {
+            weight: { name: 'משקל', values: [56, 92, 130, 168], show: (v) => Math.round(v) },
+            slant: { name: 'נטייה', values: [-10, 0, 10], show: (v) => Math.round(v) + '°' },
+            round: { name: 'עיגול', values: [0, 0.5, 1], show: (v) => Math.round(v * 100) + '%' },
+            contrast: { name: 'ניגודיות', values: [-0.3, 0, 0.35], show: (v) => Math.round(v * 100) + '%' },
+        };
+        const LETTER_OPS = {
+            w: { name: 'רוחב', values: [0.75, 1, 1.3, 1.6], show: (v) => Math.round(v * 100) + '%' },
+            h: { name: 'גובה', values: [0.8, 1, 1.32], show: (v) => Math.round(v * 100) + '%' },
+            hd: { name: 'למטה', values: [0, 0.24], show: (v) => Math.round(v * 100) + '%' },
+            rot: { name: 'סיבוב', values: [-9, 0, 9], show: (v) => Math.round(v) + '°' },
+        };
+        const NEUTRAL_FONT = { weight: 92, slant: 0, round: 0.3, contrast: 0.2 };
+        const NEUTRAL_LETTER = { w: 1, h: 1, hd: 0, rot: 0, wt: 1 };
+        let F0, box, program, cur, moving = null, step = 0, nextAt = 0, lensAt = null, hot = -1, running = false, seen = false;
+        let mood = 'machine', waveFrom = 0, justReset = false;
+
+        const neutral = () => ({ font: { ...NEUTRAL_FONT }, L: CHARS.map(() => ({ ...NEUTRAL_LETTER })) });
+        const clone = (st) => ({ font: { ...st.font }, L: st.L.map(l => ({ ...l })) });
+        // a fixed run of commands (the same every visit), so the frame can be measured once and the word never jumps in it
+        function makeProgram() {
+            let seed = 7;
+            const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+            const pick = (a) => a[Math.floor(rnd() * a.length)];
+            const out = [];
+            let st = neutral();
+            for (let k = 0; k < LENGTH; k++) {
+                if (k % RESET_EVERY === RESET_EVERY - 1) { out.push({ reset: true }); st = neutral(); continue; }
+                let op;
+                do {
+                    if (rnd() < 0.3) { const key = pick(Object.keys(FONT_OPS)); op = { key, to: pick(FONT_OPS[key].values) }; if (st.font[key] === op.to) op = null; }
+                    else { const key = pick(Object.keys(LETTER_OPS)), i = Math.floor(rnd() * N); op = { key, i, to: pick(LETTER_OPS[key].values) }; if (st.L[i][key] === op.to) op = null; }
+                } while (!op);
+                out.push(op);
+                st = apply(st, op);
+            }
+            return out;
+        }
+        function apply(st, op, i) {
+            const next = clone(st);
+            if (op.reset) return neutral();
+            if (op.i == null) next.font[op.key] = op.to;
+            else next.L[i == null ? op.i : i][op.key] = op.to;
+            return next;
+        }
+        function waveState(t, env, near) {
+            const st = neutral();
+            const f = (k, v) => { st.font[k] += (v - st.font[k]) * env; };
+            f('weight', 108 + 46 * Math.sin(t * 0.9));
+            f('slant', 9 * Math.sin(t * 0.55));
+            f('round', 0.5 + 0.5 * Math.sin(t * 0.7 + 1));
+            f('contrast', 0.25 * Math.sin(t * 0.45));
+            st.L.forEach((l, i) => {
+                const p = t * 1.6 - i * 0.9, n = near ? near(i) * env : 0;
+                l.w = 1 + env * 0.35 * Math.sin(p) + 0.6 * n;
+                l.h = 1 + env * 0.26 * Math.sin(p * 1.2 + 1.3) + 0.35 * n;
+                l.hd = env * Math.max(0, 0.18 * Math.sin(p * 0.8 + 2.4));
+                l.wt = (1 + env * 0.25 * Math.sin(p + 2)) * (1 + 0.4 * n);
+                l.rot = env * 5 * Math.sin(p * 0.7);
+            });
+            return st;
+        }
+        function layout(st) {
+            const F = { ...F0, ...st.font };
+            const L = {};
+            st.L.forEach((l, i) => { L[i] = l; });
+            return { F, ...Foundry.setLine(WORD, F, L) };
+        }
+        function measure() {
+            let st = neutral(), w = 0, top = 0, bottom = 0;
+            const look = (s) => {
+                const { F, items, total } = layout(s);
+                w = Math.max(w, total);
+                items.forEach(it => { if (it.g) { top = Math.max(top, it.g.top + (it.g.asc ? F.asc : 0)); bottom = Math.max(bottom, -it.g.bot); } });
+            };
+            look(st);
+            program.forEach(op => { st = apply(st, op); look(st); });
+            for (let t = 0; t < 24; t += 0.4) look(waveState(t, 1));
+            return { w: w * 1.1 + 60, top: top * 1.08 + 40, bottom: bottom + 50 };   // a little extra for the mouse's choices
+        }
+        // between two states, part of the way (0…1)
+        function mix(a, b, p) {
+            const m = clone(a);
+            Object.keys(m.font).forEach(k => { m.font[k] = a.font[k] + (b.font[k] - a.font[k]) * p; });
+            m.L.forEach((l, i) => Object.keys(l).forEach(k => { l[k] = a.L[i][k] + (b.L[i][k] - a.L[i][k]) * p; }));
+            return m;
+        }
+        function draw(st) {
+            const { F, items, total } = layout(st);
+            const f1 = Foundry.f1, top = box.top, dx = (box.w - total) / 2;
+            let s = `<line class="cap" x1="-40" x2="${f1(box.w + 40)}" y1="${f1(top - F0.height)}" y2="${f1(top - F0.height)}"/>`;
+            s += `<line class="base" x1="-40" x2="${f1(box.w + 40)}" y1="${f1(top)}" y2="${f1(top)}"/>`;
+            items.forEach((it, k) => {
+                if (!it.g) return;
+                const g = it.g, cx = (g.W + g.ov) / 2, cy = (g.top + g.bot) / 2;
+                s += `<g transform="translate(${f1(dx + it.x0 + g.sb)} ${f1(top)}) rotate(${f1(-(it.L.rot || 0))} ${f1(cx)} ${f1(-cy)}) scale(1 -1)"><path class="${k === hot ? 'hot' : 'ink'}" d="${g.d}"/></g>`;
+            });
+            svg.innerHTML = s;
+        }
+        function say(op, i) {
+            if (op.reset) { readout.innerHTML = '› <b>איפוס</b>'; return; }
+            const o = op.i == null ? FONT_OPS[op.key] : LETTER_OPS[op.key];
+            readout.innerHTML = `› ${op.i == null ? '' : CHARS[i] + ' · '}${o.name} ← <b dir="ltr">${o.show(op.to)}</b>`;
+        }
+        // the letter under the mouse, if the mouse is over the word
+        function letterAt() {
+            if (lensAt == null) return null;
+            return Math.min(N - 1, Math.max(0, Math.floor(lensAt * N)));
+        }
+        function frame(now) {
+            if (!running) return;
+            if (mood === 'wave') {
+                const e = now - waveFrom;
+                if (e >= WAVE) {
+                    mood = 'machine'; cur = neutral(); nextAt = now + 250; draw(cur);
+                } else {
+                    const lin = Math.max(0, Math.min(1, e / EASE, (WAVE - e) / EASE)), env = lin * lin * (3 - 2 * lin);
+                    const at = letterAt();
+                    cur = waveState(e / 1000, env, at == null ? null : (i) => Math.exp(-Math.pow((i - at) / 1.1, 2)));
+                    draw(cur);
+                    const F = cur.font;
+                    readout.innerHTML = `› גל · משקל <b>${Math.round(F.weight)}</b> · נטייה <b dir="ltr">${Math.round(F.slant)}°</b>`;
+                }
+                requestAnimationFrame(frame);
+                return;
+            }
+            if (now >= nextAt && justReset && !moving) {
+                justReset = false; mood = 'wave'; waveFrom = now; hot = -1;
+                requestAnimationFrame(frame);
+                return;
+            }
+            if (now >= nextAt) {
+                const op = program[step % program.length];
+                const i = op.i == null ? null : (letterAt() ?? op.i);
+                moving = { from: cur, to: apply(cur, op, i), t0: now };
+                hot = i == null ? -1 : i;
+                justReset = !!op.reset;
+                say(op, i);
+                step++;
+                nextAt = now + TICK;
+            }
+            if (moving) {
+                const p = Math.min(1, (now - moving.t0) / MOVE);
+                cur = p < 1 ? mix(moving.from, moving.to, p) : moving.to;
+                if (p >= 1) { cur = moving.to; moving = null; }
+                draw(cur);
+            } else if (hot >= 0 && now > nextAt - TICK + MOVE + 260) { hot = -1; draw(cur); }
+            requestAnimationFrame(frame);
+        }
+        function start() {
+            F0 = Foundry.DEF;
+            program = makeProgram();
+            box = measure();
+            cur = neutral();
+            svg.setAttribute('viewBox', `0 0 ${Foundry.f1(box.w)} ${Foundry.f1(box.top + box.bottom)}`);
+            draw(cur);
+            readout.innerHTML = '› <b>מוכן</b>';
+            if (still) return;
+            new IntersectionObserver(([en]) => {
+                const was = running;
+                running = en.isIntersecting;
+                if (running && !was) { nextAt = performance.now() + 400; requestAnimationFrame(frame); }
+            }).observe(tile);
+            if (mouse) {
+                const sheet = tile.querySelector('.sheet');
+                sheet.addEventListener('mousemove', (e) => {
+                    const r = svg.getBoundingClientRect();
+                    // the word is centred in the frame; across it, right to left, 0…1
+                    const span = r.width * ((box.w - 60) / 1.1) / box.w, right = r.left + (r.width + span) / 2;
+                    const at = (right - e.clientX) / span;
+                    lensAt = at >= 0 && at <= 1 ? at : null;
+                });
+                sheet.addEventListener('mouseleave', () => { lensAt = null; });
+            }
+        }
+        // load the engine when the tile is near
+        new IntersectionObserver(([en], io) => {
+            if (!en.isIntersecting || seen) return;
+            seen = true;
+            io.disconnect();
+            const sc = document.createElement('script');
+            sc.src = 'font-lab/engine.js';
+            sc.onload = start;
+            document.head.appendChild(sc);
+        }, { rootMargin: '400px' }).observe(tile);
+    })();
 
     // ── running band of words (doubled for a seamless loop); tap a word for its card ──
     const band = document.getElementById('wb-track');

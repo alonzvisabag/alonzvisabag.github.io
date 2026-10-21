@@ -356,6 +356,8 @@ const PAGE_NAMES = {
   '/demo/birthday/index.html': 'ההדגמה של 60 ברכות',
   '/demo/birthday/contribute.html': 'ההדגמה של דף המברכים',
   '/rescue-banner.html': 'הבאנר של רסקיו',
+  '/font-lab/': 'בית היציקה',
+  '/font-lab/index.html': 'בית היציקה',
 };
 const BOT_UA = /bot|crawl|spider|slurp|preview|headless|lighthouse|facebookexternalhit|whatsapp\/|telegrambot/i;
 const VISIT_GAP_MS = 30 * 60 * 1000;   // the same visitor is reported at most once per half hour
