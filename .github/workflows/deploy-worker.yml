@@ -1,0 +1,25 @@
+# Deploys the Cloudflare worker (roni/worker) whenever its code changes on main, so nobody has to
+# copy-paste it into the Cloudflare dashboard. Needs two repository secrets, set once in
+# Settings → Secrets and variables → Actions: CLOUDFLARE_API_TOKEN (a token made from the
+# "Edit Cloudflare Workers" template) and CLOUDFLARE_ACCOUNT_ID.
+# The worker's own secrets (GitHub and Telegram tokens) stay in Cloudflare and are not touched.
+name: Deploy the Cloudflare worker
+
+on:
+  push:
+    branches: [main]
+    paths: ['roni/worker/**']
+  workflow_dispatch:
+
+concurrency: worker-deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: roni/worker
