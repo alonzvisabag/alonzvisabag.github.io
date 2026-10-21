@@ -804,16 +804,19 @@
         stickerTimer = setTimeout(() => { if (hero.classList.contains('go')) { STICKERS.forEach(st => { st.dx = 0; st.dy = 0; }); placeStickers(); } }, 200);
     });
 
-    // ── בית היציקה: the tile draws "הצלחה" with the tool's own letter engine, and a little machine keeps re-tuning it:
-    // one command at a time (a letter wider, the whole font bolder, a letter tilted), each a quick straight move and a
-    // stop, the letter being changed lit in magenta and the command printed in the corner. Every few commands it resets.
-    // On a computer the commands go to the letter under the mouse. The engine is loaded only when the tile is close.
+    // ── בית היציקה: the tile draws "הצלחה" with the tool's own letter engine and takes turns between two moods.
+    // The machine: one command at a time (a letter wider, the whole font bolder, a letter tilted), each a quick straight
+    // move and a stop, the letter being changed lit in magenta and the command printed in the corner, then a reset.
+    // The wave: a soft wave runs through the letters while the font drifts between thin and bold, sharp and round.
+    // Each mood starts and ends at the word's plain shape, so the hand-over never jumps. On a computer the mouse steers:
+    // the machine's commands go to the letter under it, and in the wave that letter swells.
+    // The engine is loaded only when the tile is close.
     (function () {
         const tile = document.querySelector('.t-font');
         if (!tile) return;
         const svg = tile.querySelector('svg'), readout = tile.querySelector('.readout');
         const WORD = 'הצלחה', CHARS = [...WORD], N = CHARS.length;
-        const TICK = 720, MOVE = 150, RESET_EVERY = 7, LENGTH = 42;
+        const TICK = 720, MOVE = 150, RESET_EVERY = 7, LENGTH = 42, WAVE = 6000, EASE = 900;
         // what the machine can set, and to which values
         const FONT_OPS = {
             weight: { name: 'משקל', values: [56, 92, 130, 168], show: (v) => Math.round(v) },
@@ -828,8 +831,9 @@
             rot: { name: 'סיבוב', values: [-9, 0, 9], show: (v) => Math.round(v) + '°' },
         };
         const NEUTRAL_FONT = { weight: 92, slant: 0, round: 0.3, contrast: 0.2 };
-        const NEUTRAL_LETTER = { w: 1, h: 1, hd: 0, rot: 0 };
+        const NEUTRAL_LETTER = { w: 1, h: 1, hd: 0, rot: 0, wt: 1 };
         let F0, box, program, cur, moving = null, step = 0, nextAt = 0, lensAt = null, hot = -1, running = false, seen = false;
+        let mood = 'machine', waveFrom = 0, justReset = false;
 
         const neutral = () => ({ font: { ...NEUTRAL_FONT }, L: CHARS.map(() => ({ ...NEUTRAL_LETTER })) });
         const clone = (st) => ({ font: { ...st.font }, L: st.L.map(l => ({ ...l })) });
@@ -859,6 +863,23 @@
             else next.L[i == null ? op.i : i][op.key] = op.to;
             return next;
         }
+        function waveState(t, env, near) {
+            const st = neutral();
+            const f = (k, v) => { st.font[k] += (v - st.font[k]) * env; };
+            f('weight', 108 + 46 * Math.sin(t * 0.9));
+            f('slant', 9 * Math.sin(t * 0.55));
+            f('round', 0.5 + 0.5 * Math.sin(t * 0.7 + 1));
+            f('contrast', 0.25 * Math.sin(t * 0.45));
+            st.L.forEach((l, i) => {
+                const p = t * 1.6 - i * 0.9, n = near ? near(i) * env : 0;
+                l.w = 1 + env * 0.35 * Math.sin(p) + 0.6 * n;
+                l.h = 1 + env * 0.26 * Math.sin(p * 1.2 + 1.3) + 0.35 * n;
+                l.hd = env * Math.max(0, 0.18 * Math.sin(p * 0.8 + 2.4));
+                l.wt = (1 + env * 0.25 * Math.sin(p + 2)) * (1 + 0.4 * n);
+                l.rot = env * 5 * Math.sin(p * 0.7);
+            });
+            return st;
+        }
         function layout(st) {
             const F = { ...F0, ...st.font };
             const L = {};
@@ -874,6 +895,7 @@
             };
             look(st);
             program.forEach(op => { st = apply(st, op); look(st); });
+            for (let t = 0; t < 24; t += 0.4) look(waveState(t, 1));
             return { w: w * 1.1 + 60, top: top * 1.08 + 40, bottom: bottom + 50 };   // a little extra for the mouse's choices
         }
         // between two states, part of the way (0…1)
@@ -907,11 +929,32 @@
         }
         function frame(now) {
             if (!running) return;
+            if (mood === 'wave') {
+                const e = now - waveFrom;
+                if (e >= WAVE) {
+                    mood = 'machine'; cur = neutral(); nextAt = now + 250; draw(cur);
+                } else {
+                    const lin = Math.max(0, Math.min(1, e / EASE, (WAVE - e) / EASE)), env = lin * lin * (3 - 2 * lin);
+                    const at = letterAt();
+                    cur = waveState(e / 1000, env, at == null ? null : (i) => Math.exp(-Math.pow((i - at) / 1.1, 2)));
+                    draw(cur);
+                    const F = cur.font;
+                    readout.innerHTML = `› גל · משקל <b>${Math.round(F.weight)}</b> · נטייה <b dir="ltr">${Math.round(F.slant)}°</b>`;
+                }
+                requestAnimationFrame(frame);
+                return;
+            }
+            if (now >= nextAt && justReset && !moving) {
+                justReset = false; mood = 'wave'; waveFrom = now; hot = -1;
+                requestAnimationFrame(frame);
+                return;
+            }
             if (now >= nextAt) {
                 const op = program[step % program.length];
                 const i = op.i == null ? null : (letterAt() ?? op.i);
                 moving = { from: cur, to: apply(cur, op, i), t0: now };
                 hot = i == null ? -1 : i;
+                justReset = !!op.reset;
                 say(op, i);
                 step++;
                 nextAt = now + TICK;
