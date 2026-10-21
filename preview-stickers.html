@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta name="robots" content="noindex, nofollow">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
     <meta name="google-site-verification" content="MAn1wpLdEOxDv3xeQ4JZfIzKpD0tx18Ti6hfAHwWEF4">
-    <title>אלון צבי סבג · Alon Zvi Sabag · קופירייטינג וקריאייטיב</title>
+    <title>תצוגה מקדימה · סטיקרים</title>
     <meta name="description" content="תיק העבודות של אלון צבי סבג: קופירייטינג, קריאייטיב ורעיונות. ״מילים של מבוגרים״, מתנות דיגיטליות ופירות וירקות.">
     <meta property="og:title" content="אלון צבי סבג · Alon Zvi Sabag · קופירייטינג וקריאייטיב">
     <meta property="og:description" content="תיק העבודות של אלון צבי סבג: קופירייטינג, קריאייטיב ורעיונות. ״מילים של מבוגרים״, מתנות דיגיטליות ופירות וירקות.">
@@ -16,7 +16,7 @@
     <link rel="alternate icon" href="favicon-32.png">
     <link rel="apple-touch-icon" href="favicon-180.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Rubik:wght@300..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/shared.css">
     <link rel="stylesheet" href="assets/icq.css">
     <style>
@@ -291,9 +291,8 @@
         .t-rescue:hover img { transform: rotate(4deg) translateY(-10px); }
         .t-rescue .txt { max-width: 60%; }
 
-        /* ── word stickers floating around the headline like rings in a pool (drag them, or push them with the mouse) ── */
+        /* ── word stickers around the headline (drag them) ── */
         .sticker {
-            --lift: 0;
             position: absolute;
             left: 0;
             top: 0;
@@ -301,23 +300,21 @@
             padding: 8px 15px 9px;
             border-radius: 14px;
             font-weight: 800;
-            font-size: clamp(0.85rem, 1.35vw, 1.1rem);
+            font-size: clamp(0.9rem, 1.5vw, 1.2rem);
             white-space: nowrap;
             border: 3px solid #fff;
-            box-shadow: 0 calc(10px + var(--lift) * 1px) calc(20px + var(--lift) * 1.6px) rgba(20, 40, 60, calc(0.2 - var(--lift) * 0.008));
+            box-shadow: 0 8px 22px rgba(0,0,0,0.16);
             cursor: grab;
             touch-action: none;
             user-select: none;
             -webkit-user-select: none;
             opacity: 0;
             scale: 0.3;
-            transition: opacity 0.4s, scale 0.6s cubic-bezier(.2,1.6,.4,1);
-            will-change: translate, rotate;
+            transition: opacity 0.35s, scale 0.5s cubic-bezier(.2,1.6,.4,1);
         }
-        .sticker.on { opacity: 1; scale: var(--size, 1); }
-        .sticker.on.dragging { cursor: grabbing; scale: calc(var(--size, 1) * 1.08); transition: none; }
+        .sticker.on { opacity: 1; scale: 1; }
+        .sticker.on.dragging { cursor: grabbing; scale: 1.08; box-shadow: 0 18px 36px rgba(0,0,0,0.24); transition: none; }
         .sticker[hidden] { display: none; }
-        .preview-tag { position: fixed; left: 12px; bottom: 12px; z-index: 50; padding: 6px 12px; border-radius: 999px; background: #111; color: #fff; font: 600 0.75rem 'Rubik', sans-serif; letter-spacing: 0.04em; }
 
         /* ── running band of words ── */
         .band-wrap { overflow: hidden; padding: 26px 0 46px; }
@@ -497,7 +494,7 @@
         }
         @media (max-width: 600px) {
             .st-frame { width: 100vw; border-radius: 0; height: 100vh; height: 100dvh; }
-            .sticker { border-width: 2px; padding: 5px 10px 6px; border-radius: 10px; font-size: 0.8rem; }
+            .sticker { border-width: 2px; padding: 6px 11px 7px; border-radius: 11px; }
             .band-wrap { padding: 14px 0 30px; }
             nav { padding: 6px 6px 6px 16px; }
             nav .name { font-size: 0.75rem; letter-spacing: 0.06em; }
@@ -519,6 +516,102 @@
             .hero .ctas, .contact-line { opacity: 1; transition: none; }
             .status i, .seal .ring, .wb-track, .t-words .watch i { animation: none; }
             .sticker { transition: none; }
+        }
+
+        /* ══ PREVIEW ONLY: four ways to do the stickers (switch at the bottom) ══ */
+        .pv { position: fixed; left: 12px; bottom: 12px; z-index: 60; display: flex; align-items: center; gap: 3px; padding: 5px; border-radius: 999px; background: #111; color: #fff; font: 600 0.78rem 'Rubik', sans-serif; box-shadow: 0 8px 24px rgba(0,0,0,0.25); max-width: calc(100vw - 24px); overflow-x: auto; scrollbar-width: none; }
+        .pv::-webkit-scrollbar { display: none; }
+        .pv span { padding: 0 8px 0 6px; opacity: 0.65; white-space: nowrap; }
+        .pv a { padding: 7px 12px; border-radius: 999px; color: #fff; text-decoration: none; white-space: nowrap; }
+        .pv a b { font-weight: inherit; }
+        .pv a.on { background: #fff; color: #111; }
+        .opt-3 .seal, .opt-2 .seal, .opt-12 .seal { display: none; }
+
+        /* 5: the stickers of today, placed with translate/rotate so dragging doesn't make them jump */
+        .sticker { will-change: translate; }
+
+        /* groups of stickers: left of the headline on a wide screen, under the email on a narrow one */
+        .cluster { display: flex; flex-wrap: wrap; justify-content: center; align-content: center; align-items: center; z-index: 4; }
+        .cluster.side { position: absolute; }
+        .cluster.below { position: relative; margin: 34px auto 0; }
+
+        /* 3: a laptop lid full of stickers; the corner peels under the mouse, a click peels one off */
+        .lid-st { position: relative; margin: -5px -7px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.14)) drop-shadow(0 8px 12px rgba(0,0,0,0.1)); cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; opacity: 0; scale: 0.6; transition: opacity 0.35s, scale 0.5s cubic-bezier(.2,1.6,.4,1); }
+        .lid-st.on { opacity: 1; scale: 1; }
+        .lid-st .face { position: relative; display: grid; place-items: center; text-align: center; padding: 10px 16px 11px; border: 3px solid #fff; border-radius: 12px; font-weight: 800; font-size: clamp(0.85rem, 1.25vw, 1.05rem); line-height: 1.08; white-space: nowrap; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 100%); transition: clip-path 0.25s ease; }
+        .lid-st .face::after { content: ''; position: absolute; left: -3px; bottom: -3px; width: 0; height: 0; background: linear-gradient(45deg, transparent 50%, rgba(0,0,0,0.22) 50%, #e8e5de 55%, #fff 100%); transition: width 0.25s ease, height 0.25s ease; }
+        .lid-st.pill .face { border-radius: 999px; padding-inline: 18px; }
+        .lid-st.stack .face { white-space: normal; padding: 11px 14px 12px; border-radius: 10px; }
+        .lid-st.round .face { width: 5.4em; height: 5.4em; padding: 6px; border-radius: 50%; white-space: normal; }
+        .lid-st.ink .face { border-color: #111; }
+        .lid-st.ink { filter: drop-shadow(3px 3px 0 #111); }
+        .lid-st.holo .face { background: linear-gradient(125deg, #ffd3f4, #cdefff 35%, #fff4bd 65%, #d6ffd4) !important; }
+        /* the lid itself, with the pear glowing in the middle like a logo, under the stickers */
+        .cluster.lid { justify-content: space-around; align-content: space-around; background: linear-gradient(150deg, #e4e5e8, #c4c7cc); border-radius: 22px; padding: 16px 18px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6), inset 0 -2px 0 rgba(0,0,0,0.06), 0 24px 44px -22px rgba(0,0,0,0.4); overflow: hidden; }
+        .cluster.lid .logo { position: absolute; left: 50%; top: 50%; translate: -50% -50%; font-size: 3.4rem; opacity: 0.85; filter: drop-shadow(0 0 14px rgba(255,255,255,0.9)); pointer-events: none; }
+        @media (hover: hover) {
+            .lid-st:hover { z-index: 30 !important; }
+            .lid-st:not(.round):hover .face { clip-path: polygon(0 0, 100% 0, 100% 100%, 20px 100%, 0 calc(100% - 20px)); }
+            .lid-st:not(.round):hover .face::after { width: 23px; height: 23px; }
+            .lid-st.round:hover { scale: 1.06; }
+        }
+
+        /* 1: the headline gets corrected */
+        .was { position: relative; }
+        .was::after { content: ''; position: absolute; left: -4%; right: -4%; top: 46%; height: 0.085em; border-radius: 99px; background: var(--acc); rotate: -4deg; transform-origin: right; scale: 0 1; transition: scale 0.45s cubic-bezier(.6,0,.3,1); }
+        .hero.struck .was::after { scale: 1 1; }
+        .fix { position: absolute; left: 0; top: 0; z-index: 6; padding: 0.14em 0.42em 0.2em; border-radius: 0.22em; border: 0.07em solid #fff; font-weight: 900; letter-spacing: -0.02em; line-height: 1.05; white-space: nowrap; box-shadow: 0 0.12em 0.36em rgba(0,0,0,0.2); cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+
+        /* 2: famous stickers, twisted */
+        .fm { position: relative; margin: 6px; font-size: 13px; line-height: 1; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.14)) drop-shadow(0 8px 12px rgba(0,0,0,0.1)); cursor: grab; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; opacity: 0; scale: 0.5; transition: opacity 0.35s, scale 0.5s cubic-bezier(.2,1.6,.4,1); }
+        .fm.on { opacity: 1; scale: 1; }
+        .fm.dragging { cursor: grabbing; scale: 1.06; transition: none; z-index: 30; }
+        .fm [dir="ltr"] { direction: ltr; unicode-bidi: isolate; }
+        .fm-hello { width: 11.4em; padding: 0.6em 0.5em 0.5em; background: #e3262f; border-radius: 0.9em; color: #fff; text-align: center; }
+        .fm-hello b { display: block; font-size: 2.35em; font-weight: 900; letter-spacing: 0.03em; }
+        .fm-hello small { display: block; font-size: 0.95em; font-weight: 600; margin: 0.2em 0 0.5em; }
+        .fm-hello i { display: block; background: #fff; color: #1b2b8f; border-radius: 0.35em; padding: 0.12em 0.3em 0.02em; font: 700 2.7em 'Amatic SC', 'Rubik', sans-serif; }
+        .fm-pa { width: 10.6em; background: #000; color: #fff; text-align: center; padding: 0.5em 0.45em 0.45em; border: 0.14em solid #fff; outline: 0.22em solid #000; }
+        .fm-pa b { display: block; font-size: 1.72em; font-weight: 900; line-height: 0.95; letter-spacing: -0.01em; }
+        .fm-pa span { display: block; margin-top: 0.35em; background: #fff; color: #000; font-weight: 900; font-size: 1.12em; padding: 0.28em 0.2em 0.22em; }
+        .fm-fruit { width: 9.6em; height: 6.4em; border-radius: 50%; background: #1f5fbf; border: 0.26em solid #ffd200; box-shadow: inset 0 0 0 0.18em #fff; color: #fff; display: grid; place-content: center; text-align: center; gap: 0.18em; }
+        .fm-fruit b { font-size: 1.8em; font-weight: 900; color: #ffd200; }
+        .fm-fruit small { font-size: 0.72em; font-weight: 700; letter-spacing: 0.05em; }
+        .fm-sale .burst { width: 8.6em; height: 8.6em; background: #e8182a; display: grid; place-content: center; text-align: center; color: #fff; gap: 0.15em; }
+        .fm-sale b { font-size: 1.85em; font-weight: 900; color: #ffe14d; }
+        .fm-sale small { font-size: 0.85em; font-weight: 700; }
+        .fm-fragile { display: flex; align-items: center; gap: 0.5em; background: #d71920; color: #fff; padding: 0.55em 0.9em 0.55em 0.75em; border-radius: 0.2em; }
+        .fm-fragile svg { width: 1.8em; height: 2.6em; flex: none; }
+        .fm-fragile b { display: block; font-size: 1.8em; font-weight: 900; }
+        .fm-fragile small { display: block; font-size: 0.6em; font-weight: 700; letter-spacing: 0.14em; margin-top: 0.25em; }
+        .fm-kosher .disc { position: relative; width: 8.8em; height: 8.8em; border-radius: 50%; background: #fff; color: #2b36a8; display: grid; place-items: center; text-align: center; box-shadow: inset 0 0 0 0.32em #fff, inset 0 0 0 0.48em currentColor, inset 0 0 0 1.95em #fff, inset 0 0 0 2.08em currentColor; }
+        .fm-kosher .ring { position: absolute; inset: 0; }
+        .fm-kosher .ring span { position: absolute; left: 50%; top: 0.62em; width: 1em; margin-left: -0.5em; height: calc(50% - 0.62em); transform-origin: 50% 100%; text-align: center; font-size: 0.82em; font-weight: 700; }
+        .fm-kosher b { font-size: 1.3em; font-weight: 900; line-height: 1.02; }
+        .fm-ok { filter: none; mix-blend-mode: multiply; color: #d4202a; border: 0.2em solid currentColor; outline: 0.1em solid currentColor; outline-offset: 0.18em; border-radius: 0.25em; padding: 0.35em 0.75em 0.45em; text-align: center; opacity: 0.92; }
+        .fm-ok.on { opacity: 0.92; }
+        .fm-ok small { display: block; font-size: 0.85em; font-weight: 800; letter-spacing: 0.22em; }
+        .fm-ok b { display: block; font-size: 2.1em; font-weight: 900; margin-top: 0.08em; }
+        .fm-insp { width: 8.6em; background: #fff; color: #222; border: 1px dashed #c9c5bb; padding: 0.5em 0.6em 0.45em; text-align: center; }
+        .fm-insp small { display: block; font-size: 0.62em; font-weight: 600; letter-spacing: 0.16em; }
+        .fm-insp b { display: block; font: 700 2.15em 'Amatic SC', 'Rubik', sans-serif; color: #1b2b8f; margin: 0.08em 0 0.02em; }
+
+        @media (max-width: 600px) {
+            .pv { left: 8px; right: 8px; bottom: 8px; max-width: none; }
+            .lid-st .face { font-size: 0.8rem; padding: 7px 11px 8px; border-width: 2px; }
+            .lid-st .face::after { left: -2px; bottom: -2px; }
+            .lid-st.round .face { padding: 4px; }
+            .cluster.lid { padding: 12px; border-radius: 16px; }
+            .cluster.lid .logo { font-size: 2.6rem; }
+            .pv span { display: none; }
+            .pv { justify-content: space-between; }
+            .pv a { padding: 7px 10px; }
+            .pv a b { display: none; }
+            .fm { font-size: 10px; margin: 4px; }
+            .cluster.below { margin-top: 26px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .lid-st, .fm, .lid-st .face, .lid-st .face::after, .was::after { transition: none; }
         }
     </style>
 </head>
@@ -544,7 +637,7 @@
     </div>
     <h1>
         <span class="line"><span>יותר מדי</span></span>
-        <span class="line"><span>רעיונות טובים</span></span>
+        <span class="line"><span>רעיונות <span class="was">טובים</span></span></span>
         <span class="line"><span class="acc">לשמור לעצמי.</span></span>
     </h1>
     <div class="ctas">
@@ -616,8 +709,16 @@
     </div>
 </section>
 
-<div class="preview-tag">תצוגה מקדימה · סטיקרים</div>
 <footer>&copy; 2026 Alon Zvi Sabag ✦</footer>
+
+<div class="pv">
+    <span>תצוגה מקדימה</span>
+    <a href="?opt=5" data-opt="5">5<b> · כמו היום</b></a>
+    <a href="?opt=3" data-opt="3">3<b> · לפטופ</b></a>
+    <a href="?opt=1" data-opt="1">1<b> · הכותרת</b></a>
+    <a href="?opt=2" data-opt="2">2<b> · מותגים</b></a>
+    <a href="?opt=12" data-opt="12">1+2</a>
+</div>
 
 <div id="word-pop" role="status" hidden>
     <b></b><span>מתוך ״מילים של מבוגרים״</span>
@@ -668,7 +769,6 @@
         });
     });
 
-
     // ── a card for any tapped word ──
     const pop = document.getElementById('word-pop');
     let popTimer;
@@ -683,160 +783,299 @@
         clearTimeout(popTimer);
         popTimer = setTimeout(() => { pop.hidden = true; }, 4500);
     }
-    document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#word-pop, .sticker, .wb-track button')) pop.hidden = true; });
+    document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#word-pop, .sticker, .lid-st, .fm, .fix, .wb-track button')) pop.hidden = true; });
     addEventListener('scroll', () => { pop.hidden = true; }, { passive: true });
 
-    // ── stickers: 15 words from the dictionary float in the free space around the headline, like rings in a pool:
-    // they bob, rock and drift slowly, glide away from the mouse (or a finger) and float back. Drag one to move it.
+    // ══ PREVIEW ONLY: four ways to do the stickers, switched with ?opt= (5, 3, 1, 2, 12 = 1+2) ══
+    const params = new URLSearchParams(location.search);
+    const OPT = ['5', '3', '1', '2', '12'].includes(params.get('opt')) ? params.get('opt') : '5';
+    document.body.classList.add('opt-' + OPT);
+    document.querySelectorAll('.pv a').forEach(a => a.classList.toggle('on', a.dataset.opt === OPT));
+
     const hero = document.getElementById('hero');
-    const WORDS = ['חבל על הזמן', 'משהו משהו', 'טיפ טופ', 'הצעקה האחרונה', 'ישר כוח',
-                   'בעל מקצוע', 'קליבר', 'פירמה', 'תותחן', 'באחריות',
-                   'פנומן', 'שלאגר', 'בוננזה', 'מקגייוור', 'שאין כמוהו'];
+    const POOL = ['חבל על הזמן', 'משהו משהו', 'טיפ טופ', 'הצעקה האחרונה', 'ישר כוח',
+                  'בעל מקצוע', 'קליבר', 'פירמה', 'תותחן', 'באחריות',
+                  'פנומן', 'שלאגר', 'בוננזה', 'מקגייוור', 'שאין כמוהו'];
     const COLORS = [['#ffe14d', '#111'], ['#ff8fb8', '#111'], ['#b8e86b', '#111'], ['#8ec5ff', '#111'], ['#111', '#fff'], ['#c9a7ff', '#111'], ['#ffb27a', '#111']];
     const rnd = (a, b) => a + Math.random() * (b - a);
-    const STICKERS = WORDS.map((w, i) => {
-        const el = document.createElement('div');
-        el.className = 'sticker';
-        el.textContent = w;
-        el.style.background = COLORS[i % COLORS.length][0];
-        el.style.color = COLORS[i % COLORS.length][1];
-        el.style.setProperty('--size', rnd(0.88, 1.12).toFixed(2));
-        el.hidden = true;
-        hero.appendChild(el);
-        return {
-            w, el, x: 0, y: 0, ox: 0, oy: 0, vx: 0, vy: 0,
-            rot: rnd(-10, 10),
-            ph: [rnd(0, 6.3), rnd(0, 6.3), rnd(0, 6.3), rnd(0, 6.3)],          // each one floats on its own rhythm
-            sp: [rnd(0.55, 0.85), rnd(0.35, 0.6), rnd(0.07, 0.12), rnd(0.05, 0.1)],
-        };
-    });
+    const shuffle = (a) => a.map(v => [Math.random(), v]).sort((p, q) => p[0] - q[0]).map(p => p[1]);
+    const wiggle = (el) => { if (!still) el.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(-9deg)' }, { transform: 'rotate(9deg)' }, { transform: 'rotate(0deg)' }], { duration: 400 }); };
 
-    // spread them over the free space (never on the headline, the buttons or the badge)
-    function placeStickers() {
-        const hr = hero.getBoundingClientRect();
-        const pad = innerWidth < 600 ? 10 : 22;
-        const blockers = Array.from(hero.querySelectorAll('.status, h1 .line > span, .ctas .btn, .contact, .seal'))
-            .filter(el => getComputedStyle(el).display !== 'none')
-            .map(el => el.getBoundingClientRect())
-            .map(r => ({ left: r.left - hr.left - pad, right: r.right - hr.left + pad, top: r.top - hr.top - pad, bottom: r.bottom - hr.top + pad }));
-        const placed = [];
-        const top = Math.max(84, (document.querySelector('nav') || hero).getBoundingClientRect().bottom - hr.top + 20);
-        let k = 0;
-        STICKERS.slice().sort(() => Math.random() - 0.5).forEach(st => {
-            st.el.hidden = false;
-            const w = st.el.offsetWidth, h = st.el.offsetHeight;
-            const hit = (b) => (r) => !(r.right < b.left || r.left > b.right || r.bottom < b.top || r.top > b.bottom);
-            let spot = null;
-            for (let t = 0; t < 400 && !spot; t++) {
-                const x = rnd(6, hr.width - w - 6), y = rnd(top, hr.height - h - 30);
-                const g = innerWidth < 600 ? 5 : 10, b = { left: x - g, right: x + w + g, top: y - g, bottom: y + h + g };
-                if (!blockers.some(hit(b)) && !placed.some(hit(b))) spot = { x, y, b };
-            }
-            if (!spot) { st.el.hidden = true; return; }
-            placed.push(spot.b);
-            st.x = spot.x; st.y = spot.y; st.ox = st.oy = st.vx = st.vy = 0;
-            const size = parseFloat(st.el.style.getPropertyValue('--size')) || 1;
-            st.hw = w * size / 2; st.hh = h * size / 2;
-            setTimeout(() => st.el.classList.add('on'), still ? 0 : 70 * k++);
-        });
-        if (!running) { running = true; requestAnimationFrame(frame); }
-    }
-
-    // the water: a slow bob and rock, a lazy drift, and a soft push away from the pointer
-    let px = -9999, py = -9999, running = false, heroVisible = true;
-    const PUSH = 110;
-    function frame(now) {
-        if (!heroVisible || document.hidden) { running = false; return; }
-        const t = now / 1000;
-        const hr = hero.getBoundingClientRect();
-        const afloat = STICKERS.filter(st => !st.el.hidden);
-        afloat.forEach(st => {
-            st.bob = still ? 0 : Math.sin(t * st.sp[0] * 2 + st.ph[0]) * 5;
-            st.sx = still ? 0 : Math.sin(t * st.sp[2] * 2 + st.ph[2]) * 14 + Math.sin(t * st.sp[1] + st.ph[1]) * 3;
-            st.sy = still ? 0 : Math.cos(t * st.sp[3] * 2 + st.ph[3]) * 8;
-            st.cx = st.x + st.ox + st.sx + st.hw;
-            st.cy = st.y + st.oy + st.sy - st.bob + st.hh;
-        });
-        // rings that drift into each other bump apart
-        for (let i = 0; i < afloat.length; i++) for (let j = i + 1; j < afloat.length; j++) {
-            const a = afloat[i], b = afloat[j];
-            const dx = b.cx - a.cx, dy = b.cy - a.cy;
-            const ix = a.hw + b.hw + 8 - Math.abs(dx), iy = a.hh + b.hh + 8 - Math.abs(dy);
-            if (ix <= 0 || iy <= 0) continue;
-            const kx = ix < iy ? Math.sign(dx || 1) * Math.min(ix, 20) * 0.05 : 0;
-            const ky = ix < iy ? 0 : Math.sign(dy || 1) * Math.min(iy, 20) * 0.05;
-            const share = a.dragging ? 0 : b.dragging ? 1 : 0.5;
-            a.vx -= kx * share * 2; a.vy -= ky * share * 2;
-            b.vx += kx * (1 - share) * 2; b.vy += ky * (1 - share) * 2;
-        }
-        afloat.forEach(st => {
-            if (!st.dragging) {
-                // pushed by how close the pointer is to its edge; once the pointer is on it, it stays put to be caught
-                const dx = hr.left + st.cx - px, dy = hr.top + st.cy - py, d = Math.hypot(dx, dy);
-                const gap = Math.hypot(Math.max(0, Math.abs(dx) - st.hw), Math.max(0, Math.abs(dy) - st.hh));
-                let tx = 0, ty = 0;
-                if (gap > 0 && gap < PUSH && d > 0.1) { const f = (PUSH - gap) / PUSH * 40; tx = dx / d * f; ty = dy / d * f; }
-                st.vx = (st.vx + (tx - st.ox) * 0.02) * 0.92;
-                st.vy = (st.vy + (ty - st.oy) * 0.02) * 0.92;
-                st.ox += st.vx; st.oy += st.vy;
-            } else st.vx = st.vy = 0;
-            const tilt = still ? 0 : Math.sin(t * st.sp[1] * 2 + st.ph[1]) * 4;
-            st.el.style.setProperty('--lift', (st.bob + 5).toFixed(1));
-            // separate translate and rotate, so the sticker's size (scale) doesn't shift where it sits
-            const left = Math.min(hr.width - 2 * st.hw - 8, Math.max(8, st.x + st.ox + st.sx));   // never past the screen's edge
-            st.el.style.translate = `${left.toFixed(1)}px ${(st.y + st.oy + st.sy - st.bob).toFixed(1)}px`;
-            st.el.style.rotate = `${(st.rot + tilt).toFixed(2)}deg`;
-        });
-        requestAnimationFrame(frame);
-    }
-    const resume = () => { if (!running && heroVisible && !document.hidden) { running = true; requestAnimationFrame(frame); } };
-    if ('IntersectionObserver' in window) new IntersectionObserver(([en]) => { heroVisible = en.isIntersecting; resume(); }).observe(hero);
-    document.addEventListener('visibilitychange', resume);
-    addEventListener('pointermove', (e) => { px = e.clientX; py = e.clientY; }, { passive: true });
-    addEventListener('touchmove', (e) => { const p = e.touches[0]; if (p) { px = p.clientX; py = p.clientY; } }, { passive: true });
-    addEventListener('touchend', () => { px = py = -9999; }, { passive: true });
-    document.addEventListener('mouseleave', () => { px = py = -9999; });
-
-    // hero words slide up once the opening is over, then the stickers float in
+    // the stickers come in once the headline is up (and the font is in, so the free space is measured right)
+    const starts = [], relays = [];
     Intro.whenDone(() => {
-        document.getElementById('hero').classList.add('go');
-        // placed once the font is in, so the free space is measured around the headline as it really is
+        hero.classList.add('go');
         const fontsIn = document.fonts ? document.fonts.ready : Promise.resolve();
-        setTimeout(() => fontsIn.then(placeStickers), still ? 0 : 1100);
+        setTimeout(() => fontsIn.then(() => starts.forEach(fn => fn())), still ? 0 : 1100);
+    });
+    // phones fire resize when the address bar hides; only a change of width lays the stickers out again
+    let relayTimer, lastWidth = innerWidth;
+    addEventListener('resize', () => {
+        if (innerWidth === lastWidth) return;
+        lastWidth = innerWidth;
+        clearTimeout(relayTimer);
+        relayTimer = setTimeout(() => { if (hero.classList.contains('go')) relays.forEach(fn => fn()); }, 250);
     });
 
-    STICKERS.forEach(st => st.el.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        st.el.setPointerCapture(e.pointerId);
-        const startX = e.clientX, startY = e.clientY, baseX = st.x + st.ox, baseY = st.y + st.oy;
+    // drag a sticker by an offset (dx, dy); a click that didn't drag is a tap
+    function draggable(st, render, onTap, mouseOnly) {
+        st.dx = 0; st.dy = 0;
         let moved = false;
-        st.dragging = true;
-        st.el.classList.add('dragging');
-        const move = (ev) => {
-            st.x = baseX + ev.clientX - startX - st.ox;
-            st.y = baseY + ev.clientY - startY - st.oy;
-            if (Math.abs(ev.clientX - startX) + Math.abs(ev.clientY - startY) > 5) moved = true;
+        st.el.addEventListener('pointerdown', (e) => {
+            if (mouseOnly && e.pointerType !== 'mouse') return;
+            e.preventDefault();
+            st.el.setPointerCapture(e.pointerId);
+            const sx = e.clientX, sy = e.clientY, bx = st.dx, by = st.dy;
+            moved = false;
+            st.el.classList.add('dragging');
+            const move = (ev) => {
+                st.dx = bx + ev.clientX - sx; st.dy = by + ev.clientY - sy;
+                if (Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) > 5) moved = true;
+                render(st);
+            };
+            const up = () => {
+                st.el.classList.remove('dragging');
+                st.el.removeEventListener('pointermove', move);
+                st.el.removeEventListener('pointerup', up);
+                st.el.removeEventListener('pointercancel', up);
+            };
+            st.el.addEventListener('pointermove', move);
+            st.el.addEventListener('pointerup', up);
+            st.el.addEventListener('pointercancel', up);
+        });
+        st.el.addEventListener('click', () => { if (moved) moved = false; else onTap(st); });
+    }
+
+    // ── 5: like today, five stickers beside the headline; each visit draws its words from the fifteen ──
+    function besideHeadline() {
+        const SPOTS = [
+            { anchor: '.status',                             rot: -9, depth: 0.6 },
+            { anchor: '.hero h1 .line:nth-child(1) > span', rot: 7,  depth: 1 },
+            { anchor: '.hero h1 .line:nth-child(2) > span', rot: -5, depth: 0.8 },
+            { anchor: '.hero h1 .line:nth-child(3) > span', rot: 6,  depth: 1.2 },
+            { anchor: '.hero .ctas .btn:last-child',        rot: -6, depth: 0.9 },
+        ];
+        const colors = shuffle(COLORS);
+        let mx = 0, my = 0, shown = [];
+        const render = (st) => {
+            st.el.style.translate = `${st.x + st.dx + mx * 16 * st.depth}px ${st.y + st.dy + my * 12 * st.depth}px`;
+            st.el.style.rotate = st.rot + 'deg';
         };
-        const up = () => {
-            st.dragging = false;
-            st.el.classList.remove('dragging');
-            st.el.removeEventListener('pointermove', move);
-            st.el.removeEventListener('pointerup', up);
-            st.el.removeEventListener('pointercancel', up);
-            if (!moved) {
-                st.vy -= 6;                                    // a little splash
-                showPop(st.w, st.el);
-            }
-        };
-        st.el.addEventListener('pointermove', move);
-        st.el.addEventListener('pointerup', up);
-        st.el.addEventListener('pointercancel', up);
-    }));
-    let stickerTimer;
-    addEventListener('resize', () => {
-        clearTimeout(stickerTimer);
-        stickerTimer = setTimeout(() => { if (hero.classList.contains('go')) placeStickers(); }, 250);
-    });
+        const all = shuffle(POOL).map((w, i) => {
+            const el = document.createElement('div');
+            el.className = 'sticker';
+            el.textContent = w;
+            el.style.background = colors[i % colors.length][0];
+            el.style.color = colors[i % colors.length][1];
+            el.hidden = true;
+            hero.appendChild(el);
+            const st = { w, el, x: 0, y: 0, rot: 0, depth: 1 };
+            draggable(st, render, (s) => { wiggle(s.el); showPop(s.w, s.el); });
+            return st;
+        });
+        // each spot takes the first word, in this visit's order, that fits beside it
+        function place() {
+            const hr = hero.getBoundingClientRect();
+            const gap = innerWidth < 600 ? 10 : 22;
+            const blockers = Array.from(hero.querySelectorAll('.status, h1 .line > span, .ctas .btn, .contact, .seal'))
+                .filter(el => getComputedStyle(el).display !== 'none').map(el => el.getBoundingClientRect());
+            const placed = [];
+            all.forEach(st => { st.el.hidden = true; st.el.classList.remove('on'); st.dx = st.dy = 0; });
+            shown = [];
+            SPOTS.forEach(spot => {
+                const a = hero.querySelector(spot.anchor).getBoundingClientRect();
+                for (const st of all) {
+                    if (shown.includes(st)) continue;
+                    st.el.hidden = false;
+                    const w = st.el.offsetWidth, h = st.el.offsetHeight;
+                    const x = a.left - hr.left - w - gap, y = a.top - hr.top + (a.height - h) / 2;
+                    const box = { left: hr.left + x - 6, right: hr.left + x + w + 6, top: hr.top + y - 6, bottom: hr.top + y + h + 6 };
+                    const hit = (r) => !(r.right < box.left || r.left > box.right || r.bottom < box.top || r.top > box.bottom);
+                    if (x < 4 || blockers.some(hit) || placed.some(hit)) { st.el.hidden = true; continue; }
+                    placed.push(box);
+                    Object.assign(st, { x, y, rot: spot.rot, depth: spot.depth });
+                    shown.push(st);
+                    render(st);
+                    const k = shown.length - 1;
+                    setTimeout(() => st.el.classList.add('on'), still ? 0 : 120 * k);
+                    break;
+                }
+            });
+        }
+        if (mouse && !still) addEventListener('mousemove', (e) => {
+            mx = e.clientX / innerWidth - 0.5; my = e.clientY / innerHeight - 0.5;
+            requestAnimationFrame(() => shown.forEach(render));
+        }, { passive: true });
+        starts.push(place); relays.push(place);
+    }
+
+    // a group of stickers: on a wide screen in the free space left of the headline (below `fromY`, if given),
+    // on a narrow one in a block under the email. Whatever doesn't fit is left out, from the end of the list.
+    function cluster(cls, items, belowHeight, landscape) {
+        const box = document.createElement('div');
+        box.className = 'cluster ' + cls;
+        items.forEach(it => box.appendChild(it.el));
+        hero.appendChild(box);
+        let side = false;
+        function lay() {
+            const hr = hero.getBoundingClientRect();
+            const pad = parseFloat(getComputedStyle(hero).paddingLeft);
+            const edge = Math.min(...Array.from(hero.querySelectorAll('h1 .line > span, .ctas .btn, .contact, .status')).map(e => e.getBoundingClientRect().left)) - hr.left;
+            let top = hero.querySelector('.status').getBoundingClientRect().top - hr.top;
+            const bottom = hero.querySelector('.contact').getBoundingClientRect().bottom - hr.top;
+            const width = edge - 40 - pad;
+            let height = bottom - top;
+            side = width >= 300 && height >= 200;
+            if (side && landscape && height > width * 0.72) { top += (height - width * 0.72) / 2; height = width * 0.72; }
+            items.forEach(it => { it.el.hidden = false; it.el.classList.remove('on'); });
+            box.className = 'cluster ' + cls + (side ? ' side' : ' below');
+            Object.assign(box.style, side
+                ? { left: pad + 'px', top: top + 'px', width: width + 'px', height: 'auto' }
+                : { left: '', top: '', width: '100%', height: 'auto' });
+            const room = side ? height : landscape ? Math.min(belowHeight, hero.clientWidth * 0.62) : belowHeight;
+            const visible = items.slice();
+            while (visible.length && box.offsetHeight > room) visible.pop().el.hidden = true;
+            if (side || landscape) box.style.height = room + 'px';
+            visible.forEach((it, k) => setTimeout(() => it.el.classList.add('on'), still ? 0 : 60 * k));
+        }
+        starts.push(lay); relays.push(lay);
+        // where the group ends on the right, so a sticker on the headline can stay clear of it
+        return { right: () => side ? box.offsetLeft + box.offsetWidth : null };
+    }
+
+    // ── 3: a laptop lid full of stickers. The corner peels under the mouse; a click peels one off and shows the word ──
+    function laptopLid() {
+        const colors = shuffle(COLORS);
+        const items = shuffle(POOL).map((w, i) => {
+            const parts = w.split(' ');
+            const shape = parts.length > 1 && w.length >= 10 ? 'stack'
+                : w.length <= 5 ? (i % 3 ? 'round' : 'pill')
+                : ['', 'pill', 'ink', 'holo', ''][i % 5];
+            const el = document.createElement('div');
+            el.className = 'lid-st ' + shape;
+            const face = document.createElement('div');
+            face.className = 'face';
+            if (shape === 'stack') {
+                const cut = w.lastIndexOf(' ', Math.ceil(w.length / 2)) > 0 ? w.lastIndexOf(' ', Math.ceil(w.length / 2)) : w.indexOf(' ');
+                face.append(w.slice(0, cut), document.createElement('br'), w.slice(cut + 1));
+            } else face.textContent = w;
+            face.style.background = colors[i % colors.length][0];
+            face.style.color = shape === 'holo' ? '#111' : colors[i % colors.length][1];
+            el.appendChild(face);
+            return { w, el };
+        });
+        items.forEach((it, k) => {
+            it.el.style.rotate = rnd(-13, 13).toFixed(1) + 'deg';
+            it.el.style.translate = `${rnd(-7, 7).toFixed(0)}px ${rnd(-7, 7).toFixed(0)}px`;
+            it.el.style.zIndex = 1 + Math.floor(Math.random() * 15);
+            it.el.addEventListener('click', () => {
+                if (it.off) return;
+                it.off = true;
+                showPop(it.w, it.el);
+                if (still) { it.off = false; return; }
+                const peel = it.el.animate([{ transform: 'none', opacity: 1 }, { transform: 'translate(-24px, -38px) rotate(-16deg) scale(1.12)', opacity: 0 }],
+                    { duration: 420, easing: 'cubic-bezier(.3,.6,.4,1)', fill: 'forwards' });
+                setTimeout(() => {
+                    peel.cancel();
+                    it.el.animate([{ transform: 'scale(1.3)', opacity: 0 }, { transform: 'scale(0.95)', opacity: 1, offset: 0.7 }, { transform: 'none', opacity: 1 }], { duration: 360, easing: 'ease-out' });
+                    it.off = false;
+                }, 2600);
+            });
+        });
+        cluster('lid', items, 230, true);
+        const logo = document.createElement('div');
+        logo.className = 'logo';
+        logo.setAttribute('aria-hidden', 'true');
+        logo.textContent = '🍐';
+        document.querySelector('.cluster.lid').prepend(logo);
+    }
+
+    // ── 1: the headline gets corrected: "טובים" is struck out and a sticker with a better word is slapped above it, again and again ──
+    let groupRight = () => null;
+    function headlineFix() {
+        const FIXES = ['חבל על הזמן', 'טיפ טופ', 'משהו משהו', 'שאין כמוהם', 'שופרא דשופרא', 'פר אקסלנס', 'פירמה', 'שלאגר'];
+        const TILT = [-5, 4, -7, 3, -4, 6, -6, 5];
+        const was = hero.querySelector('.was');
+        const line1 = hero.querySelector('h1 .line:nth-child(1) > span');
+        const h1 = hero.querySelector('h1');
+        let i = 0, cur = null, timer = 0, hold = false;
+        function slap() {
+            clearTimeout(timer);
+            const hr = hero.getBoundingClientRect(), w = was.getBoundingClientRect(), l1 = line1.getBoundingClientRect();
+            const el = document.createElement('div');
+            el.className = 'fix';
+            el.setAttribute('aria-hidden', 'true');
+            el.textContent = FIXES[i % FIXES.length];
+            el.style.background = COLORS[i % COLORS.length][0];
+            el.style.color = COLORS[i % COLORS.length][1];
+            let size = Math.max(19, parseFloat(getComputedStyle(h1).fontSize) * 0.4);
+            el.style.fontSize = size + 'px';
+            hero.appendChild(el);
+            // above the struck word; its right edge clear of "יותר מדי", its left edge inside the screen
+            const right = Math.min(w.right, l1.left - 14) - hr.left;
+            const minX = Math.max(10 - hr.left, (groupRight() ?? -1e4) + 18);
+            if (el.offsetWidth > right - minX) { size *= (right - minX) / el.offsetWidth; el.style.fontSize = size + 'px'; }
+            const x = Math.max(minX, Math.min(right - el.offsetWidth, w.left + w.width / 2 - hr.left - el.offsetWidth / 2));
+            const y = w.top - hr.top - el.offsetHeight * 0.72;
+            el.style.translate = `${x}px ${y}px`;
+            el.style.rotate = TILT[i % TILT.length] + 'deg';
+            if (!still) el.animate([{ scale: 1.5, opacity: 0 }, { scale: 0.94, opacity: 1, offset: 0.7 }, { scale: 1, opacity: 1 }], { duration: 380, easing: 'ease-out' });
+            el.addEventListener('pointerenter', () => { hold = true; clearTimeout(timer); });
+            el.addEventListener('pointerleave', () => { hold = false; next(2600); });
+            el.addEventListener('click', () => { hold = false; peelOff(); slap(); });
+            peelOff();
+            cur = el;
+            i++;
+            next(2600);
+        }
+        function peelOff() {
+            const old = cur;
+            cur = null;
+            if (!old) return;
+            if (still) { old.remove(); return; }
+            old.animate([{ transform: 'none', opacity: 1 }, { transform: 'translate(-30px, -46px) rotate(-14deg)', opacity: 0 }], { duration: 360, easing: 'ease-in', fill: 'forwards' }).onfinish = () => old.remove();
+        }
+        function next(ms) { clearTimeout(timer); if (!hold) timer = setTimeout(slap, still ? ms + 800 : ms); }
+        starts.push(() => { hero.classList.add('struck'); setTimeout(slap, still ? 0 : 480); });
+        relays.push(() => setTimeout(() => { i = Math.max(0, i - 1); slap(); }, 0));   // after the group is laid out again
+    }
+
+    // ── 2: famous stickers everyone knows, with words from the dictionary ──
+    function famousStickers() {
+        const STAR = Array.from({ length: 32 }, (_, k) => k).map(k => {
+            const r = k % 2 ? 41 : 50, a = k * Math.PI / 16;
+            return `${(50 + r * Math.sin(a)).toFixed(1)}% ${(50 - r * Math.cos(a)).toFixed(1)}%`;
+        }).join(', ');
+        const GLASS = '<svg viewBox="0 0 24 34" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 2h14l-1.2 9a5.8 5.8 0 0 1-11.6 0z"/><path d="M12 17v12M7 31h10"/><path d="M11 3l2 3.5-2 3 1.6 2.6" stroke-width="1.5"/></svg>';
+        const RING = 'בהשגחת מילים של מבוגרים · בהשגחת מילים של מבוגרים · ';
+        const MADE = [
+            { w: 'תותחן', cls: 'fm-hello', html: '<b dir="ltr">HELLO</b><small dir="ltr">my name is</small><i>תותחן</i>' },
+            { w: 'מילים של מבוגרים', cls: 'fm-pa', stories: true, html: '<b dir="ltr">PARENTAL</b><b dir="ltr">ADVISORY</b><span>מילים של מבוגרים</span>' },
+            { w: 'שלאגר', cls: 'fm-sale', html: `<div class="burst" style="clip-path: polygon(${STAR})"><b>שלאגר!</b><small>רק היום</small></div>` },
+            { w: 'בוננזה', cls: 'fm-fruit', html: '<small dir="ltr">PLU 4011</small><b>בוננזה</b><small>איכות מובחרת</small>' },
+            { w: 'ישר כוח', cls: 'fm-ok', html: '<small dir="ltr">APPROVED</small><b>ישר כוח</b>' },
+            { w: 'באחריות', cls: 'fm-fragile', html: `${GLASS}<div><b>באחריות</b><small dir="ltr">HANDLE WITH CARE</small></div>` },
+            { w: 'שופרא דשופרא', cls: 'fm-kosher', html: `<div class="disc"><div class="ring">${[...RING].map((c, k, all) => `<span style="transform: rotate(${-k * 360 / all.length}deg)">${c}</span>`).join('')}</div><b>שופרא<br>דשופרא</b></div>` },
+            { w: 'מקגייוור', cls: 'fm-insp', html: '<small dir="ltr">INSPECTED BY</small><b>מקגייוור</b><small dir="ltr">No. 7</small>' },
+        ];
+        const items = MADE.map(m => {
+            const el = document.createElement('div');
+            el.className = 'fm ' + m.cls;
+            el.innerHTML = m.html;
+            const st = { w: m.w, el, rot: rnd(-10, 10), jx: rnd(-8, 8), jy: rnd(-8, 8) };
+            const render = (s) => { s.el.style.translate = `${s.jx + s.dx}px ${s.jy + s.dy}px`; s.el.style.rotate = s.rot.toFixed(1) + 'deg'; };
+            draggable(st, render, (s) => { wiggle(s.el); if (m.stories) openStories(); else showPop(s.w, s.el); }, true);
+            render(st);
+            return st;
+        });
+        const group = cluster('famous', items, 330);
+        if (OPT === '12') groupRight = group.right;
+    }
+
+    if (OPT === '5') besideHeadline();
+    if (OPT === '3') laptopLid();
+    if (OPT === '1' || OPT === '12') headlineFix();
+    if (OPT === '2' || OPT === '12') famousStickers();
 
     // ── running band of words (doubled for a seamless loop); tap a word for its card ──
     const band = document.getElementById('wb-track');
@@ -1011,6 +1250,5 @@
         });
     }
 </script>
-
 </body>
 </html>
