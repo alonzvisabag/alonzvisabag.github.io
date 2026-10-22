@@ -697,9 +697,11 @@
     });
 
     // hero words slide up once the opening is over, then the stickers land around them
+    // (once the font is in, so the free space beside the headline is measured right)
     Intro.whenDone(() => {
         document.getElementById('hero').classList.add('go');
-        setTimeout(placeStickers, still ? 0 : 1100);
+        const fontsIn = document.fonts ? document.fonts.ready : Promise.resolve();
+        setTimeout(() => fontsIn.then(placeStickers), still ? 0 : 1100);
     });
 
     // ── a card for any tapped word ──
@@ -719,56 +721,69 @@
     document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#word-pop, .sticker, .wb-track button')) pop.hidden = true; });
     addEventListener('scroll', () => { pop.hidden = true; }, { passive: true });
 
-    // ── stickers: words placed in the free space beside the headline; drag them around ──
+    // ── stickers: five words from the dictionary beside the headline, drawn anew on every visit; drag them around ──
     const hero = document.getElementById('hero');
-    const STICKERS = [
-        { w: 'שאפו',         bg: '#ffe14d', fg: '#111', rot: -9, anchor: '.status',                             depth: 0.6 },
-        { w: 'ביג טיים',     bg: '#ff8fb8', fg: '#111', rot: 7,  anchor: '.hero h1 .line:nth-child(1) > span', depth: 1 },
-        { w: 'שופרא דשופרא', bg: '#b8e86b', fg: '#111', rot: -5, anchor: '.hero h1 .line:nth-child(2) > span', depth: 0.8 },
-        { w: 'פר אקסלנס',    bg: '#8ec5ff', fg: '#111', rot: 6,  anchor: '.hero h1 .line:nth-child(3) > span', depth: 1.2 },
-        { w: 'בראבו',        bg: '#111',    fg: '#fff', rot: -6, anchor: '.hero .ctas .btn:last-child',        depth: 0.9 },
+    const STICKER_WORDS = ['חבל על הזמן', 'משהו משהו', 'טיפ טופ', 'הצעקה האחרונה', 'ישר כוח',
+                           'בעל מקצוע', 'קליבר', 'פירמה', 'תותחן', 'באחריות',
+                           'פנומן', 'שלאגר', 'בוננזה', 'מקגייוור', 'שאין כמוהו'];
+    const STICKER_COLORS = [['#ffe14d', '#111'], ['#ff8fb8', '#111'], ['#b8e86b', '#111'], ['#8ec5ff', '#111'], ['#111', '#fff'], ['#c9a7ff', '#111'], ['#ffb27a', '#111']];
+    const SPOTS = [
+        { anchor: '.status',                             rot: -9, depth: 0.6 },
+        { anchor: '.hero h1 .line:nth-child(1) > span', rot: 7,  depth: 1 },
+        { anchor: '.hero h1 .line:nth-child(2) > span', rot: -5, depth: 0.8 },
+        { anchor: '.hero h1 .line:nth-child(3) > span', rot: 6,  depth: 1.2 },
+        { anchor: '.hero .ctas .btn:last-child',        rot: -6, depth: 0.9 },
     ];
-    STICKERS.forEach(st => {
-        st.dx = 0; st.dy = 0;
-        st.el = document.createElement('div');
-        st.el.className = 'sticker';
-        st.el.textContent = st.w;
-        st.el.style.background = st.bg;
-        st.el.style.color = st.fg;
-        st.el.hidden = true;
-        hero.appendChild(st.el);
+    const shuffled = (a) => a.map(v => [Math.random(), v]).sort((p, q) => p[0] - q[0]).map(p => p[1]);
+    const stickerColors = shuffled(STICKER_COLORS);
+    const STICKERS = shuffled(STICKER_WORDS).map((w, i) => {
+        const el = document.createElement('div');
+        el.className = 'sticker';
+        el.textContent = w;
+        el.style.background = stickerColors[i % stickerColors.length][0];
+        el.style.color = stickerColors[i % stickerColors.length][1];
+        el.hidden = true;
+        hero.appendChild(el);
+        return { w, el, x: 0, y: 0, dx: 0, dy: 0, rot: 0, depth: 1 };
     });
-    let mx = 0, my = 0;
-    function renderStickers() {
-        STICKERS.forEach(st => {
-            if (st.el.hidden) return;
-            st.el.style.transform = `translate(${st.x + st.dx + mx * 16 * st.depth}px, ${st.y + st.dy + my * 12 * st.depth}px) rotate(${st.rot}deg)`;
-        });
+    let mx = 0, my = 0, shown = [];
+    // position and tilt are their own properties, so the sticker's scale (popping in, being dragged) doesn't shift it
+    function renderSticker(st) {
+        st.el.style.translate = `${st.x + st.dx + mx * 16 * st.depth}px ${st.y + st.dy + my * 12 * st.depth}px`;
+        st.el.style.rotate = st.rot + 'deg';
     }
+    // each spot beside the headline takes the first word, in this visit's order, that fits there
     function placeStickers() {
         const hr = hero.getBoundingClientRect();
+        const gap = innerWidth < 600 ? 10 : 22;
         const blockers = Array.from(hero.querySelectorAll('.status, h1 .line > span, .ctas .btn, .contact, .seal'))
             .filter(el => getComputedStyle(el).display !== 'none').map(el => el.getBoundingClientRect());
         const placed = [];
-        let k = 0;
-        STICKERS.forEach(st => {
-            const a = hero.querySelector(st.anchor).getBoundingClientRect();
-            st.el.hidden = false;
-            const w = st.el.offsetWidth, h = st.el.offsetHeight;
-            const x = a.left - hr.left - w - (innerWidth < 600 ? 10 : 22);
-            const y = a.top - hr.top + (a.height - h) / 2;
-            const box = { left: hr.left + x - 6, right: hr.left + x + w + 6, top: hr.top + y - 6, bottom: hr.top + y + h + 6 };
-            const hit = (r) => !(r.right < box.left || r.left > box.right || r.bottom < box.top || r.top > box.bottom);
-            if (x < 4 || blockers.some(hit) || placed.some(hit)) { st.el.hidden = true; return; }
-            placed.push(box);
-            st.x = x; st.y = y;
-            setTimeout(() => st.el.classList.add('on'), still ? 0 : 120 * k++);
+        STICKERS.forEach(st => { st.el.hidden = true; st.el.classList.remove('on'); st.dx = st.dy = 0; });
+        shown = [];
+        SPOTS.forEach(spot => {
+            const a = hero.querySelector(spot.anchor).getBoundingClientRect();
+            for (const st of STICKERS) {
+                if (shown.includes(st)) continue;
+                st.el.hidden = false;
+                const w = st.el.offsetWidth, h = st.el.offsetHeight;
+                const x = a.left - hr.left - w - gap, y = a.top - hr.top + (a.height - h) / 2;
+                const box = { left: hr.left + x - 6, right: hr.left + x + w + 6, top: hr.top + y - 6, bottom: hr.top + y + h + 6 };
+                const hit = (r) => !(r.right < box.left || r.left > box.right || r.bottom < box.top || r.top > box.bottom);
+                if (x < 4 || blockers.some(hit) || placed.some(hit)) { st.el.hidden = true; continue; }
+                placed.push(box);
+                Object.assign(st, { x, y, rot: spot.rot, depth: spot.depth });
+                shown.push(st);
+                renderSticker(st);
+                const k = shown.length - 1;
+                setTimeout(() => st.el.classList.add('on'), still ? 0 : 120 * k);
+                break;
+            }
         });
-        renderStickers();
     }
     if (mouse && !still) addEventListener('mousemove', (e) => {
         mx = e.clientX / innerWidth - 0.5; my = e.clientY / innerHeight - 0.5;
-        requestAnimationFrame(renderStickers);
+        requestAnimationFrame(() => shown.forEach(renderSticker));
     }, { passive: true });
     STICKERS.forEach(st => st.el.addEventListener('pointerdown', (e) => {
         e.preventDefault();
@@ -780,7 +795,7 @@
             st.dx = baseX + ev.clientX - startX;
             st.dy = baseY + ev.clientY - startY;
             if (Math.abs(ev.clientX - startX) + Math.abs(ev.clientY - startY) > 5) moved = true;
-            renderStickers();
+            renderSticker(st);
         };
         const up = () => {
             st.el.classList.remove('dragging');
@@ -788,7 +803,7 @@
             st.el.removeEventListener('pointerup', up);
             st.el.removeEventListener('pointercancel', up);
             if (!moved) {
-                st.el.animate([{ rotate: '0deg' }, { rotate: '-9deg' }, { rotate: '9deg' }, { rotate: '0deg' }], { duration: 400 });
+                if (!still) st.el.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(-9deg)' }, { transform: 'rotate(9deg)' }, { transform: 'rotate(0deg)' }], { duration: 400 });
                 showPop(st.w, st.el);
             }
         };
@@ -796,10 +811,13 @@
         st.el.addEventListener('pointerup', up);
         st.el.addEventListener('pointercancel', up);
     }));
-    let stickerTimer;
+    // phones fire resize when the address bar hides; only a change of width lays the stickers out again
+    let stickerTimer, stickerWidth = innerWidth;
     addEventListener('resize', () => {
+        if (innerWidth === stickerWidth) return;
+        stickerWidth = innerWidth;
         clearTimeout(stickerTimer);
-        stickerTimer = setTimeout(() => { if (hero.classList.contains('go')) { STICKERS.forEach(st => { st.dx = 0; st.dy = 0; }); placeStickers(); } }, 200);
+        stickerTimer = setTimeout(() => { if (hero.classList.contains('go')) placeStickers(); }, 200);
     });
 
     // ── בית היציקה: the tile draws "הצלחה" with the tool's own letter engine and takes turns between two moods.
@@ -1077,6 +1095,33 @@
     const ring = document.querySelector('.seal .ring');
     const ringChars = [...ring.dataset.text];
     ring.innerHTML = ringChars.map((c, i) => `<span style="transform: rotate(${-i * 360 / ringChars.length}deg)">${c}</span>`).join('');
+    // with a mouse, the ring spins faster as the mouse comes near the pear and slows down as it moves away
+    if (mouse && !still) {
+        const seal = ring.parentElement;
+        let angle = 0, speed = 12, near = 0, last = 0, spinning = false;
+        ring.style.animation = 'none';
+        addEventListener('mousemove', (e) => {
+            const r = seal.getBoundingClientRect();
+            const d = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
+            near = Math.max(0, 1 - d / 700);                    // 1 on the pear, 0 from 700px away
+        }, { passive: true });
+        document.addEventListener('mouseleave', () => { near = 0; });
+        function spin(now) {
+            if (!spinning) return;
+            const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
+            last = now;
+            const target = 6 + 260 * near * near;                // degrees a second: a lazy turn far away, a whirl up close
+            speed += (target - speed) * Math.min(1, dt * 3);     // eases in and out, like a wheel with some weight
+            angle = (angle + speed * dt) % 360;
+            ring.style.transform = `rotate(${angle.toFixed(2)}deg)`;
+            requestAnimationFrame(spin);
+        }
+        // only while the pear is on the screen
+        new IntersectionObserver(([en]) => {
+            if (en.isIntersecting && !spinning) { spinning = true; last = 0; requestAnimationFrame(spin); }
+            else if (!en.isIntersecting) spinning = false;
+        }).observe(seal);
+    }
 
     // the vegetables drift by in an endless strip that can also be swiped (or dragged with a mouse);
     // it picks up again a moment after letting go. The set is there three times so it can loop both ways.
