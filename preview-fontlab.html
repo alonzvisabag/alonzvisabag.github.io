@@ -356,6 +356,7 @@
             backface-visibility: hidden;
         }
         .wb-track { display: flex; align-items: center; width: max-content; animation: slide 90s linear infinite; }
+        @keyframes slide { to { transform: translateX(-50%); } }
         .words-band:hover .wb-track { animation-play-state: paused; }
         .wb-track button {
             font: 800 clamp(1.25rem, 2.6vw, 2rem) 'Rubik', sans-serif;
