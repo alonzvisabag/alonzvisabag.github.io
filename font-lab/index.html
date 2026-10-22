@@ -319,6 +319,14 @@
     let flash = null, flashTimer = 0;
     const activeHl = () => flash || state.term;
 
+    // a letter's own turn and flip, around its middle (in the letter's drawing space, before the y-flip)
+    function own(g, L) {
+        const cx = f1((g.W + g.ov) / 2), cy = f1(-(g.top + g.bot) / 2);
+        let t = L.rot ? ` rotate(${-L.rot} ${cx} ${cy})` : '';
+        if (L.fx || L.fy) t += ` translate(${cx} ${cy}) scale(${L.fx ? -1 : 1} ${L.fy ? -1 : 1}) translate(${-cx} ${-cy})`;
+        return t;
+    }
+
     function drawStage() {
         const F = state.font, hl = activeHl();
         const { items, total } = setLine(state.word, F, state.letters);
@@ -356,8 +364,8 @@
                 s += `<rect class="sel" x="${f1(it.x0)}" y="${Y(hTop)}" width="${f1(it.adv)}" height="${f1(hTop + hBot)}" rx="12"/>`;
             }
             if (!it.g) return;
-            const g = it.g, cx = g.sb + (g.W + g.ov) / 2, cy = (g.top + g.bot) / 2;
-            const tr = `translate(${f1(it.x0 + g.sb)} ${Y(it.L.dy || 0)})` + (it.L.rot ? ` rotate(${-it.L.rot} ${f1(cx - g.sb)} ${f1(-cy)})` : '') + ' scale(1 -1)';
+            const g = it.g;
+            const tr = `translate(${f1(it.x0 + g.sb)} ${Y(it.L.dy || 0)})` + own(g, it.L) + ' scale(1 -1)';
             s += `<g transform="${tr}">`;
             s += `<path class="${hl === 'all' ? 'hl' : 'ink'}" d="${g.d}"/>`;
             const show = hl === 'contrast' ? g.pieces : g.pieces.filter(p => hl === 'term' ? p.end : p.role === hl);
@@ -392,8 +400,8 @@
         let s = '';
         items.forEach(it => {
             if (!it.g) return;
-            const g = it.g, cx = g.sb + (g.W + g.ov) / 2, cy = (g.top + g.bot) / 2;
-            const tr = `translate(${f1(it.x0 + g.sb)} ${f1(top - (it.L.dy || 0))})` + (it.L.rot ? ` rotate(${-it.L.rot} ${f1(cx - g.sb)} ${f1(-cy)})` : '') + ' scale(1 -1)';
+            const g = it.g;
+            const tr = `translate(${f1(it.x0 + g.sb)} ${f1(top - (it.L.dy || 0))})` + own(g, it.L) + ' scale(1 -1)';
             s += `<g transform="${tr}"><path${fill ? ` fill="${fill}"` : ''} d="${g.d}"/></g>`;
         });
         return { viewBox: `-10 0 ${f1(total + 20)} ${f1(top + bottom)}`, body: s };
@@ -412,7 +420,7 @@
         const bottom = Math.max(F.desc, -g.bot + (g.desc ? F.desc : 0)) + pad;
         const w = Math.max(g.adv, F.height * 0.9);
         const x = (w - g.adv) / 2 + g.sb;
-        return `<svg viewBox="0 0 ${f1(w)} ${f1(top + bottom)}" aria-hidden="true"><line x1="0" x2="${f1(w)}" y1="${f1(top)}" y2="${f1(top)}"/><g transform="translate(${f1(x)} ${f1(top)}) scale(1 -1)"><path class="ink" d="${g.d}"/></g></svg>`;
+        return `<svg viewBox="0 0 ${f1(w)} ${f1(top + bottom)}" aria-hidden="true"><line x1="0" x2="${f1(w)}" y1="${f1(top)}" y2="${f1(top)}"/><g transform="translate(${f1(x)} ${f1(top)})${own(g, L || {})} scale(1 -1)"><path class="ink" d="${g.d}"/></g></svg>`;
     }
 
     function drawAbc() {
@@ -476,7 +484,8 @@
             const same = chars.filter(c => c === ch).length;
             html += `<div class="letter-head">${letterSVG(ch, state.font, L, 30)}<div><b>${ch}, האות ה־${it + 1} במילה</b><span>השינויים כאן חלים רק עליה</span></div></div>`;
             html += LETTER_CTLS.map(c => slider(c, L[c.k] ?? c.def, 'l-' + c.k)).join('');
-            html += `<div class="chips" style="margin-top:10px"><button type="button" class="chip" id="l-reset">איפוס האות</button>${same > 1 ? `<button type="button" class="chip" id="l-all">אותו דבר לכל ה־${ch}</button>` : ''}</div>`;
+            html += `<div class="chips" style="margin-top:10px"><button type="button" class="chip${L.fx ? ' on' : ''}" id="l-fx" aria-pressed="${!!L.fx}">↔ היפוך ימין־שמאל</button><button type="button" class="chip${L.fy ? ' on' : ''}" id="l-fy" aria-pressed="${!!L.fy}">↕ היפוך למעלה־למטה</button></div>`;
+            html += `<div class="chips" style="margin-top:4px"><button type="button" class="chip" id="l-reset">איפוס האות</button>${same > 1 ? `<button type="button" class="chip" id="l-all">אותו דבר לכל ה־${ch}</button>` : ''}</div>`;
         }
         $('p-letter').innerHTML = html;
     }
@@ -526,6 +535,13 @@
         const b = e.target.closest('[data-sel]');
         if (b) { select(+b.dataset.sel); return; }
         if (e.target.id === 'l-reset') { delete state.letters[state.sel]; buildLetterPane(); render(false); }
+        if (e.target.id === 'l-fx' || e.target.id === 'l-fy') {
+            const L = state.letters[state.sel] = state.letters[state.sel] || {};
+            const k = e.target.id === 'l-fx' ? 'fx' : 'fy';
+            L[k] = !L[k];
+            buildLetterPane();
+            render(false);
+        }
         if (e.target.id === 'l-all') {
             const chars = [...state.word], ch = chars[state.sel], L = state.letters[state.sel] || {};
             chars.forEach((c, i) => { if (c === ch) state.letters[i] = { ...L }; });
