@@ -18,6 +18,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # says whether the two keys are there and whether Cloudflare accepts them (never their values),
+      # as notes on the run that can be read without opening its log
+      - name: Check the Cloudflare keys
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          [ -n "$TOKEN" ] && echo "::notice::CLOUDFLARE_API_TOKEN is set" || echo "::error::CLOUDFLARE_API_TOKEN is missing from the repository's Actions secrets"
+          [ -n "$ACCOUNT" ] && echo "::notice::CLOUDFLARE_ACCOUNT_ID is set" || echo "::error::CLOUDFLARE_ACCOUNT_ID is missing from the repository's Actions secrets"
+          if [ -n "$TOKEN" ]; then
+            echo "::notice::token check: $(curl -s -H "Authorization: Bearer $TOKEN" https://api.cloudflare.com/client/v4/user/tokens/verify | jq -c '{success, status: .result.status, errors: [.errors[].message]}')"
+          fi
+          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
+            echo "::notice::account check: $(curl -s -H "Authorization: Bearer $TOKEN" "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/workers/scripts" | jq -c '{success, errors: [.errors[].message]}')"
+          fi
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
