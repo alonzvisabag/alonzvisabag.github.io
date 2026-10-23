@@ -21,4 +21,15 @@ jobs:
             echo "::notice::worker /$p → $(curl -s -H "$O" $W/$p | jq -c '{ok, items: ((.words // .countdowns // .prefs // []) | length), error}')"
           done
           echo "::notice::worker /words from another site → $(curl -s -o /dev/null -w '%{http_code}' $W/words) (403 expected)"
-          echo "::notice::worker /contribute → $(curl -s -X POST -H "$O" -H 'Content-Type: application/json' -d '{"site":"__check__"}' $W/contribute) (unknown site expected)"
+      # each of these is turned away before anything is written or any Telegram message goes out
+      - name: Sending, without saving anything
+        run: |
+          W=https://roni-contribute.alonzvisabag.workers.dev
+          O="Origin: https://alonzvisabag.github.io"
+          J='Content-Type: application/json'
+          echo "::notice::contribute, unknown site → $(curl -s -X POST -H "$O" -H "$J" -d '{"site":"__check__"}' $W/contribute) (unknown site expected)"
+          echo "::notice::contribute, bot trap → $(curl -s -X POST -H "$O" -H "$J" -d '{"website":"x"}' $W/contribute) (ok expected)"
+          echo "::notice::contribute, no such situation → $(curl -s -X POST -H "$O" -H "$J" -d '{"capsuleId":"__check__","from":"check","text":"check"}' $W/contribute) (situation not available expected: it read the site's content)"
+          echo "::notice::words, an empty change → $(curl -s -X POST -H "$O" -H "$J" -d '{"ops":[]}' $W/words | jq -c '{ok, words: (.words | length)}')"
+          echo "::notice::sos, unknown number → $(curl -s -o /dev/null -w '%{http_code}' -X POST -H "$O" -d '{"to":"__check__"}' $W/sos) (204 expected)"
+          echo "::notice::preflight → $(curl -s -o /dev/null -w '%{http_code}' -X OPTIONS -H "$O" $W/contribute), allows $(curl -s -D - -o /dev/null -X OPTIONS -H "$O" $W/contribute | tr -d '\r' | grep -i '^access-control-allow-origin' | cut -d' ' -f2)"
