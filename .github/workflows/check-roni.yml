@@ -1,0 +1,24 @@
+# A health check for Roni's site, run by hand from the Actions tab: are the pages up, does the worker answer
+# for the words, countdowns and colours, does it still turn away other sites, and does the contribution
+# endpoint answer. It only reads; nothing is saved or sent. Results show as notes on the run.
+name: Check Roni's site
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pages and worker
+        run: |
+          W=https://roni-contribute.alonzvisabag.workers.dev
+          O="Origin: https://alonzvisabag.github.io"
+          for p in roni/ roni/contribute.html roni/content.json roni/words.json roni/countdowns.json roni/prefs.json; do
+            echo "::notice::page $p → $(curl -s -o /dev/null -w '%{http_code}' https://alonzvisabag.github.io/$p)"
+          done
+          for p in words countdowns prefs; do
+            echo "::notice::worker /$p → $(curl -s -H "$O" $W/$p | jq -c '{ok, items: ((.words // .countdowns // .prefs // []) | length), error}')"
+          done
+          echo "::notice::worker /words from another site → $(curl -s -o /dev/null -w '%{http_code}' $W/words) (403 expected)"
+          echo "::notice::worker /contribute → $(curl -s -X POST -H "$O" -H 'Content-Type: application/json' -d '{"site":"__check__"}' $W/contribute) (unknown site expected)"
