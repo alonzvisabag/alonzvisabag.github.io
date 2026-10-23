@@ -4,20 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>INSIDE JOKES · A comedy series</title>
-<meta name="description" content="INSIDE JOKES: a comedy series where comedians bring their best friend to finally explain the jokes only the two of them get.">
+<title>The Inside Joke Show · A comedy series</title>
+<meta name="description" content="The Inside Joke Show: a comedy series where comedians bring their best friend to finally explain the jokes only the two of them get.">
+<meta property="og:title" content="The Inside Joke Show">
+<meta property="og:description" content="One comedian. Their best friend. The jokes nobody else gets, until now.">
+<meta property="og:image" content="https://alonzvisabag.github.io/inside-jokes/img/share.jpg">
+<link rel="icon" type="image/png" href="img/icon.png">
+<link rel="apple-touch-icon" href="img/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Caveat:wght@600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
     /* Two voices run through the page, like the show: the comedian's version in type, the best friend's
        corrections in red pen on top of it. Stage red for the show, white paper for the transcript. */
     :root {
-        --paper: #fffaf8;
+        --paper: #eeede9;
         --ink: #2a0c0a;
-        --muted: #7a5552;
-        --line: #f0dcd8;
-        --red: #e5261d;
-        --red-deep: #b8160f;
+        --muted: #765552;
+        --line: #ddd3cf;
+        --brick: #a9161e;
+        --red: #be0912;
+        --red-deep: #8e0f15;
         --blush: #ffd6d0;
         --display: 'Bricolage Grotesque', 'Arial Narrow', system-ui, sans-serif;
         --hand: 'Caveat', 'Comic Sans MS', cursive;
@@ -37,26 +43,29 @@
     .preview-tag span { color: var(--blush); }
 
     /* nav */
-    .nav { position: sticky; top: 0; z-index: 40; background: var(--red); color: #fff; border-bottom: 1px solid rgba(255,255,255,0.15); }
+    .nav { position: sticky; top: 0; z-index: 40; background: var(--brick); color: #fff; border-bottom: 1px solid rgba(255,255,255,0.15); }
     .nav .wrap { display: flex; align-items: center; gap: 24px; height: 64px; }
-    .wordmark { font: 800 1.15rem var(--display); letter-spacing: -0.01em; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-    .wordmark b { border: 2px solid currentColor; border-radius: 14px 14px 14px 3px; padding: 0 7px 1px; font-weight: 800; }
+    .wordmark { display: block; flex: none; }
+    .wordmark img { height: 48px; width: auto; display: block; }
     .nav nav { display: flex; gap: 22px; margin-left: auto; font-weight: 500; font-size: 0.95rem; }
     .nav nav a { text-decoration: none; opacity: 0.85; }
     .nav nav a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 4px; }
     .btn { display: inline-flex; align-items: center; gap: 8px; font: 700 1rem var(--display); padding: 13px 22px; border-radius: 999px; text-decoration: none; border: 2px solid currentColor; transition: transform 0.15s, background 0.15s, color 0.15s; cursor: pointer; }
     .btn:hover { transform: translateY(-2px); }
-    .btn.fill { background: #fff; color: var(--red); border-color: #fff; }
+    .btn.fill { background: var(--paper); color: var(--red); border-color: var(--paper); }
     .contact .btn.fill, .nav .btn.fill { color: var(--red-deep); }
     .btn.small { padding: 8px 16px; font-size: 0.9rem; }
     :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
     .nav :focus-visible, .hero :focus-visible, .contact :focus-visible { outline-color: #fff; }
 
     /* hero */
-    .hero { background: var(--red); color: #fff; overflow: hidden; }
+    .hero { background: var(--brick); color: #fff; overflow: hidden; }
     .hero .wrap { padding-top: 70px; padding-bottom: 90px; position: relative; }
     .hero .label { color: var(--blush); }
-    .hero h1 { font: 800 clamp(3.4rem, 11.5vw, 10rem)/0.92 var(--display); letter-spacing: -0.045em; margin: 22px 0 0; max-width: 11ch; position: relative; isolation: isolate; }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.85fr); gap: 30px 50px; align-items: center; }
+    .hero-logo { width: 100%; height: auto; rotate: -5deg; filter: drop-shadow(0 14px 18px rgba(60, 0, 4, 0.3)); animation: slap 0.55s 0.15s cubic-bezier(.2,1.5,.4,1) both; }
+    @keyframes slap { from { opacity: 0; scale: 1.3; rotate: -14deg; } to { opacity: 1; scale: 1; rotate: -5deg; } }
+    .hero h1 { font: 800 clamp(3.2rem, 7.4vw, 7.4rem)/0.92 var(--display); letter-spacing: -0.045em; margin: 22px 0 0; max-width: 11ch; position: relative; isolation: isolate; }
     .hero h1 .there { position: relative; white-space: nowrap; }
     .hero h1 .there::after { content: ''; position: absolute; left: -2%; right: -2%; bottom: 0.08em; height: 0.12em; background: var(--red-deep); border-radius: 99px; transform: rotate(-1.5deg) scaleX(0); transform-origin: left; animation: swipe 0.6s 0.5s cubic-bezier(.6,0,.3,1) forwards; mix-blend-mode: normal; z-index: -1; }
     @keyframes swipe { to { transform: rotate(-1.5deg) scaleX(1); } }
@@ -126,7 +135,7 @@
     /* host */
     .host { padding: 40px 0 110px; }
     .host .card { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 44px; align-items: center; }
-    .portrait { aspect-ratio: 4 / 5; max-width: 100%; border-radius: 22px; background: var(--red); color: #fff; display: grid; place-items: center; position: relative; overflow: hidden; }
+    .portrait { aspect-ratio: 4 / 5; max-width: 100%; border-radius: 22px; background: var(--brick); color: #fff; display: grid; place-items: center; position: relative; overflow: hidden; }
     .portrait b { font: 800 9rem/1 var(--display); letter-spacing: -0.05em; }
     .portrait span { position: absolute; bottom: 16px; font: 500 0.75rem var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--blush); }
     .host h2 { font: 800 clamp(2.4rem, 5vw, 4rem)/1 var(--display); letter-spacing: -0.035em; margin: 10px 0 16px; }
@@ -134,17 +143,22 @@
     .host p { color: var(--muted); max-width: 32em; font-size: 1.1rem; }
 
     /* contact */
-    .contact { background: var(--red); color: #fff; padding: 110px 0; }
+    .contact { background: var(--brick); color: #fff; padding: 110px 0; }
     .contact h2 { font: 800 clamp(2.8rem, 8vw, 6.4rem)/0.95 var(--display); letter-spacing: -0.045em; max-width: 12ch; }
     .contact p { margin-top: 22px; font-size: 1.25rem; color: rgba(255,255,255,0.9); max-width: 30em; }
     .contact .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; align-items: center; }
     .contact .mail { font: 500 1.1rem var(--mono); }
 
     footer { padding: 30px 0 70px; color: var(--muted); font-size: 0.9rem; }
-    footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+    footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+    .foot-id { display: inline-flex; align-items: center; gap: 14px; }
+    .foot-id img { height: 54px; width: auto; }
 
     @media (max-width: 860px) {
         .nav nav { display: none; }
+        .hero-grid { grid-template-columns: minmax(0, 1fr); }
+        .hero-logo { order: -1; width: min(78%, 360px); justify-self: center; }
+        .hero .wrap { padding-top: 40px; }
         .nav .btn { margin-left: auto; }
         .hero .note { margin-left: 0.1em; }
         .beats { grid-template-columns: minmax(0, 1fr); gap: 30px; }
@@ -157,6 +171,7 @@
     @media (prefers-reduced-motion: reduce) {
         html { scroll-behavior: auto; }
         .hero h1 .there::after { animation: none; transform: rotate(-1.5deg); }
+        .hero-logo { animation: none; }
         .hero .note, .hero .note path, .notes .hand { animation: none; opacity: 1; stroke-dashoffset: 0; }
     }
 </style>
@@ -167,7 +182,7 @@
 
 <header class="nav">
     <div class="wrap">
-        <a class="wordmark" href="#top" aria-label="INSIDE JOKES"><b>INSIDE</b> JOKES</a>
+        <a class="wordmark" href="#top"><img src="img/logo-sticker.png" alt="The Inside Joke Show" width="1000" height="738"></a>
         <nav aria-label="Sections">
             <a href="#format">The format</a>
             <a href="#example">An example</a>
@@ -180,14 +195,17 @@
 
 <main id="top">
     <section class="hero">
-        <div class="wrap">
+        <div class="wrap hero-grid">
+            <div class="hero-copy">
             <div class="label">A comedy series · In development</div>
             <h1>You had to be <span class="there">there.</span><span class="note hand" aria-hidden="true"><svg viewBox="0 0 120 70"><path d="M112 40 C 90 62, 50 66, 10 44 M10 44 L 28 38 M10 44 L 20 60"/></svg>now you are</span></h1>
-            <p class="sub">Every comedian has a best friend who was there for the stories that never make it into the act. INSIDE JOKES puts them both in the room to finally tell those stories properly.</p>
+            <p class="sub">Every comedian has a best friend who was there for the stories that never make it into the act. The Inside Joke Show puts them both in the room to finally tell those stories properly.</p>
             <div class="ctas">
                 <a class="btn fill" href="#sizzle">Watch the sizzle</a>
                 <a class="btn" href="#contact">Get the pitch deck</a>
             </div>
+            </div>
+            <img class="hero-logo" src="img/logo-sticker.png" alt="The Inside Joke Show" width="1000" height="738">
         </div>
     </section>
 
@@ -314,7 +332,7 @@
 
 <footer>
     <div class="wrap">
-        <span>INSIDE JOKES is in development. © 2026 Noah Wolf.</span>
+        <span class="foot-id"><img src="img/logo-paper.png" alt="" width="1000" height="716">The Inside Joke Show is in development. © 2026 Noah Wolf.</span>
         <span>Site by <a href="https://alonzvisabag.github.io/">Alon Zvi Sabag</a></span>
     </div>
 </footer>
