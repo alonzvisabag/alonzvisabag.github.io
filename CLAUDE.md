@@ -10,6 +10,7 @@ Plain HTML/CSS portfolio site hosted on GitHub Pages at https://alonzvisabag.git
 - `portfolio/` — project pages (`far.html`, `sixty.html`, shared `case.css`), phone videos and stills in `portfolio/media/`
 - `demo/` — demos of the two gift sites with invented names and blurred photos (noindex)
 - `roni/`, `galit/` — the real gift sites (private, noindex)
+- `inside-joke-show/` — a pitch site for Noah Wolf's comedy series "The Inside Joke Show" (English, for producers; logo cut-outs in `img/`), noindex while in preview; `inside-jokes/` only forwards old links to it
 - `font-lab/` — "בית היציקה", a Hebrew font builder (sliders for each part of the letters, per-letter tweaks in a word), linked from the main page; `engine.js` is the letter engine both pages use. A copy of it also lives as a Claude artifact. noindex
 - `image-1-nobg.png` … `image-10-nobg.png` and the Hebrew-named Instagram post images — artwork in the root folder (not a subfolder)
 
