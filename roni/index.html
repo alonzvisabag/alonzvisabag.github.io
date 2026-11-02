@@ -15,7 +15,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="לרונני">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://api.open-meteo.com https://roni-contribute.alonzvisabag.workers.dev; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.basemaps.cartocdn.com https://server.arcgisonline.com; media-src 'self'; connect-src 'self' https://api.open-meteo.com https://roni-contribute.alonzvisabag.workers.dev https://nominatim.openstreetmap.org; object-src 'none'; base-uri 'self';">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -624,7 +624,7 @@
     margin-bottom:16px;
   }
 
-  #memory-open-btn, #nickname-open-btn, #bored-open-btn, #hungry-open-btn, #words-open-btn, #countdown-open-btn{
+  #memory-open-btn, #nickname-open-btn, #bored-open-btn, #hungry-open-btn, #words-open-btn, #countdown-open-btn, #places-open-btn{
     padding:12px 26px;
   }
 
@@ -1675,6 +1675,7 @@
     #sos-sheet, .sos-panel{ animation:none; }
   }
 </style>
+<link rel="stylesheet" href="places.css">
 </head>
 <body>
 
@@ -1770,6 +1771,7 @@
       <button id="hungry-open-btn" class="btn">אני רעבה<br>מה לאכול?</button>
       <button id="words-open-btn" class="btn">למדתי מילה<br>חדשה בגרמנית</button>
       <button id="countdown-open-btn" class="btn">ספירה<br>לאחור</button>
+      <button id="places-open-btn" class="btn">המקומות<br>שלי 🧳</button>
     </div>
     <button id="reset-link">נעלי הכל מחדש</button>
   </footer>
@@ -1879,6 +1881,40 @@
   </div>
   <div id="countdown-list"></div>
 </div>
+
+<div id="places-view">
+  <div class="view-header">
+    <button id="places-back-btn" class="back-btn" type="button" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <h2>המקומות שלי</h2>
+  </div>
+  <div class="pl-wrap">
+    <div class="pl-stats" id="pl-stats"></div>
+    <div class="pl-modes" role="group" aria-label="איך להראות את המפה">
+      <button type="button" data-mode="art" aria-pressed="true">מאוירת</button>
+      <button type="button" data-mode="map" aria-pressed="false">מפה</button>
+      <button type="button" data-mode="sat" aria-pressed="false">לוויין</button>
+    </div>
+    <div class="pl-map-card">
+      <div class="pl-map" id="pl-art"><svg id="pl-svg" aria-hidden="true"></svg><div class="pl-pins" id="pl-pins"></div></div>
+      <div class="pl-map" id="pl-real" hidden></div>
+      <p class="pl-outside" id="pl-outside" hidden></p>
+    </div>
+    <div class="pl-place" id="pl-place" aria-live="polite"></div>
+    <label class="pl-add-photos btn">📸 להוסיף תמונות מהאייפון
+      <input type="file" id="pl-files" accept="image/*" multiple hidden>
+    </label>
+    <p class="pl-hint">בוחרים תמונות מהטיולים, והן נכנסות לבד למקום שבו צולמו. מקום חדש? הוא יופיע במפה.</p>
+    <div id="pl-progress" class="pl-progress" aria-live="polite"></div>
+    <div id="pl-tray" class="pl-tray" hidden></div>
+    <form id="pl-add-form" class="pl-add-form" autocomplete="off">
+      <input id="pl-add-name" maxlength="60" placeholder="הייתי במקום חדש: איך הוא נקרא?" aria-label="שם המקום">
+      <button class="btn" type="submit">להוסיף</button>
+    </form>
+    <p id="pl-add-msg" class="pl-add-msg" aria-live="polite"></p>
+    <p class="pl-status" id="pl-status"></p>
+  </div>
+</div>
+<div id="pl-viewer" hidden><img alt=""><button type="button" class="pl-v-del">להסיר את התמונה מהמפה</button></div>
 
 <div id="words-view">
   <div class="view-header">
@@ -2566,6 +2602,8 @@ function showSite(){
     document.querySelectorAll('#hero-photos .polaroid').forEach(p => p.classList.add('ready'));
   }, 5000);
   setTimeout(() => loadDeferredImages(document.getElementById('main')), 3000);
+  // a new feature says hello once, after the site has settled in (places.js)
+  setTimeout(() => { if(window.placesLaunch) window.placesLaunch(); }, 2600);
 }
 
 const HEART_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.1 5.4 3.1 1.8-2 3.3-3.1 5.4-3.1 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
@@ -3845,5 +3883,7 @@ document.getElementById('pace-nickname-btn').addEventListener('click', paceTo(op
 document.getElementById('pace-bored-btn').addEventListener('click', paceTo(openBored));
 </script>
 
+<script src="../lib/media-prep.js"></script>
+<script src="places.js"></script>
 </body>
 </html>
