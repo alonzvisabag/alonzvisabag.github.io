@@ -5,7 +5,7 @@
 // tapPoint, burstConfetti and escapeHTML from the page, and shrinkImage/blobToBase64 from lib/media-prep.js.
 (function () {
   const API = 'https://roni-contribute.alonzvisabag.workers.dev';
-  const HOME = { id: 'home', name: 'גראץ', country: 'אוסטריה', lat: 47.0707, lon: 15.4395, emoji: '🏠', text: 'הבית שלך עכשיו. מכאן יוצאות כל הנסיעות.' };
+  const HOME = { id: 'home', name: 'גראץ', country: 'אוסטריה', lat: 47.0707, lon: 15.4395, emoji: '🏠', text: '' };
   const TLV = { lat: 32.0853, lon: 34.7818 };
   const PIN_COLORS = ['#ffb703', '#ff6b4a', '#4cc9f0', '#06d6a0', '#9b8cff', '#f0447f', '#ff9f1c', '#2ec4b6'];
   const SAME_PLACE_KM = 35;           // a photo this close to a place belongs to it
@@ -157,10 +157,32 @@
 
   // ── the real map (street or satellite), with Leaflet, loaded only when she first asks for it
   let leaf = null, tiles = null, markers = null;
+  // Each look has a second source, used when the first one can't be reached from her phone.
   const TILES = {
-    map: ['https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19, attribution: '© OpenStreetMap · © CARTO' }],
-    sat: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Esri, Maxar, Earthstar Geographics' }],
+    map: [
+      ['https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19, attribution: '© OpenStreetMap · © CARTO' }],
+      ['https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }],
+    ],
+    sat: [
+      ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Esri, Maxar, Earthstar Geographics' }],
+      ['https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Esri, Maxar, Earthstar Geographics' }],
+    ],
   };
+  let tilesMode = null;
+  function setTiles(source) {
+    if (tiles) leaf.removeLayer(tiles);
+    const [url, opts] = TILES[mode][source];
+    let loaded = 0, failed = 0;
+    tiles = L.tileLayer(url, opts).addTo(leaf);
+    tiles.on('tileload', () => { loaded++; $('pl-real-msg').hidden = true; });
+    tiles.on('tileerror', () => {
+      failed++;
+      if (loaded || failed < 4) return;
+      if (TILES[mode][source + 1]) setTiles(source + 1);
+      else $('pl-real-msg').hidden = false;
+    });
+    tilesMode = mode;
+  }
   function loadLeaflet() {
     if (window.L) return Promise.resolve();
     return new Promise((resolve, reject) => {
@@ -184,9 +206,11 @@
       leaf.attributionControl.setPrefix('');
       markers = L.layerGroup().addTo(leaf);
       fit = true;
+      box.insertAdjacentHTML('beforeend', '<div id="pl-real-msg" class="pl-real-msg" hidden>המפה לא נטענת בטלפון הזה. אם יש בספארי חוסם פרסומות, כדאי לכבות אותו לאתר הזה.</div>');
+      // the screen opens with an animation; whenever the map's box changes size, Leaflet has to measure it again
+      if (window.ResizeObserver) new ResizeObserver(fitWhenVisible).observe(box);
     }
-    if (tiles) leaf.removeLayer(tiles);
-    tiles = L.tileLayer(...TILES[mode]).addTo(leaf);
+    if (tilesMode !== mode) { $('pl-real-msg').hidden = true; setTiles(0); }
     markers.clearLayers();
     const list = [HOME, ...allPlaces()];
     for (const p of list) {
@@ -196,10 +220,20 @@
       const html = `<button type="button" class="pl-pin${p === HOME ? ' home' : ''}${selected === p.id ? ' on' : ''}" style="--c:${colorOf(p)}" data-place="${esc(p.id)}" aria-label="${esc(p.name)}">${pinHTML(p)}</button>`;
       L.marker([p.lat, p.lon], { icon: L.divIcon({ className: 'pl-leaf', html, iconSize: null }), keyboard: false }).addTo(markers);
     }
-    setTimeout(() => {
-      leaf.invalidateSize();
-      if (fit) leaf.fitBounds(L.latLngBounds(list.map((p) => [p.lat, p.lon])), { padding: [40, 40], maxZoom: 9 });
-    }, 50);
+    if (fit) needFit = true;
+    setTimeout(fitWhenVisible, 50);
+  }
+  // Leaflet can only frame the places once its box has a size; a box still hidden (the screen opening straight into
+  // the street map or the satellite) would leave it with no view at all, a grey square. So it waits until it can.
+  let needFit = false;
+  function fitWhenVisible() {
+    const box = $('pl-real');
+    if (!leaf || !box.clientWidth || !box.clientHeight) return;
+    leaf.invalidateSize();
+    if (!needFit && leaf._loaded) return;
+    needFit = false;
+    const list = [HOME, ...allPlaces()];
+    leaf.fitBounds(L.latLngBounds(list.map((p) => [p.lat, p.lon])), { padding: [40, 40], maxZoom: 9, animate: false });
   }
 
   // On a phone, Leaflet hands the tap's click to the map itself, so the pin is read from where the finger went down
@@ -233,7 +267,8 @@
     $('pl-place').innerHTML = `
       <div class="pl-country">${esc(p.country)}</div>
       <h3>${esc(p.emoji || '📍')} ${esc(p.name)}</h3>
-      ${p.text ? `<p>${esc(p.text)}</p>` : ''}
+      ${p === HOME ? '' : p.text ? `<p class="pl-story">${esc(p.text)}</p><button type="button" class="pl-write" data-edit>✏️ לשנות</button>`
+        : '<button type="button" class="pl-write" data-edit>✏️ לכתוב כמה מילים על החוויה שם</button>'}
       ${p === HOME ? `<div class="pl-km">🇮🇱 הבית הגדול: ${fmt(km(HOME, TLV))} ק״מ מכאן</div>` : `<div class="pl-km">📍 ${fmt(km(HOME, p))} ק״מ מהבית בגראץ</div>`}
       ${pics.length ? `<div class="pl-photos">${pics.map((ph) => `<button type="button" data-photo="${esc(ph.id)}" style="background-image:url('media/${encodeURIComponent(ph.media)}')" aria-label="תמונה מ${esc(p.name)}"></button>`).join('')}</div>`
         : p === HOME ? '' : '<div class="pl-nophoto">עוד אין כאן תמונות. מעלים מהאייפון, והן יגיעו לכאן לבד.</div>'}
@@ -242,6 +277,20 @@
   $('pl-place').addEventListener('click', (e) => {
     const ph = e.target.closest('[data-photo]');
     if (ph) return openPhoto(ph.dataset.photo);
+    // her own words about the place (and its name, for places that came in with a foreign one)
+    if (e.target.closest('[data-edit]')) {
+      const p = allPlaces().find((x) => x.id === selected);
+      if (!p) return;
+      const box = e.target.closest('[data-edit]');
+      box.outerHTML = `<form class="pl-edit" autocomplete="off">
+        <input name="name" maxlength="40" value="${esc(p.name)}" aria-label="שם המקום">
+        <textarea name="text" maxlength="200" rows="3" placeholder="מה היה שם? מה הכי זכור לך?" aria-label="כמה מילים על החוויה">${esc(p.text)}</textarea>
+        <button class="btn" type="submit">לשמור</button></form>`;
+      $('pl-place').querySelector('.pl-edit textarea').focus();
+      const story = $('pl-place').querySelector('.pl-story');
+      if (story) story.remove();
+      return;
+    }
     if (e.target.closest('[data-remove]')) {
       const p = allPlaces().find((x) => x.id === selected);
       if (!p || !confirm(`להסיר את ${p.name} מהמפה?`)) return;
@@ -249,6 +298,16 @@
       photos.change(photosOf(p.id).map((x) => ({ op: 'del', id: x.id })));
       select('home');
     }
+  });
+
+  $('pl-place').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const p = allPlaces().find((x) => x.id === selected);
+    if (!p) return;
+    const name = e.target.elements.name.value.trim() || p.name;
+    const text = e.target.elements.text.value.trim();
+    places.change([{ op: 'del', id: p.id }, { op: 'add', item: Object.assign({}, p, { name, text }) }]);
+    select(p.id);
   });
 
   let viewing = null;
@@ -331,7 +390,7 @@
 
   function nearestPlace(gps) {
     let best = null, bestKm = Infinity;
-    for (const p of allPlaces()) { const d = km(gps, p); if (d < bestKm) { best = p; bestKm = d; } }
+    for (const p of [HOME, ...allPlaces()]) { const d = km(gps, p); if (d < bestKm) { best = p; bestKm = d; } }
     return bestKm <= SAME_PLACE_KM ? best : null;
   }
 
@@ -360,7 +419,7 @@
     box.hidden = !tray.length;
     if (!tray.length) return;
     const t = tray[0];
-    const chips = allPlaces().map((p) => `<button type="button" data-to="${esc(p.id)}">${esc(p.emoji || '📍')} ${esc(p.name)}</button>`).join('');
+    const chips = [HOME, ...allPlaces()].map((p) => `<button type="button" data-to="${esc(p.id)}">${esc(p.emoji || '📍')} ${esc(p.name)}</button>`).join('');
     box.innerHTML = `
       <div class="pl-game-top"><b>איפה צילמת את זה? 🤔</b><span>${answered + 1} מתוך ${answered + tray.length}</span></div>
       <img class="pl-game-img" src="${esc(t.url || 'media/' + encodeURIComponent(t.media))}" alt="">
@@ -483,10 +542,10 @@
 
   // ── opening and closing
   function openPlaces(pt, done) {
-    try { const m = localStorage.getItem('roni-places-mode'); if (m && m !== mode && ['art', 'map', 'sat'].includes(m)) setMode(m); } catch (e) {}
     $('pl-progress').textContent = '';
     $('pl-add-msg').textContent = '';
     openView(view, pt, done);
+    try { const m = localStorage.getItem('roni-places-mode'); if (m && m !== mode && ['art', 'map', 'sat'].includes(m)) setMode(m); } catch (e) {}
     render();
     renderTray();
     places.sync();
@@ -496,10 +555,11 @@
   $('places-open-btn').addEventListener('click', (e) => openPlaces(tapPoint(e)));
   $('places-back-btn').addEventListener('click', () => closeView(view));
 
-  // ── the launch: once, the next time she comes in
-  const LAUNCH_KEY = 'roni-launch-places';
+  // ── the launch of the map
+  // shown every time she comes in, until the end of Wednesday 4 November (Austria time)
+  const LAUNCH_UNTIL = Date.parse('2026-11-05T00:00:00+01:00');
   window.placesLaunch = function () {
-    try { if (localStorage.getItem(LAUNCH_KEY)) return; localStorage.setItem(LAUNCH_KEY, '1'); } catch (e) { return; }
+    if (Date.now() >= LAUNCH_UNTIL || document.getElementById('pl-launch')) return;
     const box = document.createElement('div');
     box.id = 'pl-launch';
     box.setAttribute('role', 'dialog');

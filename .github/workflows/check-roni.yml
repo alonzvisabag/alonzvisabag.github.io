@@ -33,3 +33,10 @@ jobs:
           echo "::notice::words, an empty change → $(curl -s -X POST -H "$O" -H "$J" -d '{"ops":[]}' $W/words | jq -c '{ok, words: (.words | length)}')"
           echo "::notice::sos, unknown number → $(curl -s -o /dev/null -w '%{http_code}' -X POST -H "$O" -d '{"to":"__check__"}' $W/sos) (204 expected)"
           echo "::notice::preflight → $(curl -s -o /dev/null -w '%{http_code}' -X OPTIONS -H "$O" $W/contribute), allows $(curl -s -D - -o /dev/null -X OPTIONS -H "$O" $W/contribute | tr -d '\r' | grep -i '^access-control-allow-origin' | cut -d' ' -f2)"
+      # her map, in a real browser: does the street map and the satellite load on the live site
+      - uses: actions/checkout@v4
+      - name: Her map, in Safari's engine and in Chrome
+        run: |
+          npm i --no-save playwright@1.48.2 >/dev/null
+          npx playwright install --with-deps webkit chromium >/dev/null
+          node .github/scripts/check-roni-map.js
