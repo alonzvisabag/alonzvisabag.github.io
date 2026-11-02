@@ -699,6 +699,52 @@ function cleanPref(p) {
   return out;
 }
 
+// The places she has been (her map) and the photos pinned to them. A place is new when she adds it or when a photo
+// she uploads was taken somewhere the map doesn't have yet.
+const num = (v, min, max) => (typeof v === 'number' && isFinite(v) && v >= min && v <= max ? Math.round(v * 1e5) / 1e5 : null);
+const short = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
+function cleanPlace(p) {
+  if (!p || typeof p !== 'object') return null;
+  const id = cleanId(p.id);
+  const name = short(p.name, 40);
+  const lat = num(p.lat, -90, 90), lon = num(p.lon, -180, 180);
+  if (!id || !name || lat === null || lon === null) return null;
+  return { id, name, country: short(p.country, 40), lat, lon, emoji: short(p.emoji, 8) || '📍', text: short(p.text, 200),
+    at: typeof p.at === 'string' && !isNaN(Date.parse(p.at)) ? new Date(p.at).toISOString() : new Date().toISOString() };
+}
+function cleanPlacePhoto(p) {
+  if (!p || typeof p !== 'object') return null;
+  const id = cleanId(p.id), place = cleanId(p.place);
+  const media = typeof p.media === 'string' && /^place-[a-z0-9-]{4,60}\.jpg$/.test(p.media) ? p.media : '';
+  if (!id || !place || !media) return null;
+  const takenAt = typeof p.takenAt === 'string' && !isNaN(Date.parse(p.takenAt)) ? new Date(p.takenAt).toISOString() : '';
+  return { id, place, media, takenAt };
+}
+
+// One photo for her map, already made small on her phone (a JPEG without its location); saved next to the other media.
+const PHOTO_MAX_PER_HOUR = 200;
+let photoHourStart = 0;
+let photoHourCount = 0;
+async function handlePlacePhoto(request, env) {
+  if (request.headers.get('Origin') !== ALLOWED_ORIGIN) return json({ ok: false, error: 'forbidden' }, 403);
+  const now = Date.now();
+  if (now - photoHourStart > 60 * 60 * 1000) { photoHourStart = now; photoHourCount = 0; }
+  if (photoHourCount >= PHOTO_MAX_PER_HOUR) return json({ ok: false, error: 'too many requests' }, 429);
+  let body;
+  try { body = await request.json(); } catch (e) { return json({ ok: false, error: 'invalid json' }, 400); }
+  const b64 = typeof body.mediaBase64 === 'string' ? body.mediaBase64 : '';
+  if (!b64 || b64.length > 6_000_000) return json({ ok: false, error: 'file too large' }, 400);
+  if (!b64.startsWith('/9j/')) return json({ ok: false, error: 'unsupported file type' }, 400);   // a JPEG starts FF D8 FF
+  photoHourCount++;
+  const media = `place-${now.toString(36)}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+  const res = await putFile(env, `roni/media/${media}`, b64, 'Roni added a photo to her map');
+  if (!res.ok) {
+    console.error('place photo upload failed', res.status, await res.text());
+    return json({ ok: false, error: 'server error' }, 500);
+  }
+  return json({ ok: true, media });
+}
+
 const LISTS = {
   '/words': { path: 'roni/words.json', key: 'words', field: 'word', max: 5000, clean: cleanWord,
     added: 'Roni learned a new German word', changed: "Update Roni's German words" },
@@ -706,6 +752,10 @@ const LISTS = {
     added: 'Roni added a countdown', changed: "Update Roni's countdowns" },
   '/prefs': { path: 'roni/prefs.json', key: 'prefs', field: 'item', max: 10, clean: cleanPref,
     added: "Save Roni's site colors", changed: "Save Roni's site colors" },
+  '/places': { path: 'roni/places.json', key: 'places', field: 'item', max: 500, clean: cleanPlace,
+    added: 'Roni added a place to her map', changed: "Update Roni's map" },
+  '/place-photos': { path: 'roni/place-photos.json', key: 'photos', field: 'item', max: 3000, clean: cleanPlacePhoto,
+    added: 'Roni pinned photos to her map', changed: "Update the photos on Roni's map" },
 };
 
 async function readList(env, list) {
@@ -771,6 +821,9 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/visit-summary') {
       return handleVisitSummary(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/place-photo') {
+      return handlePlacePhoto(request, env);
     }
     if (request.method === 'POST' && url.pathname === '/sos') {
       return handleSos(request, env);
