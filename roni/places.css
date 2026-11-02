@@ -37,10 +37,15 @@
   box-shadow:0 4px 0 var(--c, var(--coral)), 0 8px 14px rgba(0,0,0,.14); transition:scale .15s;
 }
 .pl-bubble > span{ rotate:45deg; font-size:22px; line-height:1; }
+/* the turned square's corner reaches below its box; the margin brings the pin's bottom down to that tip */
+.pl-pin:not(.home) .pl-bubble{ margin-bottom:9px; }
+/* a little shadow where the pin goes into the ground */
+.pl-pin:not(.home)::after{ content:''; position:absolute; left:50%; bottom:-3px; translate:-50% 0; width:14px; height:6px; border-radius:50%; background:rgba(40,20,20,.35); z-index:-1; }
 .pl-bubble.photo > span{ display:none; }
 .pl-pin.home .pl-bubble{ border-radius:50%; rotate:0deg; }
 .pl-pin.home .pl-bubble > span{ rotate:0deg; }
-.pl-name{ margin-top:6px; font-size:.8rem; font-weight:800; background:#fff; padding:2px 9px; border-radius:999px; box-shadow:0 2px 0 rgba(0,0,0,.08); white-space:nowrap; }
+/* the name hangs under the point, so the pin's tip is exactly on the place */
+.pl-name{ position:absolute; top:calc(100% + 7px); left:50%; translate:-50% 0; font-size:.8rem; font-weight:800; background:#fff; padding:2px 9px; border-radius:999px; box-shadow:0 2px 0 rgba(0,0,0,.08); white-space:nowrap; }
 .pl-pin.home .pl-name{ background:var(--ink); color:#fff; }
 .pl-pin:hover .pl-bubble, .pl-pin.on .pl-bubble{ scale:1.15; }
 .pl-pin.on{ z-index:2; }
@@ -91,7 +96,8 @@
 @media (max-width:600px){
   .pl-bubble{ width:30px; height:30px; border-width:2.5px; box-shadow:0 3px 0 var(--c, var(--coral)), 0 5px 10px rgba(0,0,0,.12); }
   .pl-bubble > span{ font-size:15px; }
-  #pl-art .pl-name{ position:absolute; top:100%; font-size:.68rem; padding:2px 7px; margin-top:4px; display:none; }
+  .pl-pin:not(.home) .pl-bubble{ margin-bottom:6px; }
+  #pl-art .pl-name{ font-size:.68rem; padding:2px 7px; top:calc(100% + 5px); display:none; }
   #pl-art .pl-pin.on .pl-name{ display:block; }
   .pl-clabel{ font-size:22px; }
   .pl-clabel.been{ font-size:26px; }
