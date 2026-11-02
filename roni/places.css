@@ -114,3 +114,10 @@
 .pl-game-new input{ flex:1; min-width:0; border:2px solid var(--border, #f1e4dc); background:var(--field, #fff); color:var(--ink); border-radius:14px; padding:10px 12px; font:500 .95rem 'Rubik', sans-serif; }
 .pl-game-msg{ font-size:.85rem; color:var(--muted); margin:6px 0 0; min-height:1.1em; }
 .pl-game-skip{ margin-top:6px; border:0; background:none; color:var(--muted); font:600 .85rem 'Rubik', sans-serif; text-decoration:underline; cursor:pointer; padding:6px; }
+.pl-real-msg{ position:absolute; inset:auto 12px 12px; z-index:500; background:rgba(255,255,255,.95); border-radius:14px; padding:10px 12px; font:600 .85rem/1.45 'Rubik', sans-serif; color:var(--ink); text-align:center; direction:rtl; }
+.pl-real-msg[hidden]{ display:none; }
+.pl-story{ white-space:pre-line; color:var(--ink) !important; }
+.pl-write{ display:block; margin-top:8px; border:0; background:none; color:var(--coral-dark); font:700 .9rem 'Rubik', sans-serif; cursor:pointer; padding:4px 0; }
+.pl-edit{ display:grid; gap:8px; margin-top:8px; }
+.pl-edit input, .pl-edit textarea{ border:2px solid var(--border, #f1e4dc); background:var(--field, #fff); color:var(--ink); border-radius:12px; padding:10px 12px; font:500 1rem 'Rubik', sans-serif; resize:vertical; }
+.pl-edit input:focus, .pl-edit textarea:focus{ outline:none; border-color:var(--coral); }
