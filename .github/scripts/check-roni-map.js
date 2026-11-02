@@ -36,6 +36,16 @@ const note = (s) => console.log('::notice::' + s.replace(/\n/g, ' ').slice(0, 90
       note(`${name} ${mode}: ${st}; tile responses ok=${tiles.ok} bad=${tiles.bad}`);
       await page.screenshot({ path: `shot-${name.replace(/\W/g, '')}-${mode}.png` });
     }
+    // close and open again: her phone remembers the last look, so the screen opens straight into it
+    await page.click('#places-back-btn');
+    await page.waitForTimeout(1200);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.$eval('#places-open-btn', (b) => b.click());
+    await page.waitForTimeout(5000);
+    note(`${name} reopened: ` + await page.evaluate(() => {
+      const box = document.getElementById('pl-real');
+      return `hidden=${box.hidden} loaded=${box.querySelectorAll('img.leaflet-tile-loaded').length} pins=${box.querySelectorAll('.pl-pin').length} fix=${!!document.querySelector('script[src="places.js"]')}`;
+    }) + ' places.js has the fix: ' + (await (await page.request.get('https://alonzvisabag.github.io/roni/places.js')).text()).includes('fitWhenVisible'));
     note(`${name} problems: ${log.slice(0, 8).join(' | ') || 'none'}`);
     await browser.close();
   }
