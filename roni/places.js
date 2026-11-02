@@ -369,6 +369,16 @@
       try { meta = readExif(new Uint8Array(await files[i].slice(0, 192 * 1024).arrayBuffer())); } catch (err) {}
       const small = typeof shrinkImage === 'function' ? await shrinkImage(files[i], true, 1600, 0.82) : null;
       if (!small) { failed++; continue; }
+      // the photo goes up first: a new place is added only once there's a photo to put in it
+      let data = {};
+      for (let attempt = 0; attempt < 2 && !data.ok; attempt++) {
+        if (attempt) await wait(1500);
+        try {
+          const res = await fetch(`${API}/place-photo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mediaBase64: await blobToBase64(small) }) });
+          data = await res.json();
+        } catch (err) {}
+      }
+      if (!data.ok) { failed++; continue; }
       let place = meta.gps ? nearestPlace(meta.gps) : null;
       if (meta.gps && !place) {
         const found = await placeName(meta.gps);
@@ -378,12 +388,6 @@
           fresh.push(place.name);
         }
       }
-      let data = {};
-      try {
-        const res = await fetch(`${API}/place-photo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mediaBase64: await blobToBase64(small) }) });
-        data = await res.json();
-      } catch (err) {}
-      if (!data.ok) { failed++; continue; }
       if (place) {
         photos.change([{ op: 'add', item: { id: newId(), place: place.id, media: data.media, takenAt: meta.taken } }]);
         counts[place.name] = (counts[place.name] || 0) + 1;
