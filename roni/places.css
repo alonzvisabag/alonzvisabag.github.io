@@ -11,15 +11,12 @@
 .pl-stat{ background:var(--card); border-radius:999px; padding:7px 13px; font-weight:700; font-size:.88rem; color:var(--ink); box-shadow:0 3px 0 rgba(255,107,74,.16); }
 .pl-stat b{ color:var(--coral); font-size:1.05rem; }
 
-.pl-modes{ display:inline-flex; background:var(--card); border-radius:999px; padding:4px; gap:2px; margin-bottom:12px; box-shadow:0 3px 10px rgba(0,0,0,.06); }
-.pl-modes button{ border:0; background:none; font:700 .88rem 'Rubik', sans-serif; color:var(--muted); padding:8px 16px; border-radius:999px; cursor:pointer; }
-.pl-modes button[aria-pressed="true"]{ background:var(--coral); color:#fff; }
 
 .pl-map-card{ background:var(--card); border-radius:26px; padding:8px; box-shadow:0 8px 0 rgba(255,107,74,.14), 0 18px 36px rgba(120,60,40,.10); }
 .pl-map{ position:relative; border-radius:20px; overflow:hidden; background:#cdeefc; }
 .pl-map svg{ display:block; width:100%; height:auto; }
-#pl-real{ height:min(70vh, 520px); background:#e8e4dc; }
 .pl-outside{ margin:8px 6px 2px; font-size:.82rem; color:var(--muted); }
+.pl-outside button{ border:1.5px solid var(--border, #f1e4dc); background:var(--field, #fff); color:var(--ink); border-radius:999px; padding:4px 10px; font:600 .8rem 'Rubik', sans-serif; cursor:pointer; margin:2px; }
 .pl-land{ stroke:#fff; stroke-width:3.5; stroke-linejoin:round; }
 .pl-land.other{ fill:#f6ecdc; }
 .pl-clabel{ font:700 15px 'Rubik', sans-serif; fill:#b39d8e; letter-spacing:.08em; text-anchor:middle; }
@@ -52,8 +49,6 @@
 .pl-pin.on .pl-name{ background:var(--c, var(--coral)); color:#fff; }
 .pl-pin:focus-visible{ outline:none; }
 .pl-pin:focus-visible .pl-bubble{ outline:3px solid var(--ink); outline-offset:3px; }
-.pl-leaf{ background:none; border:0; width:0 !important; height:0 !important; }
-#pl-real .leaflet-control-attribution{ font-size:9px; }
 
 .pl-place{ margin-top:16px; background:var(--card); border-radius:22px; padding:16px; box-shadow:0 6px 0 rgba(255,107,74,.12); }
 .pl-place .pl-country{ font-size:.78rem; font-weight:700; color:var(--coral-dark); letter-spacing:.05em; }
@@ -101,7 +96,6 @@
   #pl-art .pl-pin.on .pl-name{ display:block; }
   .pl-clabel{ font-size:22px; }
   .pl-clabel.been{ font-size:26px; }
-  .pl-leaf .pl-name{ font-size:.68rem; }
 }
 @media (prefers-reduced-motion: reduce){
   #pl-launch, #pl-launch .pl-l-card, #pl-launch .pl-l-big span{ animation:none; }
@@ -120,8 +114,6 @@
 .pl-game-new input{ flex:1; min-width:0; border:2px solid var(--border, #f1e4dc); background:var(--field, #fff); color:var(--ink); border-radius:14px; padding:10px 12px; font:500 .95rem 'Rubik', sans-serif; }
 .pl-game-msg{ font-size:.85rem; color:var(--muted); margin:6px 0 0; min-height:1.1em; }
 .pl-game-skip{ margin-top:6px; border:0; background:none; color:var(--muted); font:600 .85rem 'Rubik', sans-serif; text-decoration:underline; cursor:pointer; padding:6px; }
-.pl-real-msg{ position:absolute; inset:auto 12px 12px; z-index:500; background:rgba(255,255,255,.95); border-radius:14px; padding:10px 12px; font:600 .85rem/1.45 'Rubik', sans-serif; color:var(--ink); text-align:center; direction:rtl; }
-.pl-real-msg[hidden]{ display:none; }
 .pl-story{ white-space:pre-line; color:var(--ink) !important; }
 .pl-write{ display:block; margin-top:8px; border:0; background:none; color:var(--coral-dark); font:700 .9rem 'Rubik', sans-serif; cursor:pointer; padding:4px 0; }
 .pl-edit{ display:grid; gap:8px; margin-top:8px; }

@@ -1,6 +1,5 @@
-// ── Her places (🧳): every place she's been, on an illustrated map or a real one (street or satellite), with her
-// photos pinned to each. Photos she picks from her phone find their own place from where they were taken; a photo
-// from somewhere new adds that place. Saved on her phone right away and backed up through the worker
+// ── Her places (🧳): every place she's been, on an illustrated map, with her photos pinned to each. Photos she
+// picks from her phone find their own place from where they were taken; a photo from somewhere new adds that place. Saved on her phone right away and backed up through the worker
 // (roni/places.json, roni/place-photos.json), the same way as the German words. Uses openView/closeView,
 // tapPoint, burstConfetti and escapeHTML from the page, and shrinkImage/blobToBase64 from lib/media-prep.js.
 (function () {
@@ -79,7 +78,6 @@
   }
 
   let selected = null;
-  let mode = 'art';
 
   // ── the illustrated map: fixed on the Alps, drawn from map-shapes.json
   let shapes = null;
@@ -129,10 +127,10 @@
     const [hx, hy] = project(HOME);
     const pins = $('pl-pins');
     pins.textContent = '';
-    let outside = 0;
+    const outside = [];
     for (const p of list) {
       const xy = project(p);
-      if (!inside(xy)) { outside++; continue; }
+      if (!inside(xy)) { outside.push(p); continue; }
       const [x, y] = xy;
       if (p !== HOME) {
         const mx = (hx + x) / 2, my = (hy + y) / 2 - Math.hypot(x - hx, y - hy) * 0.22;
@@ -150,112 +148,11 @@
       pins.appendChild(b);
     }
     const note = $('pl-outside');
-    note.hidden = !outside;
-    note.textContent = outside === 1 ? 'מקום אחד נמצא מחוץ למפה המאוירת. רואים אותו במפה הרגילה.' : `${outside} מקומות נמצאים מחוץ למפה המאוירת. רואים אותם במפה הרגילה.`;
+    note.hidden = !outside.length;
+    note.innerHTML = 'ועוד מחוץ למפה: ' + outside.map((p) => `<button type="button" data-place="${esc(p.id)}">${esc(p.emoji || '📍')} ${esc(p.name)}</button>`).join(' ');
   }
+  $('pl-outside').addEventListener('click', (e) => { const b = e.target.closest('[data-place]'); if (b) select(b.dataset.place); });
   $('pl-pins').addEventListener('click', (e) => { const b = e.target.closest('[data-place]'); if (b) select(b.dataset.place); });
-
-  // ── the real map (street or satellite), with Leaflet, loaded only when she first asks for it
-  let leaf = null, tiles = null, markers = null;
-  // Each look has a second source, used when the first one can't be reached from her phone.
-  const TILES = {
-    map: [
-      ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Esri, HERE, Garmin, © OpenStreetMap' }],
-      ['https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }],
-    ],
-    sat: [
-      ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Esri, Maxar, Earthstar Geographics' }],
-      ['https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Esri, Maxar, Earthstar Geographics' }],
-    ],
-  };
-  let tilesMode = null;
-  function setTiles(source) {
-    if (tiles) leaf.removeLayer(tiles);
-    const [url, opts] = TILES[mode][source];
-    let loaded = 0, failed = 0;
-    tiles = L.tileLayer(url, opts).addTo(leaf);
-    tiles.on('tileload', () => { loaded++; $('pl-real-msg').hidden = true; });
-    tiles.on('tileerror', () => {
-      failed++;
-      if (loaded || failed < 4) return;
-      if (TILES[mode][source + 1]) setTiles(source + 1);
-      else $('pl-real-msg').hidden = false;
-    });
-    tilesMode = mode;
-  }
-  function loadLeaflet() {
-    if (window.L) return Promise.resolve();
-    return new Promise((resolve, reject) => {
-      const css = document.createElement('link');
-      css.rel = 'stylesheet';
-      css.href = 'lib/leaflet.css';
-      document.head.appendChild(css);
-      const s = document.createElement('script');
-      s.src = 'lib/leaflet.js';
-      s.onload = resolve;
-      s.onerror = reject;
-      document.head.appendChild(s);
-    });
-  }
-  async function drawReal(fit) {
-    try { await loadLeaflet(); } catch (e) { return; }
-    const box = $('pl-real');
-    if (!leaf) {
-      box.setAttribute('dir', 'ltr');
-      leaf = L.map(box, { zoomControl: true, attributionControl: true, tap: true });
-      leaf.attributionControl.setPrefix('');
-      markers = L.layerGroup().addTo(leaf);
-      fit = true;
-      box.insertAdjacentHTML('beforeend', '<div id="pl-real-msg" class="pl-real-msg" hidden>המפה לא נטענת בטלפון הזה. אם יש בספארי חוסם פרסומות, כדאי לכבות אותו לאתר הזה.</div>');
-      // the screen opens with an animation; whenever the map's box changes size, Leaflet has to measure it again
-      if (window.ResizeObserver) new ResizeObserver(fitWhenVisible).observe(box);
-    }
-    if (tilesMode !== mode) { $('pl-real-msg').hidden = true; setTiles(0); }
-    markers.clearLayers();
-    const list = [HOME, ...allPlaces()];
-    for (const p of list) {
-      if (p !== HOME) L.polyline([[HOME.lat, HOME.lon], [p.lat, p.lon]], { color: '#ff6b4a', weight: 2.5, dashArray: '2 8', opacity: .8 }).addTo(markers);
-    }
-    for (const p of list) {
-      const html = `<button type="button" class="pl-pin${p === HOME ? ' home' : ''}${selected === p.id ? ' on' : ''}" style="--c:${colorOf(p)}" data-place="${esc(p.id)}" aria-label="${esc(p.name)}">${pinHTML(p)}</button>`;
-      L.marker([p.lat, p.lon], { icon: L.divIcon({ className: 'pl-leaf', html, iconSize: null }), keyboard: false }).addTo(markers);
-    }
-    if (fit) needFit = true;
-    setTimeout(fitWhenVisible, 50);
-  }
-  // Leaflet can only frame the places once its box has a size; a box still hidden (the screen opening straight into
-  // the street map or the satellite) would leave it with no view at all, a grey square. So it waits until it can.
-  let needFit = false;
-  function fitWhenVisible() {
-    const box = $('pl-real');
-    if (!leaf || !box.clientWidth || !box.clientHeight) return;
-    leaf.invalidateSize();
-    if (!needFit && leaf._loaded) return;
-    needFit = false;
-    const list = [HOME, ...allPlaces()];
-    leaf.fitBounds(L.latLngBounds(list.map((p) => [p.lat, p.lon])), { padding: [40, 40], maxZoom: 9, animate: false });
-  }
-
-  // On a phone, Leaflet hands the tap's click to the map itself, so the pin is read from where the finger went down
-  // (and only when it didn't drag the map).
-  let downAt = null;
-  $('pl-real').addEventListener('pointerdown', (e) => { const b = e.target.closest('[data-place]'); downAt = b ? { id: b.dataset.place, x: e.clientX, y: e.clientY } : null; });
-  $('pl-real').addEventListener('pointerup', (e) => {
-    if (downAt && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 10) select(downAt.id);
-    downAt = null;
-  });
-
-  function setMode(m) {
-    const wasArt = mode === 'art';
-    mode = m;
-    document.querySelectorAll('.pl-modes button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === m)));
-    $('pl-art').hidden = m !== 'art';
-    $('pl-real').hidden = m === 'art';
-    if (m === 'art') { $('pl-outside').hidden = true; drawArt(); }
-    else { $('pl-outside').hidden = true; drawReal(wasArt); }
-    try { localStorage.setItem('roni-places-mode', m); } catch (e) {}
-  }
-  document.querySelector('.pl-modes').addEventListener('click', (e) => { const b = e.target.closest('[data-mode]'); if (b && b.dataset.mode !== mode) setMode(b.dataset.mode); });
 
   // ── the card of the chosen place
   function select(id) {
@@ -337,7 +234,7 @@
       `<span class="pl-stat">בערך <b>${fmt(Math.round(list.reduce((s, p) => s + km(HOME, p) * 2, 0) / 10) * 10)}</b> ק״מ הלוך וחזור</span>`;
     const busy = places.pending.length || photos.pending.length;
     $('pl-status').textContent = busy ? 'נשמר בטלפון. יגובה ברגע שיהיה אינטרנט' : (list.length ? '✓ הכל מגובה' : '');
-    if (mode === 'art') drawArt(); else drawReal(false);
+    drawArt();
     if (!selected || (selected !== 'home' && !list.some((p) => p.id === selected))) selected = list.length ? list[list.length - 1].id : 'home';
     select(selected);
   }
@@ -545,12 +442,10 @@
     $('pl-progress').textContent = '';
     $('pl-add-msg').textContent = '';
     openView(view, pt, done);
-    try { const m = localStorage.getItem('roni-places-mode'); if (m && m !== mode && ['art', 'map', 'sat'].includes(m)) setMode(m); } catch (e) {}
     render();
     renderTray();
     places.sync();
     photos.sync();
-    if (mode !== 'art') setTimeout(() => drawReal(true), 650);
   }
   $('places-open-btn').addEventListener('click', (e) => openPlaces(tapPoint(e)));
   $('places-back-btn').addEventListener('click', () => closeView(view));
