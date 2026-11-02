@@ -33,6 +33,12 @@ jobs:
           echo "::notice::words, an empty change → $(curl -s -X POST -H "$O" -H "$J" -d '{"ops":[]}' $W/words | jq -c '{ok, words: (.words | length)}')"
           echo "::notice::sos, unknown number → $(curl -s -o /dev/null -w '%{http_code}' -X POST -H "$O" -d '{"to":"__check__"}' $W/sos) (204 expected)"
           echo "::notice::preflight → $(curl -s -o /dev/null -w '%{http_code}' -X OPTIONS -H "$O" $W/contribute), allows $(curl -s -D - -o /dev/null -X OPTIONS -H "$O" $W/contribute | tr -d '\r' | grep -i '^access-control-allow-origin' | cut -d' ' -f2)"
+      - name: Map tile sources
+        run: |
+          for u in https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/6/22/34 https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/6/22/34 https://tile.openstreetmap.org/6/34/22.png https://a.basemaps.cartocdn.com/rastertiles/voyager/6/34/22.png; do
+            curl -s -o t.img -H 'Referer: https://alonzvisabag.github.io/' -A 'Mozilla/5.0' -w '%{http_code} %{content_type} %{size_download}' "$u" > r.txt
+            echo "::notice::tile $(cat r.txt) $(md5sum t.img | cut -c1-8) ← $u"
+          done
       # her map, in a real browser: does the street map and the satellite load on the live site
       - uses: actions/checkout@v4
       - name: Her map, in Safari's engine and in Chrome
