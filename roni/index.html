@@ -1567,6 +1567,14 @@
   .love-counter .label{ color:var(--accent-on-bg); }
 
   /* ── SOS: one tap away from the people and numbers that matter, on every screen ── */
+  /* one tap to the bottom of the home page (the games and tools), and back up from there */
+  #jump-btn{
+    position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:50;
+    width:52px; height:52px; border-radius:50%; border:3px solid #fff; background:var(--coral); color:#fff;
+    display:grid; place-items:center; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.18);
+  }
+  #jump-btn svg{ width:24px; height:24px; transition:rotate .3s; }
+  #jump-btn.up svg{ rotate:180deg; }
   #sos-btn{
     position:fixed;
     left:16px;
@@ -1775,6 +1783,7 @@
     </div>
     <button id="reset-link">נעלי הכל מחדש</button>
   </footer>
+  <button id="jump-btn" type="button" aria-label="לרדת לכפתורים למטה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
 </div>
 
 <div id="memory-view">
@@ -2769,6 +2778,23 @@ fetch('content.json', { cache: 'no-store' })
   .catch(() => {
     document.getElementById('gate-error').textContent = 'לא הצלחתי לטעון את התוכן. נסי לרענן.';
   });
+
+// one tap to the bottom of the home page; at the bottom, the same button goes back up
+(function(){
+  const btn = document.getElementById('jump-btn');
+  const atBottom = () => window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80;
+  const update = () => {
+    btn.classList.toggle('up', atBottom());
+    btn.setAttribute('aria-label', atBottom() ? 'לחזור למעלה' : 'לרדת לכפתורים למטה');
+  };
+  btn.addEventListener('click', () => {
+    const top = atBottom() ? 0 : document.documentElement.scrollHeight;
+    window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update);
+  update();
+})();
 
 document.getElementById('reset-link').addEventListener('click', () => {
   if(confirm('לנעול הכל מחדש?')){
