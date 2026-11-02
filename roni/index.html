@@ -15,7 +15,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="לרונני">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://server.arcgisonline.com https://services.arcgisonline.com; media-src 'self'; connect-src 'self' https://api.open-meteo.com https://roni-contribute.alonzvisabag.workers.dev https://nominatim.openstreetmap.org; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' https://api.open-meteo.com https://roni-contribute.alonzvisabag.workers.dev https://nominatim.openstreetmap.org; object-src 'none'; base-uri 'self';">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -1675,7 +1675,7 @@
     #sos-sheet, .sos-panel{ animation:none; }
   }
 </style>
-<link rel="stylesheet" href="places.css?v=5">
+<link rel="stylesheet" href="places.css?v=6">
 </head>
 <body>
 
@@ -1889,14 +1889,8 @@
   </div>
   <div class="pl-wrap">
     <div class="pl-stats" id="pl-stats"></div>
-    <div class="pl-modes" role="group" aria-label="איך להראות את המפה">
-      <button type="button" data-mode="art" aria-pressed="true">מאוירת</button>
-      <button type="button" data-mode="map" aria-pressed="false">מפה</button>
-      <button type="button" data-mode="sat" aria-pressed="false">לוויין</button>
-    </div>
     <div class="pl-map-card">
       <div class="pl-map" id="pl-art"><svg id="pl-svg" aria-hidden="true"></svg><div class="pl-pins" id="pl-pins"></div></div>
-      <div class="pl-map" id="pl-real" hidden></div>
       <p class="pl-outside" id="pl-outside" hidden></p>
     </div>
     <div class="pl-place" id="pl-place" aria-live="polite"></div>
@@ -3884,6 +3878,6 @@ document.getElementById('pace-bored-btn').addEventListener('click', paceTo(openB
 </script>
 
 <script src="../lib/media-prep.js"></script>
-<script src="places.js?v=5"></script>
+<script src="places.js?v=6"></script>
 </body>
 </html>
