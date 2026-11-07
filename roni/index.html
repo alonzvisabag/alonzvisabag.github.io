@@ -992,13 +992,19 @@
   .view-enter #words-shelf{ animation:rise-in .6s cubic-bezier(.22,1,.36,1) .25s backwards; }
 
   /* ── countdowns: events she's waiting for, with a live timer ── */
+  /* every countdown still ahead, on the home screen, nearest first */
   #next-countdown{
-    display:flex;
-    align-items:center;
-    gap:12px;
+    display:grid;
+    gap:8px;
     width:calc(100% - 40px);
     max-width:600px;
     margin:-14px auto 26px;
+  }
+  #next-countdown .nc-card{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
     padding:12px 16px;
     border:none;
     border-radius:16px;
@@ -1011,6 +1017,9 @@
     -webkit-tap-highlight-color:transparent;
   }
   #next-countdown[hidden]{ display:none; }
+  #next-countdown .nc-card + .nc-card{ padding-block:9px; }
+  #next-countdown .nc-card + .nc-card .nc-emoji{ font-size:1.4rem; }
+  #next-countdown .nc-card + .nc-card .nc-left{ font-size:1rem; }
   #next-countdown .nc-emoji{ font-size:1.8rem; flex:none; }
   #next-countdown .nc-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
   #next-countdown .nc-name{ font-size:.85rem; font-weight:700; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -1754,11 +1763,7 @@
     </div>
   </div>
 
-  <button id="next-countdown" type="button" aria-label="לכל הספירות לאחור" hidden>
-    <span class="nc-emoji"></span>
-    <span class="nc-txt"><span class="nc-name"></span><span class="nc-left"></span></span>
-    <span class="nc-more" aria-hidden="true">←</span>
-  </button>
+  <div id="next-countdown" hidden></div>
 
   <div id="install-tip" hidden>
     <img src="app-icon-180.png" alt="">
@@ -3646,16 +3651,21 @@ function tickCountdowns(){
     box.innerHTML = [[p.d, p.d === 1 ? 'יום' : 'ימים'], [p.h, p.h === 1 ? 'שעה' : 'שעות'], [p.m, p.m === 1 ? 'דקה' : 'דקות'], [p.s, p.s === 1 ? 'שנייה' : 'שניות']]
       .map(([n, label]) => `<div class="cd-unit"><b>${n}</b><span>${label}</span></div>`).join('');
   }
-  // the nearest one, on the home screen
-  const next = countdowns.filter(ev => cdState(ev, now) !== 'past').sort((a, b) => cdTarget(a) - cdTarget(b))[0];
-  const card = document.getElementById('next-countdown');
-  card.hidden = !next;
-  if(!next) return;
-  card.querySelector('.nc-emoji').textContent = cdEmojiOf(next);
-  card.querySelector('.nc-name').textContent = next.name;
-  const p = cdParts(cdTarget(next) - now);
-  card.querySelector('.nc-left').textContent = cdState(next, now) === 'now' ? cdNowText(next)
-    : (p.d ? `עוד ${p.d} ${p.d === 1 ? 'יום' : 'ימים'} · ` : 'עוד ') + `${pad2(p.h)}:${pad2(p.m)}:${pad2(p.s)}`;
+  // all the ones still ahead, on the home screen, nearest first; the cards are made again only when the list changes
+  const ahead = countdowns.filter(ev => cdState(ev, now) !== 'past').sort((a, b) => cdTarget(a) - cdTarget(b));
+  const home = document.getElementById('next-countdown');
+  home.hidden = !ahead.length;
+  const ids = ahead.map(ev => ev.id).join(',');
+  if(home.dataset.ids !== ids){
+    home.dataset.ids = ids;
+    home.innerHTML = ahead.map(ev => `<button type="button" class="nc-card" data-cd="${escapeHTML(ev.id)}" aria-label="${escapeHTML(ev.name)}: לכל הספירות לאחור">
+      <span class="nc-emoji">${cdEmojiOf(ev)}</span><span class="nc-txt"><span class="nc-name">${escapeHTML(ev.name)}</span><span class="nc-left"></span></span><span class="nc-more" aria-hidden="true">←</span></button>`).join('');
+  }
+  ahead.forEach((ev, i) => {
+    const p = cdParts(cdTarget(ev) - now);
+    home.children[i].querySelector('.nc-left').textContent = cdState(ev, now) === 'now' ? cdNowText(ev)
+      : (p.d ? `עוד ${p.d} ${p.d === 1 ? 'יום' : 'ימים'} · ` : 'עוד ') + `${pad2(p.h)}:${pad2(p.m)}:${pad2(p.s)}`;
+  });
 }
 
 function setCountdownMsg(text, isError){
@@ -3682,7 +3692,7 @@ function openCountdown(pt, done){
 }
 
 document.getElementById('countdown-open-btn').addEventListener('click', (e) => openCountdown(tapPoint(e)));
-document.getElementById('next-countdown').addEventListener('click', (e) => openCountdown(tapPoint(e)));
+document.getElementById('next-countdown').addEventListener('click', (e) => { if(e.target.closest('.nc-card')) openCountdown(tapPoint(e)); });
 document.getElementById('countdown-back-btn').addEventListener('click', () => closeView(document.getElementById('countdown-view')));
 document.getElementById('countdown-form').addEventListener('submit', (e) => {
   e.preventDefault();
