@@ -2509,6 +2509,8 @@ function renderSite(data){
   main.appendChild(list);
   renderFavorites();
   setupInstallTip();
+  // from her birthday on, the birthday greetings join the list as one more situation (bday-show.js)
+  if(window.bdayAddToSite) window.bdayAddToSite(list);
 }
 
 document.getElementById('main').addEventListener('click', (e) => {
@@ -3918,6 +3920,6 @@ document.getElementById('pace-bored-btn').addEventListener('click', paceTo(openB
 
 <script src="../lib/media-prep.js"></script>
 <script src="places.js?v=7"></script>
-<script src="bday-show.js?v=1"></script>
+<script src="bday-show.js?v=2"></script>
 </body>
 </html>

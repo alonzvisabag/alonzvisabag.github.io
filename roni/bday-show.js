@@ -198,6 +198,29 @@
   }
   addHomeButton();
 
+  // From her birthday on, the greetings also become part of her site: one more situation at the top of the list,
+  // with hearts for favorites like every other message, and counted in the heart at the top.
+  window.bdayAddToSite = async function (list) {
+    if (!isOpen()) return;
+    await load();
+    if (!cards.length || document.querySelector('.capsule[data-id="bday26"]')) return;
+    const items = [];
+    for (const c of cards) {
+      const first = { from: c.from, text: c.texts.join('\n\n') || null, media: c.media[0] || null };
+      items.push(first);
+      c.media.slice(1).forEach((m) => items.push({ from: null, text: null, media: m }));
+    }
+    const capsule = { id: 'bday26', trigger: `ליום ההולדת ה-${AGE} שלך 🎂`, type: 'letter', items };
+    if (typeof siteData !== 'undefined' && siteData && siteData.capsules) siteData.capsules.unshift(capsule);   // the page's own list, for favorites
+    const el = renderCapsule(capsule);
+    el.style.setProperty('--shadow-c', 'color-mix(in srgb, #ff5d8f 26%, var(--card))');
+    list.prepend(el);
+    renderFavorites();
+    loveTotal += cards.length;
+    const heart = document.getElementById('love-count');
+    if (heart && document.getElementById('site').style.display === 'block') heart.textContent = loveTotal;
+  };
+
   // called by the page once she's in (showSite): on the day itself, the party opens once by itself
   window.bdayLaunch = function () {
     if (!isOpen()) return;
