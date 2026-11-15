@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>מכולם · מתנת פרידה למי שעובר לחו״ל</title>
+<meta name="description" content="אתר מתנה אישי למי שעובר לחו״ל: מכתבים, הקלטות ותמונות מכל החברים, שנפתחים ברגע שמתגעגעים.">
+<!-- the text WhatsApp and Instagram show when the link is shared; the brand name is written here too -->
+<meta property="og:title" content="מכולם · מתנת פרידה למי שעובר לחו״ל">
+<meta property="og:description" content="מכתבים, הקלטות ותמונות מכל החברים, שנפתחים ברגע שמתגעגעים.">
+<meta property="og:image" content="https://alonzvisabag.github.io/portfolio/media/far_poster.jpg">
+<meta name="theme-color" content="#fff3e6">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffaf4; --soft:#fff1e4; --card:#fff; --ink:#2b2222; --muted:#7a6a6a; --line:#f0e2d6;
+    --coral:#ff6b4a; --coral-dark:#d9472a; --sun:#ffb703; --wa:#25d366; --wa-dark:#128c4a;
+    --r:22px;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ background:var(--paper); scroll-behavior:smooth; }
+  body{ font-family:'Rubik', system-ui, sans-serif; color:var(--ink); background:var(--paper); line-height:1.6; font-size:17px; -webkit-font-smoothing:antialiased; overflow-x:hidden; padding-bottom:84px; }
+  a{ color:inherit; }
+  img, video{ display:block; max-width:100%; }
+  .wrap{ max-width:980px; margin:0 auto; padding:0 20px; }
+  section{ padding:56px 0; }
+  .kicker{ font-size:.82rem; font-weight:700; letter-spacing:.08em; color:var(--coral-dark); margin-bottom:8px; }
+  h2{ font-size:clamp(1.6rem, 6vw, 2.3rem); line-height:1.15; font-weight:800; letter-spacing:-.01em; margin-bottom:14px; }
+  .lead{ color:var(--muted); font-size:1.05rem; max-width:34em; }
+
+  /* the WhatsApp button: the one thing the page asks for */
+  .wa-btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:56px; padding:14px 26px;
+    background:var(--wa); color:#fff; font:700 1.08rem 'Rubik', sans-serif; border-radius:999px; text-decoration:none; border:0; cursor:pointer;
+    box-shadow:0 6px 0 var(--wa-dark), 0 12px 24px rgba(18,140,74,.25); transition:transform .12s, box-shadow .12s;
+  }
+  .wa-btn:active{ transform:translateY(4px); box-shadow:0 2px 0 var(--wa-dark); }
+  .wa-btn svg{ width:24px; height:24px; flex:none; }
+  .ghost-btn{ display:inline-flex; align-items:center; gap:8px; min-height:48px; padding:10px 20px; border:2px solid var(--ink); border-radius:999px; font-weight:700; text-decoration:none; background:transparent; }
+  .form-btn[hidden]{ display:none; }
+
+  /* top bar */
+  .top{ display:flex; justify-content:space-between; align-items:center; padding:16px 20px; max-width:980px; margin:0 auto; }
+  .brand{ font-weight:800; font-size:1.35rem; letter-spacing:-.02em; }
+  .brand::after{ content:'.'; color:var(--coral); }
+  .top a.small{ font-size:.9rem; font-weight:600; color:var(--muted); text-decoration:none; }
+
+  /* hero */
+  .hero{ padding:20px 0 48px; background:linear-gradient(170deg, #fff3e6 0%, #ffe3dc 55%, var(--paper) 100%); }
+  .hero .wrap{ display:grid; gap:30px; align-items:center; }
+  .hero h1{ font-size:clamp(2.3rem, 10vw, 3.9rem); line-height:1.02; font-weight:800; letter-spacing:-.025em; }
+  .hero h1 em{ font-style:normal; color:var(--coral); }
+  .hero .lead{ font-size:1.12rem; margin:16px 0 24px; color:#5b4b4b; }
+  .hero .proof{ margin-top:16px; font-size:.92rem; color:var(--muted); }
+  .hero .proof b{ color:var(--ink); }
+  .phone{ width:min(250px, 66vw); margin:0 auto; border-radius:34px; padding:9px; background:#1d1717; box-shadow:0 24px 50px rgba(80,30,20,.25); rotate:-3deg; }
+  .phone video, .phone img{ width:100%; border-radius:26px; aspect-ratio:600/1022; object-fit:cover; background:#eee; }
+
+  /* how it works */
+  .steps{ list-style:none; display:grid; gap:14px; margin-top:22px; counter-reset:s; }
+  .steps li{ background:var(--card); border-radius:var(--r); padding:20px 20px 20px 18px; display:grid; grid-template-columns:44px 1fr; gap:14px; align-items:start; box-shadow:0 4px 0 var(--line); }
+  .steps li::before{ counter-increment:s; content:counter(s); width:44px; height:44px; border-radius:50%; background:var(--coral); color:#fff; font-weight:800; font-size:1.2rem; display:grid; place-items:center; }
+  .steps b{ display:block; font-size:1.12rem; margin-bottom:2px; }
+  .steps p{ color:var(--muted); font-size:.98rem; }
+
+  /* what's inside */
+  .inside{ background:var(--soft); }
+  .shots{ display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding:22px 20px 10px; margin:0 -20px; scrollbar-width:none; }
+  .shots::-webkit-scrollbar{ display:none; }
+  .shots figure{ flex:0 0 68%; max-width:230px; scroll-snap-align:center; }
+  .shots .phone{ width:100%; rotate:0deg; padding:7px; border-radius:28px; box-shadow:0 14px 30px rgba(80,30,20,.18); }
+  .shots .phone img{ border-radius:22px; }
+  .shots figcaption{ margin-top:12px; font-size:.95rem; line-height:1.45; }
+  .shots figcaption b{ display:block; font-size:1.02rem; }
+  .swipe-hint{ font-size:.82rem; color:var(--muted); margin-top:6px; }
+  .more-list{ display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+  .more-list span{ background:var(--card); border-radius:999px; padding:7px 13px; font-size:.92rem; font-weight:500; box-shadow:0 2px 0 var(--line); }
+  .demo-cta{ margin-top:26px; display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; }
+  .demo-cta small{ color:var(--muted); font-size:.88rem; }
+
+  /* prices */
+  .plans{ display:grid; gap:16px; margin-top:22px; }
+  .plan{ background:var(--card); border-radius:var(--r); padding:24px 22px; border:2px solid var(--line); position:relative; }
+  .plan.featured{ border-color:var(--coral); }
+  .plan .tag{ position:absolute; top:-13px; right:20px; background:var(--coral); color:#fff; font-size:.78rem; font-weight:700; padding:4px 12px; border-radius:999px; }
+  .plan h3{ font-size:1.25rem; font-weight:800; }
+  .plan .for{ color:var(--muted); font-size:.95rem; }
+  .plan .price{ font-size:2.6rem; font-weight:800; letter-spacing:-.02em; margin:10px 0 12px; line-height:1; }
+  .plan .price small{ font-size:1.1rem; font-weight:700; margin-inline-start:4px; }
+  .plan ul{ list-style:none; display:grid; gap:7px; font-size:.97rem; }
+  .plan li{ display:flex; gap:8px; }
+  .plan li::before{ content:'✓'; color:var(--coral); font-weight:800; }
+  .split{ margin-top:18px; background:#fff3cf; border-radius:16px; padding:14px 16px; font-weight:700; font-size:1.05rem; text-align:center; }
+  .extras{ margin-top:16px; display:grid; gap:8px; }
+  .extras div{ display:flex; justify-content:space-between; gap:12px; border-bottom:1px dashed var(--line); padding:8px 2px; font-size:.97rem; }
+  .extras span:last-child{ color:var(--muted); font-size:.88rem; white-space:nowrap; }
+
+  /* questions */
+  details{ background:var(--card); border-radius:18px; padding:4px 18px; margin-top:10px; box-shadow:0 3px 0 var(--line); }
+  summary{ cursor:pointer; list-style:none; font-weight:700; font-size:1.05rem; padding:14px 0; display:flex; justify-content:space-between; gap:12px; }
+  summary::-webkit-details-marker{ display:none; }
+  summary::after{ content:'+'; color:var(--coral); font-size:1.4rem; line-height:1; transition:rotate .2s; }
+  details[open] summary::after{ rotate:45deg; }
+  details p{ color:var(--muted); padding:0 0 16px; }
+
+  /* closing */
+  .closing{ text-align:center; background:linear-gradient(180deg, var(--paper), #ffe3dc); padding-bottom:70px; }
+  .closing h2{ max-width:16em; margin:0 auto 12px; }
+  .closing .lead{ margin:0 auto 26px; }
+  .closing .alt{ margin-top:14px; display:flex; justify-content:center; }
+  footer{ text-align:center; font-size:.85rem; color:var(--muted); padding:22px 20px; }
+
+  /* on a phone, the WhatsApp button stays at the bottom of the screen once the first one has scrolled away */
+  .sticky{ position:fixed; inset:auto 0 0 0; z-index:50; padding:10px 16px calc(10px + env(safe-area-inset-bottom)); background:rgba(255,250,244,.94); backdrop-filter:blur(8px); border-top:1px solid var(--line); transition:translate .25s; }
+  .sticky .wa-btn{ width:100%; min-height:52px; }
+  .sticky.away{ translate:0 110%; }
+
+  @media (min-width:760px){
+    body{ padding-bottom:0; }
+    .sticky{ display:none; }
+    section{ padding:80px 0; }
+    .hero{ padding:30px 0 70px; }
+    .hero .wrap{ grid-template-columns:1.2fr .8fr; }
+    .phone{ width:270px; }
+    .steps{ grid-template-columns:repeat(3, 1fr); }
+    .steps li{ grid-template-columns:1fr; }
+    .shots{ margin:0; padding:22px 0 10px; }
+    .shots figure{ flex-basis:200px; }
+    .plans{ grid-template-columns:1fr 1fr; }
+  }
+  @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } .wa-btn, .sticky{ transition:none; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="brand" data-brand>מכולם</span>
+  <a class="small" href="#prices">מחירים</a>
+</header>
+
+<!-- 1. the promise -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <h1>מתנת פרידה שנפתחת <em>ברגע שמתגעגעים</em></h1>
+      <p class="lead">אתר אישי שבו מחכים לו מכתבים, הקלטות ותמונות מכל מי שאוהב אותו. לא לפי תאריך, לפי רגע: הלילה הראשון בדירה ריקה, יום גשום, בוקר שמתעוררים חולים ואין אף אחד מוכר בסביבה.</p>
+      <a class="wa-btn" data-wa href="#">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.2 21.8l4.9-1.3A9.8 9.8 0 1 0 12 2.2zm5.6 13.8c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.7-1.2-4.5-3.9-4.6-4.1-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.6 2.1 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.7-.1 1.3z"/></svg>
+        לבנות אתר פרידה בוואטסאפ
+      </a>
+      <p class="proof">באתר הראשון שבניתי ככה כתבו <b>33 חברים ובני משפחה</b>, ונאספו <b>70 מכתבים, הקלטות ותמונות</b>.</p>
+    </div>
+    <div class="phone">
+      <video data-video="../portfolio/media/far.mp4" poster="../portfolio/media/far_poster.jpg" muted loop playsinline preload="none" aria-label="סרטון: נכנסים לאתר מהטלפון"></video>
+    </div>
+  </div>
+</section>
+
+<!-- 2. how it works -->
+<section>
+  <div class="wrap">
+    <div class="kicker">איך זה עובד</div>
+    <h2>שלושה צעדים, ורובם על החברים</h2>
+    <ol class="steps">
+      <li><div><b>עונים על שאלון קצר</b><p>כמה שאלות על מי שנוסע: כינויים, תמונות, צבעים שהוא אוהב. כ-10 דקות.</p></div></li>
+      <li><div><b>שולחים קישור לחברים</b><p>כל אחד בוחר רגע, כמו "כשמתגעגעים הביתה" או "כשמשעמם", ומשאיר מכתב, הקלטה, תמונה או סרטון. מהטלפון, בלי להירשם.</p></div></li>
+      <li><div><b>הוא פותח כשצריך</b><p>האתר נפתח עם סיסמה. וכשהרגע מגיע, יש כפתור אחד: "זה קורה לי עכשיו".</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 3. what's inside (screenshots from the demo, with invented names) -->
+<section class="inside">
+  <div class="wrap">
+    <div class="kicker">מה יש באתר</div>
+    <h2>כמו לקחת את כולם במזוודה</h2>
+    <div class="shots">
+      <figure><div class="phone"><img src="../portfolio/media/f_envelope.jpg" alt="מעטפה שנפתחת בכניסה לאתר" loading="lazy" width="600" height="1022"></div>
+        <figcaption><b>כניסה כמו מעטפה</b>סיסמה, ומעטפה שנפתחת עם תמונה משותפת.</figcaption></figure>
+      <figure><div class="phone"><img src="../portfolio/media/f_list.jpg" alt="רשימת הרגעים שאפשר לפתוח" loading="lazy" width="600" height="1022"></div>
+        <figcaption><b>רגעים, לא תאריכים</b>כל הודעה מחכה לרגע שלה. החברים יכולים גם להמציא רגעים משלהם.</figcaption></figure>
+      <figure><div class="phone"><img src="../portfolio/media/f_top.jpg" alt="לב שסופר כמה הודעות מחכות" loading="lazy" width="600" height="1022"></div>
+        <figcaption><b>לב שסופר</b>כמה הודעות מחכות לו, ושעה ומזג אוויר בבית ובעיר החדשה.</figcaption></figure>
+      <figure><div class="phone"><img src="../portfolio/media/f_memory.jpg" alt="משחק זיכרון עם תמונות משותפות" loading="lazy" width="600" height="1022"></div>
+        <figcaption><b>משחק זיכרון</b>עם התמונות שלכם ביחד.</figcaption></figure>
+      <figure><div class="phone"><img src="../portfolio/media/f_bored.jpg" alt="רעיונות לימים משעממים" loading="lazy" width="600" height="1022"></div>
+        <figcaption><b>"משעמם לי"</b>עשרות רעיונות לערב ריק, מ"לכתוב 3 דברים טובים" ועד "לשאוב מתחת לשטיח".</figcaption></figure>
+    </div>
+    <p class="swipe-hint">← אפשר להחליק</p>
+    <div class="more-list" aria-label="ועוד באתר">
+      <span>🆘 כפתור SOS</span><span>⏳ ספירה לאחור</span><span>🧩 פאזל כינויים</span><span>🍳 מתכונים לפי מה שיש בבית</span><span>📱 נשמר במסך הבית כמו אפליקציה</span>
+    </div>
+    <div class="demo-cta">
+      <a class="ghost-btn" href="../demo/far/" target="_blank" rel="noopener">לראות דוגמה חיה ←</a>
+      <small>הסיסמה בדוגמה: 1234. השמות בדויים והתמונות מטושטשות.</small>
+    </div>
+  </div>
+</section>
+
+<!-- placeholder: a real recommendation goes here, in the customer's own words, with their permission.
+     Until there is one, this section stays hidden. To show it: remove the word hidden, and replace the text.
+<section class="quote" hidden>
+  <div class="wrap"><blockquote>כאן תבוא המלצה אמיתית</blockquote><p>שם, ולמי היה האתר</p></div>
+</section>
+-->
+
+<!-- 5. prices (the numbers themselves come from the settings at the bottom of the page) -->
+<section id="prices">
+  <div class="wrap">
+    <div class="kicker">מחירים</div>
+    <h2>מחיר של מתנה, לא של פרויקט</h2>
+    <div class="plans">
+      <div class="plan">
+        <h3>בסיסית</h3>
+        <p class="for">נבנית מהשאלון</p>
+        <div class="price"><span data-price="basic"></span><small>₪</small></div>
+        <ul>
+          <li>אתר עם סיסמה, בעברית, בטלפון ובמחשב</li>
+          <li>קישור לחברים, לשלוח מכתבים, הקלטות, תמונות וסרטונים</li>
+          <li>רגעים מוכנים, והחברים מוסיפים משלהם</li>
+          <li>משחקים, "משעמם לי" וכפתור SOS</li>
+        </ul>
+      </div>
+      <div class="plan featured">
+        <span class="tag">עם ליווי צמוד</span>
+        <h3>אישית</h3>
+        <p class="for">עיצוב וליווי צמוד</p>
+        <div class="price"><span data-price="personal"></span><small>₪</small></div>
+        <ul>
+          <li>כל מה שיש בבסיסית</li>
+          <li>עיצוב לפי הטעם שלו</li>
+          <li>רגעים שכותבים יחד, רק בשבילו</li>
+          <li>ליווי עד שהאתר מתמלא, כולל תזכורות לחברים</li>
+        </ul>
+      </div>
+    </div>
+    <p class="split">מתחלקים? <span data-split-friends></span> חברים = <span data-split-each></span> ₪ לאחד</p>
+    <div class="extras">
+      <div><span>📖 אלבום מודפס מכל ההודעות, עם קודי QR להקלטות ולסרטונים</span><span>בהמשך / לפי בקשה</span></div>
+      <div><span>🗺️ מפה של המקומות שהוא מטייל בהם, עם התמונות שלו</span><span>בהמשך / לפי בקשה</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. questions -->
+<section class="faq">
+  <div class="wrap">
+    <div class="kicker">שאלות</div>
+    <h2>מה ששואלים</h2>
+    <details><summary>כמה זמן זה לוקח?</summary><p>האתר מוכן תוך כמה ימים מהשאלון. כדאי להתחיל שבועיים-שלושה לפני הטיסה, כדי שלחברים יהיה זמן לכתוב. ואפשר להמשיך להוסיף הודעות גם אחרי שהוא כבר שם.</p></details>
+    <details><summary>מה אם לא כולם שולחים?</summary><p>זה בסדר גמור. גם עשר הודעות זה הרבה כשאתה לבד בעיר חדשה. אני עוזר עם תזכורת חמה בוואטסאפ, והודעות שמגיעות מאוחר פשוט מופיעות באתר.</p></details>
+    <details><summary>זה עובד באייפון?</summary><p>כן, באייפון ובאנדרואיד, וגם במחשב. אפשר לשמור את האתר במסך הבית ולפתוח אותו כמו אפליקציה. ההקלטות והסרטונים מתנגנים בטלפון.</p></details>
+    <details><summary>לכמה זמן האתר נשאר באוויר?</summary><p>לפחות שנה מהיום שבו הוא עולה, ואפשר להאריך.</p></details>
+  </div>
+</section>
+
+<!-- 7. the ask -->
+<section class="closing">
+  <div class="wrap">
+    <h2>מישהו שאתם אוהבים עומד לטוס?</h2>
+    <p class="lead">ספרו לי למי ומתי, ונבנה את זה יחד.</p>
+    <a class="wa-btn" data-wa href="#">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.2 21.8l4.9-1.3A9.8 9.8 0 1 0 12 2.2zm5.6 13.8c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.7-1.2-4.5-3.9-4.6-4.1-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.6 2.1 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.7-.1 1.3z"/></svg>
+      לכתוב לי בוואטסאפ
+    </a>
+    <!-- the form button: hidden until there is a form link in the settings below -->
+    <div class="alt"><a class="ghost-btn form-btn" data-form href="#" target="_blank" rel="noopener" hidden>מעדיפים טופס? למלא כאן</a></div>
+  </div>
+</section>
+
+<footer>© 2026 <span data-brand>מכולם</span> · אלון צבי סבג</footer>
+
+<div class="sticky away" id="sticky">
+  <a class="wa-btn" data-wa href="#">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.2 21.8l4.9-1.3A9.8 9.8 0 1 0 12 2.2zm5.6 13.8c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.7-1.2-4.5-3.9-4.6-4.1-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.6 2.1 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.7-.1 1.3z"/></svg>
+    לבנות אתר פרידה בוואטסאפ
+  </a>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  SETTINGS: everything you may want to change is here
+// ══════════════════════════════════════════════════════════════
+const SETTINGS = {
+  brand: 'מכולם',                 // the brand name (also in the <title> and og:title lines at the top of the file)
+  prices: {
+    basic: 80,                    // בסיסית, in shekels
+    personal: 160,                // אישית, in shekels
+  },
+  splitFriends: 10,               // "מתחלקים? 10 חברים = ..." (the price per friend is worked out from the basic price)
+  // ▼▼▼ YOUR WHATSAPP NUMBER GOES HERE ▼▼▼
+  // international form, digits only: 972, then the number without its first 0. For 050-123-4567 write '972501234567'.
+  whatsapp: '',
+  whatsappText: 'היי, ראיתי את הדף של מכולם ואני רוצה אתר פרידה ל...',
+  // ▼▼▼ THE FORM LINK GOES HERE, when you have one (Google Forms or any other). Empty = the form button stays hidden ▼▼▼
+  formUrl: '',
+};
+// ══════════════════════════════════════════════════════════════
+
+(function () {
+  const $$ = (s) => document.querySelectorAll(s);
+  $$('[data-brand]').forEach((el) => { el.textContent = SETTINGS.brand; });
+  $$('[data-price="basic"]').forEach((el) => { el.textContent = SETTINGS.prices.basic; });
+  $$('[data-price="personal"]').forEach((el) => { el.textContent = SETTINGS.prices.personal; });
+  $$('[data-split-friends]').forEach((el) => { el.textContent = SETTINGS.splitFriends; });
+  const each = Math.round(SETTINGS.prices.basic / SETTINGS.splitFriends * 10) / 10;
+  $$('[data-split-each]').forEach((el) => { el.textContent = each; });
+
+  // WhatsApp: with a number, it opens a chat with you; without one (until you add it), WhatsApp asks whom to send to
+  const text = encodeURIComponent(SETTINGS.whatsappText.replace('מכולם', SETTINGS.brand));
+  const wa = `https://wa.me/${SETTINGS.whatsapp.replace(/\D/g, '')}?text=${text}`;
+  $$('[data-wa]').forEach((a) => { a.href = wa; a.target = '_blank'; a.rel = 'noopener'; });
+
+  const form = document.querySelector('[data-form]');
+  if (SETTINGS.formUrl) { form.href = SETTINGS.formUrl; form.hidden = false; }
+
+  // the WhatsApp bar at the bottom shows only after the first button has scrolled out of view
+  const sticky = document.getElementById('sticky');
+  const first = document.querySelector('.hero [data-wa]');
+  const last = document.querySelector('.closing [data-wa]');
+  if ('IntersectionObserver' in window) {
+    const seen = new Map();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => seen.set(e.target, e.isIntersecting));
+      sticky.classList.toggle('away', !!(seen.get(first) || seen.get(last)) || (!seen.get(first) && first.getBoundingClientRect().top > 0));
+    });
+    io.observe(first);
+    io.observe(last);
+  }
+
+  // the phone video starts only once the page has loaded, so it doesn't slow the first look
+  addEventListener('load', () => {
+    const v = document.querySelector('video[data-video]');
+    if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    v.src = v.dataset.video;
+    v.play().catch(() => {});
+  });
+})();
+</script>
+</body>
+</html>
