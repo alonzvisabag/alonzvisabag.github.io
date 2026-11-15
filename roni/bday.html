@@ -68,12 +68,11 @@
 
   /* the short explanation of everything */
   .about h2{ font-size:1.15rem; font-weight:800; margin-bottom:10px; }
-  .about ol{ list-style:none; display:grid; gap:10px; counter-reset:a; }
-  .about li{ display:grid; grid-template-columns:30px 1fr; gap:10px; align-items:start; line-height:1.55; font-size:.96rem; }
-  .about li::before{ counter-increment:a; content:counter(a); width:30px; height:30px; border-radius:50%; background:var(--pink); color:#fff; font-weight:800; display:grid; place-items:center; font-size:.9rem; }
-  .about li b{ color:var(--pink-dark); }
-  .secret{ margin-top:14px; background:linear-gradient(100deg, var(--pink), var(--pink-dark)); color:#fff; border-radius:16px; padding:12px 14px; font-weight:700; font-size:.92rem; line-height:1.5; display:flex; gap:10px; align-items:center; }
-  .secret svg{ width:28px; height:28px; flex:none; }
+  .about{ display:grid; gap:10px; }
+  .about h2{ margin-bottom:0; }
+  .about p{ line-height:1.6; font-size:1rem; }
+  .about b{ color:var(--pink-dark); }
+  .about .sig{ font-weight:800; color:var(--pink-dark); }
 
   .count{ text-align:center; font-weight:700; color:#fff; margin:0 0 14px; font-size:.95rem; }
   .count b{ color:var(--gold); font-size:1.4rem; margin:0 3px; }
@@ -138,23 +137,18 @@
 <div class="sky" id="sky" aria-hidden="true"></div>
 
 <header>
-  <div class="overline">שבת 21.11 · הפתעה</div>
+  <div class="overline">שבת · 21.11</div>
   <h1>רוני בת <span class="num">26</span> 🎂</h1>
 </header>
 
 <main>
   <div class="card about">
-    <h2>מה זה?</h2>
-    <ol>
-      <li><div>ביום שבת, <b>21.11</b>, רוני חוגגת 26 בגראץ, רחוק מכולנו. אנחנו אוספים לה ברכות ליום ההולדת.</div></li>
-      <li><div>כאן כותבים לה ברכה: <b>מכתב, הקלטה קולית, תמונה או סרטון.</b> כמה שרוצים.</div></li>
-      <li><div>הברכות נשמרות בצד, ו<b>רוני תראה את כולן רק בשבת</b>, באתר שלה, עם בלונים וקונפטי.</div></li>
-      <li><div>יש לה גם את האתר הרגיל, עם הודעות לרגעים שבהם היא צריכה אותנו בחו״ל. אפשר לכתוב גם שם, בכפתור שבסוף הדף.</div></li>
-    </ol>
-    <div class="secret">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="11" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><circle cx="12" cy="16" r="1.4" fill="currentColor"/></svg>
-      <span>זה סוד עד שבת. לא לספר לרוני ולא לשלוח לה את הקישור.</span>
-    </div>
+    <h2>חדשות טובות!</h2>
+    <p>האתר שבניתי לרוני עבד, והיא מתה עליו. תודה לכל מי שכתב לה 💛</p>
+    <p>ועכשיו יש לה יום הולדת: <b>ביום שבת, 21.11, רוני בת 26.</b></p>
+    <p>אז פתחתי לה פינה חדשה, רק לברכות ליום ההולדת. אפשר לכתוב, להקליט, או לצרף תמונה או סרטון.</p>
+    <p>כל הברכות יחכו לה, והיא תפתח אותן <b>ביום ההולדת</b>, עם עוגה, בלונים וקונפטי 🎈</p>
+    <p class="sig">אלון</p>
   </div>
 
   <p class="count" id="count-line" hidden>כבר מחכות לה <b id="count">0</b> ברכות</p>
@@ -192,7 +186,7 @@
 
   <div class="card" id="thanks" hidden>
     <div class="big">תודה! 🎈</div>
-    <p>הברכה נשמרה ותחכה לרוני בשבת.<br>ושומרים על הסוד עד אז!</p>
+    <p>הברכה נשמרה, ותחכה לרוני ביום ההולדת.</p>
     <div class="thanks-actions">
       <button type="button" class="pill" id="again-btn">לשלוח עוד ברכה</button>
     </div>
