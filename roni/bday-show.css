@@ -84,8 +84,9 @@
 #bd-home b{ display:block; font-size:1rem; }
 #bd-home span{ display:block; font-size:.85rem; opacity:.92; }
 
-/* the headings, names and candles in Secular One, like the friends' page */
-.bd-title, .bd-over, .bd-card h3, .bd-balloon .bb, .bd-btn, .bd-candle, #bd-home b{ font-family:'Secular One', 'Rubik', sans-serif; font-weight:400; }
+/* the whole party in Fredoka, like the friends' page */
+#bd-show, #bd-show button, .bd-candle, .bd-balloon .bb, .bd-btn, #bd-home{ font-family:'Fredoka', 'Rubik', sans-serif; word-spacing:.08em; }   /* its Hebrew spaces are narrow */
+.bd-title{ font-weight:700; }
 
 @media (prefers-reduced-motion: reduce){
   #bd-show, .bd-sky .s, .bd-flame, .bd-balloon, .bd-hint, .bd-card, .bd-card-wrap{ animation:none; }
