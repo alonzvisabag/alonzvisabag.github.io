@@ -1693,6 +1693,7 @@
   }
 </style>
 <link rel="stylesheet" href="places.css?v=6">
+<link rel="stylesheet" href="bday-show.css?v=1">
 </head>
 <body>
 
@@ -2612,6 +2613,8 @@ function showSite(){
   setTimeout(() => loadDeferredImages(document.getElementById('main')), 3000);
   // a new feature says hello once, after the site has settled in (places.js)
   setTimeout(() => { if(window.placesLaunch) window.placesLaunch(); }, 2600);
+  // her birthday party opens by itself on the day (bday-show.js)
+  setTimeout(() => { if(window.bdayLaunch) window.bdayLaunch(); }, 2000);
 }
 
 const HEART_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.1 5.4 3.1 1.8-2 3.3-3.1 5.4-3.1 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
@@ -3915,5 +3918,6 @@ document.getElementById('pace-bored-btn').addEventListener('click', paceTo(openB
 
 <script src="../lib/media-prep.js"></script>
 <script src="places.js?v=7"></script>
+<script src="bday-show.js?v=1"></script>
 </body>
 </html>

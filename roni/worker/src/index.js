@@ -3,6 +3,8 @@ const BRANCH = 'main';
 const SITES = {
   roni: { content: 'roni/content.json', media: 'roni/media' },
   galit: { content: 'galit/content.json', media: 'galit/media' },
+  // birthday greetings for Roni, kept apart from her everyday messages until her birthday (roni/bday.html)
+  ronibday: { content: 'roni/birthday.json', media: 'roni/media' },
 };
 const GALIT_GROUPS = ['family', 'friends', 'work'];
 const ALLOWED_ORIGIN = 'https://alonzvisabag.github.io';
@@ -202,6 +204,8 @@ async function handleContribute(request, env) {
   const siteKey = body.site === undefined ? 'roni' : body.site;
   const site = SITES[siteKey];
   const isGalit = siteKey === 'galit';
+  // sites that collect greetings (a name and a message) rather than messages for situations
+  const isGreetings = isGalit || siteKey === 'ronibday';
 
   if (typeof website === 'string' && website.trim()) {
     return json({ ok: true });
@@ -219,18 +223,18 @@ async function handleContribute(request, env) {
     return json({ ok: false, error: 'text too long' }, 400);
   }
 
-  if (isGalit) {
-    if (!GALIT_GROUPS.includes(group)) {
-      return json({ ok: false, error: 'group required' }, 400);
-    }
+  if (isGalit && !GALIT_GROUPS.includes(group)) {
+    return json({ ok: false, error: 'group required' }, 400);
+  }
+  if (isGreetings) {
     if (typeof from !== 'string' || !from.trim()) {
       return json({ ok: false, error: 'name required' }, 400);
     }
   }
 
-  const hasExisting = !isGalit && typeof capsuleId === 'string' && capsuleId.length > 0;
+  const hasExisting = !isGreetings && typeof capsuleId === 'string' && capsuleId.length > 0;
   let cleanNewCapsule = null;
-  if (!isGalit && !hasExisting) {
+  if (!isGreetings && !hasExisting) {
     if (
       !newCapsule ||
       !VALID_TYPES.includes(newCapsule.type) ||
@@ -281,22 +285,22 @@ async function handleContribute(request, env) {
     return json({ ok: false, error: 'too many requests' }, 429);
   }
 
-  const cleanBatch = isGalit && typeof batch === 'string' && /^[A-Za-z0-9-]{6,40}$/.test(batch) ? batch : null;
+  const cleanBatch = isGreetings && typeof batch === 'string' && /^[A-Za-z0-9-]{6,40}$/.test(batch) ? batch : null;
 
   // Telegram: "ר" for Roni's site, "5 מתוך 60" for Galit's (only when a new greeting starts,
   // not for the extra photos of one already counted).
-  const failNote = isGalit ? 'ברכה לגלית לא נשמרה' : 'ר - לא נשמר';
-  let note = isGalit ? null : 'ר';
+  const failNote = isGalit ? 'ברכה לגלית לא נשמרה' : siteKey === 'ronibday' ? 'ברכת יום הולדת לרוני לא נשמרה' : 'ר - לא נשמר';
+  let note = isGreetings ? null : 'ר';
 
   let mediaFilename = null;
   if (hasMedia) {
-    const prefix = (isGalit ? group : hasExisting ? capsuleId : 'custom').replace(/[^a-zA-Z0-9-]/g, '');
+    const prefix = (isGalit ? group : isGreetings ? 'bday' : hasExisting ? capsuleId : 'custom').replace(/[^a-zA-Z0-9-]/g, '');
     mediaFilename = `${prefix}-${Date.now()}.${ext}`;
     const res = await putFile(
       env,
       `${site.media}/${mediaFilename}`,
       mediaBase64,
-      `contribute: add media for ${isGalit ? 'greeting' : hasExisting ? capsuleId : 'new capsule'}`
+      `contribute: add media for ${isGreetings ? 'greeting' : hasExisting ? capsuleId : 'new capsule'}`
     );
     if (!res.ok) {
       console.error('media upload failed', res.status, await res.text());
@@ -313,15 +317,15 @@ async function handleContribute(request, env) {
   };
 
   try {
-    if (isGalit) {
+    if (isGreetings) {
       await saveContent(env, site.content, (data) => {
         if (!data.greetings) data.greetings = [];
         const before = greetingCount(data.greetings);
-        data.greetings.push(cleanBatch ? { ...item, group, batch: cleanBatch } : { ...item, group });
+        const extra = isGalit ? { group } : {};
+        data.greetings.push(cleanBatch ? { ...item, ...extra, batch: cleanBatch } : { ...item, ...extra });
         const after = greetingCount(data.greetings);
-        const goal = (data.site && data.site.goal) || 60;
-        note = after > before ? `${after} מתוך ${goal}` : null;
-      }, 'contribute: add greeting');
+        if (after > before) note = isGalit ? `${after} מתוך ${(data.site && data.site.goal) || 60}` : `🎂 ברכה ${after} ליום ההולדת של רוני`;
+      }, isGalit ? 'contribute: add greeting' : 'contribute: add a birthday greeting for Roni');
     } else {
       await saveContent(
         env,
