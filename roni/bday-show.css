@@ -32,4 +32,28 @@
 #bd-home b{ display:block; font-size:1rem; color:var(--coral-dark); }
 #bd-home span{ display:block; font-size:.85rem; color:var(--muted); }
 
-@media (prefers-reduced-motion: reduce){ .bd-hero .bd-cake{ animation:none; } }
+/* the opening: bunting, a cake that drops in, the title letter by letter, the cards rising one after another */
+.bd-bunting{ display:flex; justify-content:center; gap:6px; margin:-4px auto 10px; }
+.bd-bunting i{ width:22px; height:26px; clip-path:polygon(0 0, 100% 0, 50% 100%); transform-origin:50% 0; animation:bd-flag-in .5s cubic-bezier(.3,1.6,.5,1) calc(var(--i) * 60ms) backwards, bd-swing 2.6s ease-in-out calc(var(--i) * 120ms) infinite alternate; }
+@keyframes bd-flag-in{ from{ transform:translateY(-30px) scale(.4); opacity:0; } }
+@keyframes bd-swing{ from{ rotate:-6deg; } to{ rotate:6deg; } }
+#bd-show.view-enter .bd-cake{ animation:bd-drop .9s cubic-bezier(.3,1.5,.5,1) .25s backwards, bd-bob 2.4s ease-in-out 1.2s infinite; }
+@keyframes bd-drop{ from{ transform:translateY(-140px) scale(.5) rotate(-20deg); opacity:0; } }
+.bd-hero h3 span{ display:inline-block; }
+#bd-show.view-enter .bd-hero h3 span{ animation:bd-letter .55s cubic-bezier(.3,1.7,.5,1) calc(.7s + var(--i) * 55ms) backwards; }
+@keyframes bd-letter{ from{ transform:translateY(24px) scale(.3) rotate(-12deg); opacity:0; } }
+#bd-show.view-enter .bd-hero p{ animation:bd-rise .6s ease 1.5s backwards; }
+#bd-show.view-enter .bd-list .fav-card{ animation:bd-rise .6s cubic-bezier(.22,1,.36,1) calc(1.7s + var(--i, 0) * 120ms) backwards; }
+@keyframes bd-rise{ from{ transform:translateY(30px); opacity:0; } }
+
+/* the shower of confetti and the balloons going up, once, over everything */
+.bd-party{ position:fixed; inset:0; pointer-events:none; z-index:3; overflow:hidden; }
+.bd-party .c{ position:absolute; top:-20px; width:9px; height:14px; border-radius:2px; animation:bd-shower var(--t) cubic-bezier(.3,.6,.5,1) var(--d) both; }
+@keyframes bd-shower{ from{ transform:translate(0, 0) rotate(0); } to{ transform:translate(var(--x), 110vh) rotate(var(--r)); opacity:.9; } }
+.bd-party .b{ position:absolute; bottom:-70px; font-size:2.6rem; animation:bd-float var(--t) ease-in var(--d) both; }
+@keyframes bd-float{ 0%{ transform:translate(0, 0) rotate(-6deg); opacity:1; } 50%{ transform:translate(var(--x), -60vh) rotate(6deg); } 100%{ transform:translate(0, -125vh) rotate(-4deg); opacity:1; } }
+
+@media (prefers-reduced-motion: reduce){
+  .bd-hero .bd-cake, .bd-bunting i, #bd-show.view-enter .bd-cake, #bd-show.view-enter .bd-hero h3 span, #bd-show.view-enter .bd-hero p, #bd-show.view-enter .bd-list .fav-card{ animation:none; }
+  .bd-party{ display:none; }
+}
