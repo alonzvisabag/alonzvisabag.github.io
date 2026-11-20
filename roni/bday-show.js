@@ -63,11 +63,13 @@
         <h2>יום הולדת שמח</h2>
       </div>
       <div class="bd-hero">
+        <div class="bd-bunting" aria-hidden="true">${COLORS.concat(COLORS).map((c, i) => `<i style="background:${c};--i:${i}"></i>`).join('')}</div>
         <div class="bd-cake" aria-hidden="true">🎂</div>
-        <h3>מזל טוב רוני!</h3>
+        <h3 aria-label="מזל טוב רוני!">${[...'מזל טוב רוני!'].map((ch, i) => ch === ' ' ? ' ' : `<span style="--i:${i}" aria-hidden="true">${ch}</span>`).join('')}</h3>
         <p>היום את בת ${AGE}${cards.length ? `, ומחכות לך כאן ${cards.length === 1 ? 'ברכה אחת' : `${cards.length} ברכות`} מכל מי שאוהב אותך 💛` : '. הברכות בדרך אלייך 💛'}</p>
       </div>
       <div class="bd-list">${list}</div>`;
+    view.querySelectorAll('.bd-list .fav-card').forEach((c, i) => c.style.setProperty('--i', Math.min(i, 8)));
     loadDeferredImages(view);
   }
 
@@ -82,7 +84,28 @@
     render();
     view.scrollTop = 0;
     openView(view, pt || { x: innerWidth / 2, y: innerHeight / 3 });
-    if (!reduce) for (let i = 0; i < 3; i++) setTimeout(() => burstConfetti(innerWidth / 2 + (Math.random() - .5) * 160, innerHeight / 3), 500 + i * 180);
+    if (!reduce) celebrate();
+  }
+
+  // the opening: a shower of confetti over the whole screen, fireworks of confetti around the title, and balloons
+  // floating up once from the bottom; then only the confetti down the sides keeps going
+  function celebrate() {
+    const layer = document.createElement('div');
+    layer.className = 'bd-party';
+    layer.setAttribute('aria-hidden', 'true');
+    let html = '';
+    for (let i = 0; i < 90; i++) {
+      html += `<i class="c" style="left:${(Math.random() * 100).toFixed(1)}%;background:${COLORS[i % COLORS.length]};--t:${(2.2 + Math.random() * 1.8).toFixed(2)}s;--d:${(Math.random() * 1.2).toFixed(2)}s;--x:${(Math.random() * 160 - 80).toFixed(0)}px;--r:${(Math.random() * 900 - 450).toFixed(0)}deg${i % 3 ? '' : ';border-radius:50%'}"></i>`;
+    }
+    ['🎈', '🎈', '🎉', '🎈', '🎁', '🎈', '🥳', '🎈', '🎈', '💛'].forEach((e, i) => {
+      html += `<span class="b" style="left:${(4 + i * 9.5 + Math.random() * 4).toFixed(1)}%;--t:${(3.6 + Math.random() * 1.6).toFixed(2)}s;--d:${(0.6 + Math.random() * 1.4).toFixed(2)}s;--x:${(Math.random() * 60 - 30).toFixed(0)}px">${e}</span>`;
+    });
+    layer.innerHTML = html;
+    view.appendChild(layer);
+    setTimeout(() => layer.remove(), 7500);
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => burstConfetti(innerWidth * (0.2 + Math.random() * 0.6), innerHeight * (0.12 + Math.random() * 0.25)), 700 + i * 260);
+    }
   }
 
   // ── from her birthday on, the greetings also become part of her site: one more situation at the top of the list,
