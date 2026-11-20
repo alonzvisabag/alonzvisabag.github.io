@@ -1,94 +1,35 @@
-/* ── Her birthday (21.11): a party screen with a cake to blow out and a balloon for every greeting ── */
+/* ── Her birthday (21.11): a screen like the rest of her site, her greetings as message cards, confetti down the sides ── */
 #bd-show{
-  --night:#2d1438; --night2:#4a1f5c; --pink:#ff5d8f; --pink-dark:#d93a6e; --gold:#ffc23d; --paper:#fffaf5; --ink:#332b2b; --muted:#8d7f8a;
-  position:fixed; inset:0; z-index:90; overflow-y:auto; overflow-x:hidden; color:#fff; text-align:center;
-  background:radial-gradient(120% 70% at 50% 0%, var(--night2), var(--night) 70%);
-  padding:calc(18px + env(safe-area-inset-top, 0px)) 16px calc(40px + env(safe-area-inset-bottom, 0px));
-  font-family:'Rubik', sans-serif; animation:bd-in .5s ease;
+  display:none; position:fixed; inset:0; z-index:60; overflow-y:auto; overflow-x:hidden;
+  background:linear-gradient(120deg, var(--bg1), var(--bg2) 45%, var(--bg3) 100%);
+  padding:20px 20px calc(100px + env(safe-area-inset-bottom, 0px));
 }
-#bd-show[hidden]{ display:none; }
-@keyframes bd-in{ from{ opacity:0; } }
-.bd-close{ position:fixed; top:calc(14px + env(safe-area-inset-top, 0px)); left:14px; z-index:3; width:44px; height:44px; border-radius:50%; border:0; background:rgba(255,255,255,.14); color:#fff; font-size:1.2rem; cursor:pointer; }
-.bd-sky{ position:fixed; inset:0; pointer-events:none; overflow:hidden; }
-.bd-sky .s{ position:absolute; width:4px; height:4px; border-radius:50%; background:var(--gold); animation:bd-twinkle 2.6s ease-in-out var(--d) infinite; }
-@keyframes bd-twinkle{ 50%{ opacity:.15; transform:scale(.5); } }
-.bd-stage{ position:relative; max-width:520px; margin:0 auto; padding-top:40px; }
-.bd-over{ display:inline-block; font-size:.82rem; font-weight:700; letter-spacing:1.5px; color:var(--gold); border:1.5px solid rgba(255,194,61,.5); border-radius:30px; padding:5px 14px; }
-.bd-title{ font-size:clamp(2.6rem, 13vw, 4rem); font-weight:900; line-height:1.02; margin:12px 0 6px; letter-spacing:-.02em; }
-.bd-title .g{ color:var(--gold); text-shadow:0 0 28px rgba(255,194,61,.55); }
-.bd-sub{ font-size:1.05rem; font-weight:600; opacity:.9; line-height:1.55; }
+#bd-show.show{ display:block; }
+#bd-show .view-header, .bd-hero, .bd-list{ position:relative; z-index:1; }
 
-/* the cake: two number candles, 2 and 6, each with a flame to tap out */
-.bd-cake{ position:relative; width:230px; margin:34px auto 10px; height:250px; }
-/* left to right, so the number reads 26 and not 62 */
-.bd-candles{ direction:ltr; position:absolute; top:0; left:0; right:0; display:flex; justify-content:center; gap:22px; }
-.bd-candle{ position:relative; border:0; background:none; padding:0; cursor:pointer; font:900 64px/1 'Rubik', sans-serif; color:#fff; -webkit-text-stroke:3px var(--pink); paint-order:stroke fill; padding-top:46px; }
-.bd-flame{ position:absolute; top:0; left:50%; width:22px; height:36px; translate:-50% 0; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%; background:radial-gradient(circle at 50% 70%, #fff6c8, var(--gold) 45%, #ff7a2f 80%); box-shadow:0 0 22px 8px rgba(255,194,61,.55); transform-origin:50% 90%; animation:bd-flicker .18s ease-in-out infinite alternate; }
-@keyframes bd-flicker{ to{ transform:scale(.92, 1.06) rotate(3deg); } }
-.bd-candle.out .bd-flame{ animation:bd-blow .5s ease forwards; }
-@keyframes bd-blow{ to{ transform:scale(.1, .4) translateY(10px); opacity:0; } }
-.bd-candle.out::after{ content:''; position:absolute; top:4px; left:50%; width:10px; height:30px; translate:-50% 0; border-radius:50%; background:rgba(255,255,255,.5); filter:blur(6px); animation:bd-smoke 1.4s ease-out forwards; }
-@keyframes bd-smoke{ from{ opacity:.8; } to{ opacity:0; transform:translateY(-50px) scaleX(2.4); } }
-.bd-tiers{ position:absolute; bottom:0; left:0; right:0; display:flex; flex-direction:column; align-items:center; }
-.bd-tier{ border-radius:16px 16px 10px 10px; position:relative; }
-.bd-tier.t1{ width:150px; height:58px; background:linear-gradient(#ffd3e0, #ffb3c9); }
-.bd-tier.t2{ width:220px; height:74px; background:linear-gradient(#fff3d6, #ffe0a3); margin-top:-4px; }
-.bd-tier::before{ content:''; position:absolute; top:0; left:0; right:0; height:20px; border-radius:16px 16px 0 0; background:radial-gradient(circle at 10px 0, #fff 10px, transparent 11px) 0 0 / 20px 20px repeat-x; }
-.bd-plate{ width:250px; height:12px; border-radius:50%; background:rgba(255,255,255,.25); margin-top:2px; }
-.bd-hint{ margin-top:8px; font-weight:700; color:var(--gold); animation:bd-pulse 1.4s ease-in-out infinite; }
-@keyframes bd-pulse{ 50%{ opacity:.55; } }
+.bd-hero{ max-width:460px; margin:6px auto 20px; text-align:center; }
+.bd-hero .bd-cake{ font-size:3.4rem; line-height:1; animation:bd-bob 2.4s ease-in-out infinite; }
+@keyframes bd-bob{ 50%{ transform:translateY(-6px) rotate(-5deg); } }
+.bd-hero h3{ font-size:2.1rem; font-weight:900; color:var(--ink-on-bg, var(--ink)); margin:8px 0 6px; letter-spacing:-.01em; }
+.bd-hero p{ color:var(--muted-on-bg, var(--muted)); font-size:1.02rem; line-height:1.6; font-weight:500; }
 
-/* the balloons: one for every greeting, with the name on it */
-.bd-balloons{ display:flex; flex-wrap:wrap; justify-content:center; gap:22px 14px; margin:30px auto 10px; padding-bottom:20px; }
-.bd-balloon{ position:relative; border:0; background:none; padding:0; cursor:pointer; width:96px; animation:bd-bob var(--t, 3s) ease-in-out var(--d, 0s) infinite alternate; -webkit-tap-highlight-color:transparent; }
-@keyframes bd-bob{ to{ transform:translateY(-12px) rotate(var(--r, 3deg)); } }
-.bd-balloon .bb{ display:grid; place-items:center; width:96px; height:114px; border-radius:50% 50% 48% 48%; padding:10px; background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.6), transparent 26%), var(--c); box-shadow:inset -8px -10px 18px rgba(0,0,0,.15); color:#fff; font:800 .92rem/1.2 'Rubik', sans-serif; text-shadow:0 1px 3px rgba(0,0,0,.35); overflow:hidden; word-break:break-word; }
-.bd-balloon::after{ content:''; display:block; width:1.5px; height:46px; margin:0 auto; background:rgba(255,255,255,.5); }
-.bd-balloon .knot{ display:block; width:12px; height:9px; margin:-2px auto 0; background:var(--c); clip-path:polygon(50% 0, 100% 100%, 0 100%); }
-.bd-balloon.pop{ animation:bd-pop .35s ease-out forwards; pointer-events:none; }
-@keyframes bd-pop{ 40%{ transform:scale(1.25); } to{ transform:scale(1.6); opacity:0; } }
-.bd-balloon.read{ opacity:.45; animation:none; }
-.bd-balloon.read .bb::before{ content:'✓ '; }
+.bd-list{ max-width:460px; margin:0 auto; display:flex; flex-direction:column; gap:16px; }
 
-.bd-actions{ display:flex; flex-direction:column; gap:10px; align-items:center; margin-top:16px; }
-.bd-btn{ border:0; border-radius:999px; padding:13px 24px; font:800 1rem 'Rubik', sans-serif; cursor:pointer; background:linear-gradient(100deg, var(--pink), var(--pink-dark)); color:#fff; box-shadow:0 5px 0 #a3264f; }
-.bd-btn.soft{ background:rgba(255,255,255,.14); box-shadow:none; }
-
-/* one greeting, opened */
-.bd-card-wrap{ position:fixed; inset:0; z-index:4; background:rgba(20,8,26,.6); display:grid; place-items:center; padding:20px; overflow-y:auto; animation:bd-in .25s ease; }
-.bd-card-wrap[hidden]{ display:none; }
-.bd-card{ position:relative; width:100%; max-width:440px; background:var(--paper); color:var(--ink); border-radius:24px; padding:26px 20px 20px; text-align:right; box-shadow:0 24px 60px rgba(0,0,0,.4); animation:bd-card-in .45s cubic-bezier(.3,1.5,.5,1); }
-@keyframes bd-card-in{ from{ transform:scale(.6) rotate(-4deg); opacity:0; } }
-.bd-card .from{ font-size:.82rem; font-weight:700; color:var(--pink-dark); letter-spacing:.04em; }
-.bd-card h3{ font-size:1.5rem; font-weight:900; margin:2px 0 12px; }
-.bd-card .txt{ white-space:pre-line; line-height:1.7; font-size:1.02rem; }
-.bd-card .txt + .txt{ margin-top:10px; }
-.bd-card img, .bd-card video{ display:block; width:100%; max-height:60vh; object-fit:contain; border-radius:14px; margin-top:12px; background:#f2e8e8; }
-.bd-card audio{ width:100%; margin-top:12px; }
-.bd-card .bd-card-close{ display:block; margin:18px auto 0; }
-.bd-card .bd-card-x{ position:absolute; top:10px; left:10px; width:40px; height:40px; border-radius:50%; border:0; background:#f6ebe6; color:var(--ink); font-size:1rem; cursor:pointer; }
-
-.bd-list{ display:grid; gap:14px; margin-top:24px; text-align:right; }
-.bd-list .bd-card{ animation:none; max-width:none; }
-.bd-empty{ margin-top:30px; font-weight:600; opacity:.85; line-height:1.6; }
-
-.bd-confetti{ position:fixed; top:-12px; width:9px; height:14px; z-index:5; pointer-events:none; animation:bd-fall var(--t) cubic-bezier(.3,.6,.5,1) forwards; }
-@keyframes bd-fall{ to{ transform:translate(var(--x), 110vh) rotate(var(--r)); } }
-.bd-burst{ position:fixed; width:8px; height:8px; border-radius:50%; z-index:5; pointer-events:none; animation:bd-burst .7s ease-out forwards; }
-@keyframes bd-burst{ to{ transform:translate(var(--x), var(--y)) scale(.4); opacity:0; } }
+/* confetti falling down both sides of the screen, behind the cards */
+.bd-side{ position:fixed; top:0; bottom:0; width:max(26px, calc((100vw - 500px) / 2)); max-width:220px; pointer-events:none; z-index:0; overflow:hidden; }
+.bd-side.right{ right:0; }
+.bd-side.left{ left:0; }
+.bd-side i{ position:absolute; top:-20px; width:8px; height:12px; border-radius:2px; opacity:.85; animation:bd-fall var(--t) linear var(--d) infinite; }
+@keyframes bd-fall{
+  from{ transform:translate(0, 0) rotate(0deg); }
+  to{ transform:translate(var(--x), 110vh) rotate(var(--r)); }
+}
 
 /* the way back to it on the home page, from her birthday on */
-#bd-home{ display:flex; align-items:center; gap:12px; width:calc(100% - 40px); max-width:600px; margin:0 auto 18px; padding:14px 16px; border:0; border-radius:16px; cursor:pointer; text-align:right; color:#fff; font-family:'Rubik', sans-serif; background:linear-gradient(100deg, #8a5cd6, #ff5d8f); box-shadow:0 8px 22px rgba(138,92,214,.35); }
+#bd-home{ display:flex; align-items:center; gap:12px; width:calc(100% - 40px); max-width:600px; margin:0 auto 18px; padding:14px 16px; border:0; border-radius:16px; cursor:pointer; text-align:right; color:var(--ink); font-family:'Rubik', sans-serif; background:var(--card); box-shadow:0 6px 0 color-mix(in srgb, var(--coral) 22%, var(--card)), 0 10px 24px rgba(0,0,0,0.06); }
 #bd-home[hidden]{ display:none; }
 #bd-home .ic{ font-size:1.9rem; flex:none; }
-#bd-home b{ display:block; font-size:1rem; }
-#bd-home span{ display:block; font-size:.85rem; opacity:.92; }
+#bd-home b{ display:block; font-size:1rem; color:var(--coral-dark); }
+#bd-home span{ display:block; font-size:.85rem; color:var(--muted); }
 
-/* the whole party in Fredoka, like the friends' page */
-#bd-show, #bd-show button, .bd-candle, .bd-balloon .bb, .bd-btn, #bd-home{ font-family:'Fredoka', 'Rubik', sans-serif; word-spacing:.08em; }   /* its Hebrew spaces are narrow */
-.bd-title{ font-weight:700; }
-
-@media (prefers-reduced-motion: reduce){
-  #bd-show, .bd-sky .s, .bd-flame, .bd-balloon, .bd-hint, .bd-card, .bd-card-wrap{ animation:none; }
-  .bd-confetti, .bd-burst{ display:none; }
-}
+@media (prefers-reduced-motion: reduce){ .bd-hero .bd-cake{ animation:none; } }

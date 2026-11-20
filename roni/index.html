@@ -17,7 +17,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' https://api.open-meteo.com https://roni-contribute.alonzvisabag.workers.dev https://nominatim.openstreetmap.org; object-src 'none'; base-uri 'self';">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
 
@@ -1693,7 +1693,7 @@
   }
 </style>
 <link rel="stylesheet" href="places.css?v=6">
-<link rel="stylesheet" href="bday-show.css?v=3">
+<link rel="stylesheet" href="bday-show.css?v=4">
 </head>
 <body>
 
@@ -2158,7 +2158,7 @@ function itemKey(c, item){
 function itemHTML(item, key){
   const parts = [];
   if(item.from){
-    parts.push(`<div class="item-from">מ${escapeHTML(item.from)}</div>`);
+    parts.push(`<div class="item-from">מ<bdi>${escapeHTML(item.from)}</bdi></div>`);   // bdi: a name in English stays after the מ
   }
   if(item.text){
     parts.push(`<div class="letter-text">${linkify(item.text)}</div>`);
@@ -3920,6 +3920,6 @@ document.getElementById('pace-bored-btn').addEventListener('click', paceTo(openB
 
 <script src="../lib/media-prep.js"></script>
 <script src="places.js?v=7"></script>
-<script src="bday-show.js?v=2"></script>
+<script src="bday-show.js?v=3"></script>
 </body>
 </html>
