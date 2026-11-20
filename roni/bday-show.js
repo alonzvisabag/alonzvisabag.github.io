@@ -57,11 +57,7 @@
 
   function render() {
     const list = cards.map((c) => `<div class="fav-card"><div class="capsule-body">${itemsOf(c).map((it) => itemHTML(it, itemKey({ id: CAPSULE_ID }, it))).join('')}</div></div>`).join('');
-    view.innerHTML = sides() + `
-      <div class="view-header">
-        <button class="back-btn" type="button" data-exit aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-        <h2>יום הולדת שמח</h2>
-      </div>
+    view.innerHTML = sides() + HEADER + `
       <div class="bd-hero">
         <div class="bd-bunting" aria-hidden="true">${COLORS.concat(COLORS).map((c, i) => `<i style="background:${c};--i:${i}"></i>`).join('')}</div>
         <div class="bd-cake" aria-hidden="true">🎂</div>
@@ -73,22 +69,54 @@
     loadDeferredImages(view);
   }
 
+  // first, on the day: a cake with the candles 2 and 6 to blow out (tap the flames); then the greetings
+  const HEADER = `<div class="view-header">
+        <button class="back-btn" type="button" data-exit aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <h2>יום הולדת שמח</h2>
+      </div>`;
+  function renderCandles() {
+    view.innerHTML = sides() + HEADER + `
+      <div class="bd-candles-stage">
+        <h3>רוני, תכבי את הנרות</h3>
+        <div class="bd-cake2">
+          <div class="bd-candles">${String(AGE).split('').map((d) => `<button type="button" class="bd-candle" aria-label="לכבות את הנר ${d}"><span class="bd-flame"></span>${d}</button>`).join('')}</div>
+          <div class="bd-tier t1"></div><div class="bd-tier t2"></div><div class="bd-plate"></div>
+        </div>
+        <p class="bd-hint">לחצי על הלהבות 🌬️</p>
+      </div>`;
+  }
+
   view.addEventListener('click', (e) => {
+    const candle = e.target.closest('.bd-candle');
+    if (candle && !candle.classList.contains('out')) {
+      candle.classList.add('out');
+      if (!view.querySelector('.bd-candle:not(.out)')) {
+        setTimeout(() => {
+          render();
+          view.scrollTop = 0;
+          view.classList.remove('view-enter');      // replay the opening for the greetings
+          void view.offsetWidth;
+          view.classList.add('view-enter');
+          if (!reduce) celebrate();
+        }, 900);
+      }
+      return;
+    }
     const heart = e.target.closest('.fav-btn');
     if (heart) return toggleFavorite(heart);
     if (e.target.closest('[data-exit]')) closeView(view);
   });
 
-  async function open(pt) {
+  async function open(pt, withCandles) {
     await load();
-    render();
+    if (withCandles) renderCandles(); else render();
     view.scrollTop = 0;
     openView(view, pt || { x: innerWidth / 2, y: innerHeight / 3 });
-    if (!reduce) celebrate();
+    if (!withCandles && !reduce) celebrate();
   }
 
-  // the opening: a shower of confetti over the whole screen, fireworks of confetti around the title, and balloons
-  // floating up once from the bottom; then only the confetti down the sides keeps going
+  // the opening: a shower of confetti over the whole screen and bursts of it around the title;
+  // then only the confetti down the sides keeps going
   function celebrate() {
     const layer = document.createElement('div');
     layer.className = 'bd-party';
@@ -97,9 +125,6 @@
     for (let i = 0; i < 90; i++) {
       html += `<i class="c" style="left:${(Math.random() * 100).toFixed(1)}%;background:${COLORS[i % COLORS.length]};--t:${(2.2 + Math.random() * 1.8).toFixed(2)}s;--d:${(Math.random() * 1.2).toFixed(2)}s;--x:${(Math.random() * 160 - 80).toFixed(0)}px;--r:${(Math.random() * 900 - 450).toFixed(0)}deg${i % 3 ? '' : ';border-radius:50%'}"></i>`;
     }
-    ['🎈', '🎈', '🎉', '🎈', '🎁', '🎈', '🥳', '🎈', '🎈', '💛'].forEach((e, i) => {
-      html += `<span class="b" style="left:${(4 + i * 9.5 + Math.random() * 4).toFixed(1)}%;--t:${(3.6 + Math.random() * 1.6).toFixed(2)}s;--d:${(0.6 + Math.random() * 1.4).toFixed(2)}s;--x:${(Math.random() * 60 - 30).toFixed(0)}px">${e}</span>`;
-    });
     layer.innerHTML = html;
     view.appendChild(layer);
     setTimeout(() => layer.remove(), 7500);
@@ -145,7 +170,7 @@
     try { seen = localStorage.getItem(SEEN_KEY) === today(); } catch (e) {}
     if (preview || (today() === BIRTHDAY && !seen)) {
       try { if (!preview) localStorage.setItem(SEEN_KEY, today()); } catch (e) {}
-      open();
+      open(null, true);
     }
   };
 })();
