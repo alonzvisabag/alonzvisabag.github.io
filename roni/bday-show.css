@@ -46,14 +46,33 @@
 #bd-show.view-enter .bd-list .fav-card{ animation:bd-rise .6s cubic-bezier(.22,1,.36,1) calc(1.7s + var(--i, 0) * 120ms) backwards; }
 @keyframes bd-rise{ from{ transform:translateY(30px); opacity:0; } }
 
-/* the shower of confetti and the balloons going up, once, over everything */
+/* the shower of confetti, once, over everything */
 .bd-party{ position:fixed; inset:0; pointer-events:none; z-index:3; overflow:hidden; }
 .bd-party .c{ position:absolute; top:-20px; width:9px; height:14px; border-radius:2px; animation:bd-shower var(--t) cubic-bezier(.3,.6,.5,1) var(--d) both; }
 @keyframes bd-shower{ from{ transform:translate(0, 0) rotate(0); } to{ transform:translate(var(--x), 110vh) rotate(var(--r)); opacity:.9; } }
-.bd-party .b{ position:absolute; bottom:-70px; font-size:2.6rem; animation:bd-float var(--t) ease-in var(--d) both; }
-@keyframes bd-float{ 0%{ transform:translate(0, 0) rotate(-6deg); opacity:1; } 50%{ transform:translate(var(--x), -60vh) rotate(6deg); } 100%{ transform:translate(0, -125vh) rotate(-4deg); opacity:1; } }
+
+/* the candles: a two-tier cake with the numbers 2 and 6, each with a flame to tap out */
+.bd-candles-stage{ position:relative; z-index:1; max-width:460px; margin:10px auto 0; text-align:center; }
+.bd-candles-stage h3{ font-size:1.9rem; font-weight:900; color:var(--ink-on-bg, var(--ink)); }
+.bd-cake2{ position:relative; width:230px; height:250px; margin:26px auto 8px; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; }
+.bd-candles{ direction:ltr; position:absolute; top:0; left:0; right:0; display:flex; justify-content:center; gap:22px; }
+.bd-candle{ position:relative; border:0; background:none; padding:46px 0 0; cursor:pointer; font:900 64px/1 'Rubik', sans-serif; color:#fff; -webkit-text-stroke:3px var(--coral); paint-order:stroke fill; -webkit-tap-highlight-color:transparent; }
+.bd-flame{ position:absolute; top:0; left:50%; width:22px; height:36px; translate:-50% 0; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%; background:radial-gradient(circle at 50% 70%, #fff6c8, #ffc23d 45%, #ff7a2f 80%); box-shadow:0 0 22px 8px rgba(255,194,61,.5); transform-origin:50% 90%; animation:bd-flicker .18s ease-in-out infinite alternate; }
+@keyframes bd-flicker{ to{ transform:scale(.92, 1.06) rotate(3deg); } }
+.bd-candle.out .bd-flame{ animation:bd-blow .5s ease forwards; }
+@keyframes bd-blow{ to{ transform:scale(.1, .4) translateY(10px); opacity:0; } }
+.bd-candle.out::after{ content:''; position:absolute; top:4px; left:50%; width:10px; height:30px; translate:-50% 0; border-radius:50%; background:rgba(120,110,120,.35); filter:blur(6px); animation:bd-smoke 1.4s ease-out forwards; }
+@keyframes bd-smoke{ from{ opacity:.8; } to{ opacity:0; transform:translateY(-50px) scaleX(2.4); } }
+.bd-tier{ border-radius:16px 16px 10px 10px; position:relative; }
+.bd-tier.t1{ width:150px; height:58px; background:linear-gradient(#ffd3e0, #ffb3c9); }
+.bd-tier.t2{ width:220px; height:74px; background:linear-gradient(#fff3d6, #ffe0a3); margin-top:-4px; }
+.bd-tier::before{ content:''; position:absolute; top:0; left:0; right:0; height:20px; border-radius:16px 16px 0 0; background:radial-gradient(circle at 10px 0, #fff 10px, transparent 11px) 0 0 / 20px 20px repeat-x; }
+.bd-plate{ width:250px; height:12px; border-radius:50%; background:rgba(0,0,0,.08); margin-top:2px; }
+.bd-hint{ font-weight:700; color:var(--coral-dark); animation:bd-pulse 1.4s ease-in-out infinite; }
+@keyframes bd-pulse{ 50%{ opacity:.5; } }
 
 @media (prefers-reduced-motion: reduce){
+  .bd-flame, .bd-hint{ animation:none; }
   .bd-hero .bd-cake, .bd-bunting i, #bd-show.view-enter .bd-cake, #bd-show.view-enter .bd-hero h3 span, #bd-show.view-enter .bd-hero p, #bd-show.view-enter .bd-list .fav-card{ animation:none; }
   .bd-party{ display:none; }
 }
