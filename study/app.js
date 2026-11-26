@@ -181,7 +181,8 @@
       </section>
 
       ${(C.gaps || []).length ? `<section class="sec"><details class="gaps"><summary>פערים בחומר (${C.gaps.length})</summary>
-        ${C.gaps.map(([h, p]) => `<div class="gap"><b>${esc(h)}</b><p>${esc(p)}</p></div>`).join('')}</details></section>` : ''}
+        ${C.gaps.map(([h, p]) => `<div class="gap"><b>${esc(h)}</b><p>${esc(p)}</p></div>`).join('')}
+        ${(C.held || []).length ? `<div class="gap"><b>⏸️ שאלות בהמתנה (${C.held.length})</b>${C.held.map(([q, why]) => `<p>• ${esc(q)}<br><span class="small">הסיבה: ${esc(why)}</span></p>`).join('')}</div>` : ''}</details></section>` : ''}
       <p class="muted small" style="text-align:center;margin-top:26px">ההתקדמות נשמרת בדפדפן הזה בלבד.</p>
     `);
     on('[data-mode]', e => MODE[e.currentTarget.dataset.mode]());
