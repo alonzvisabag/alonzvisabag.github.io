@@ -12,6 +12,7 @@ Plain HTML/CSS portfolio site hosted on GitHub Pages at https://alonzvisabag.git
 - `roni/`, `galit/` — the real gift sites (private, noindex)
 - `inside-joke-show/` — a pitch site for Noah Wolf's comedy series "The Inside Joke Show" (English, for producers; logo cut-outs in `img/`), noindex while in preview; `inside-jokes/` only forwards old links to it
 - `font-lab/` — "בית היציקה", a Hebrew font builder (sliders for each part of the letters, per-letter tweaks in a word), linked from the main page; `engine.js` is the letter engine both pages use. A copy of it also lives as a Claude artifact. noindex
+- `study/` — "לומדים", Alon's study-games app (noindex, installable to the iPhone home screen). `app.js` holds 9 games; each course is a file in `study/courses/` (`neuro-b.js` = נוירופסיכולוגיה ב׳: topics with cards, mcq, tf, open, pairs, seq, and article briefs), and extra files like `neuro-b-cases.js` add questions to topics by id through `COURSE_ADDS`. New material each week = a new topic or more questions. Never commit the lecturers' slides or the articles themselves, only questions and briefs written from them
 - `image-1-nobg.png` … `image-10-nobg.png` and the Hebrew-named Instagram post images — artwork in the root folder (not a subfolder)
 
 ## Owner
