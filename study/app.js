@@ -321,10 +321,12 @@
           q.type === 'tf' && app.querySelector('#reason').value.trim() ? `<div class="mine"><b>הנימוק שלך:</b> ${esc(app.querySelector('#reason').value)}</div>` : '');
       }
       function revealOpen(q, text, c) {
-        const norm = s => s.replace(/[֑-ׇ]/g, '').toLowerCase();
+        /* a keyword counts if every word of it shows up, allowing for Hebrew endings (הולכה / הולכת) */
+        const norm = s => s.replace(/[\u05BE-]/g, ' ').replace(/[\u0591-\u05C7]/g, '').toLowerCase().replace(/[ךםןףץ]/g, c => 'כמנפצ'['ךםןףץ'.indexOf(c)]);
         const mine = norm(text || '');
+        const has = kw => norm(kw).split(/\s+/).filter(Boolean).every(w => mine.includes(w.length >= 4 ? w.slice(0, -1) : w));
         app.querySelector('#ans').readOnly = true;
-        after.innerHTML = `${mine.trim() ? `<div class="kw">${q.kws.map(k => `<span class="${mine.includes(norm(k)) ? 'hit' : ''}">${mine.includes(norm(k)) ? '✓' : '·'} ${esc(k)}…</span>`).join('')}</div>` : ''}
+        after.innerHTML = `${mine.trim() ? `<div class="kw-h">מילות מפתח שמופיעות בתשובה הטובה (✓ = כתבת אותה, ✗ = חסרה אצלך):</div><div class="kw">${q.kws.map(k => `<span class="${has(k) ? 'hit' : 'miss'}">${has(k) ? '✓' : '✗'} ${esc(k)}</span>`).join('')}</div>` : ''}
           <div class="why"><b>תשובה טובה:</b>${esc(q.ans)}</div>${srcLine(q.t, q.src)}
           <div class="choice-h">בהשוואה לתשובה, איך היה?</div>
           <div class="btns three"><button class="btn bad" data-g="0">לא ידעתי</button><button class="btn mid" data-g="1">חלקית</button><button class="btn good" data-g="2">ידעתי</button></div>`;
