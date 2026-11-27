@@ -232,3 +232,5 @@ textarea:focus{ outline:none; border-color:var(--blue); }
 .chain .col{ display:grid; gap:8px; align-content:start; }
 .chain .tile{ font-size:.8rem; padding:9px 6px; min-height:56px; }
 .ch-h{ font-size:.75rem; font-weight:800; color:var(--muted); text-align:center; }
+.kw-h{ margin-top:14px; font-size:.82rem; font-weight:700; color:var(--muted); }
+.kw span.miss{ background:color-mix(in srgb, var(--bad) 12%, transparent); color:var(--bad); }
